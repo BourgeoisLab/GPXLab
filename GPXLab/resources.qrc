@@ -1,0 +1,33 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/gpxlab.png</file>
+        <file>images/fileopen.png</file>
+        <file>images/fileappend.png</file>
+        <file>images/filesave.png</file>
+        <file>images/filesaveas.png</file>
+        <file>images/exit.png</file>
+        <file>images/arror_up.png</file>
+        <file>images/arror_down.png</file>
+        <file>images/edit.png</file>
+        <file>images/edit2.png</file>
+        <file>images/undo.png</file>
+        <file>images/plus.png</file>
+        <file>images/minus.png</file>
+        <file>images/log.png</file>
+        <file>images/fit_view.png</file>
+        <file>images/fit_track.png</file>
+        <file>images/fit_point.png</file>
+        <file>images/follow.png</file>
+        <file>images/track_only.png</file>
+        <file>images/1downarrow.png</file>
+        <file>images/1uparrow.png</file>
+        <file>images/ledblue.png</file>
+        <file>images/ledgreen.png</file>
+        <file>images/ledlightblue.png</file>
+        <file>images/ledlightgreen.png</file>
+        <file>images/ledorange.png</file>
+        <file>images/ledpurple.png</file>
+        <file>images/ledred.png</file>
+        <file>images/ledyellow.png</file>
+    </qresource>
+</RCC>
