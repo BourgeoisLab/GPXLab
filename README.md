@@ -1,7 +1,7 @@
 GPXLab
 ======
 
-![GPXLab](gpxlab.png?raw=true)
+![GPXLab](doc/gpxlab.png?raw=true)
 
 What is GPXLab?
 ---------------
@@ -9,7 +9,7 @@ GPXLab is an application to display and manage GPS tracks previously recorded wi
 
 The idea is to give the user the possibility to merge several tracks into one single file and have statistic information about the summarized tracks or about a single track. Furthermore the user can see all tracks on a map and select there a track and/or a single track point. An altitude and a speed diagram and also a list of the track points offers visual information about the selected item.
 
-![Demo](demo.png?raw=true)
+![Demo](doc/demo.png?raw=true)
 
 The view is divided into 6 different parts:
 - Statistic information about all tracks
@@ -62,6 +62,8 @@ Release Notes
 
 Information
 -----------
-**Author:** Frederic Bourgeois <bourgeoislab@gmail.com>
-**Project homepage: **http://bourgeoislab.wordpress.com/gpxlab
+**Author:** Frédéric Bourgeois <bourgeoislab@gmail.com>
+
+**Project homepage:** http://bourgeoislab.wordpress.com/gpxlab
+
 **Latest sources:** http://github.com/bourgeoislab/gpxlab
