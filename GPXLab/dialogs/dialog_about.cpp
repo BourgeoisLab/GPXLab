@@ -29,6 +29,7 @@ Dialog_about::Dialog_about(QWidget *parent) :
     ui->labelCopyright->setText(" ©2014 " + GPXLab::organisationName);
     ui->labelLinkHomepage->setOpenExternalLinks(true);
     ui->labelLinkSourceCode->setOpenExternalLinks(true);
+    ui->labelLinkRelease->setOpenExternalLinks(true);
 }
 
 Dialog_about::~Dialog_about()

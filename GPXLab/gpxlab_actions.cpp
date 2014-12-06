@@ -18,10 +18,21 @@
 #include "gpxlab.h"
 #include "ui_gpxlab.h"
 #include "dialog_about.h"
+#include "dialog_settings.h"
 #include "dialog_modelproperties.h"
 #include "dialog_trackproperties.h"
 #include "dialog_srtm.h"
 #include <QMessageBox>
+
+#include "selectcommand.h"
+#include "editfilepropertiescommand.h"
+#include "edittrackpropertiescommand.h"
+#include "setaltitudecommand.h"
+#include "removetrackcommand.h"
+#include "movetrackdowncommand.h"
+#include "movetrackupcommand.h"
+#include "splittrackcommand.h"
+#include "combinetrackcommand.h"
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -32,32 +43,24 @@ void GPXLab::on_actionAbout_triggered()
     delete dlg;
 }
 
+void GPXLab::on_actionSettings_triggered()
+{
+    Dialog_settings *dlg = new Dialog_settings(settings, this);
+    dlg->exec();
+    delete dlg;
+}
+
+
 void GPXLab::on_actionEdit_File_Properties_triggered()
 {
     if (gpxmw)
     {
-        GPX_metadataType metadata = *gpxmw->getModelMetadata(); // copy metadata
+        GPX_metadataType metadata = *gpxmw->getModelMetadata();
         Dialog_modelProperties *dlg = new Dialog_modelProperties(metadata, *gpxmw->getModelStats(), this);
         if(dlg->exec() == QDialog::Accepted)
-        {
-            // set new metadata
-            gpxmw->setModelMetadata(metadata);
-
-            // update file properties
-            if (check_modified())
-            {
-                updating = true;
-                updateFile();
-                updating = false;
-            }
-        }
+            undoStack->push(new EditFilePropertiesCommand(this, metadata));
         delete dlg;
     }
-}
-
-void GPXLab::on_pushButtonFileEdit_clicked()
-{
-    on_actionEdit_File_Properties_triggered();
 }
 
 void GPXLab::on_actionEdit_Track_Properties_triggered()
@@ -67,29 +70,19 @@ void GPXLab::on_actionEdit_Track_Properties_triggered()
         const GPX_statsType *stats = gpxmw->getTrackStats(gpxmw->getSelectedTrackNumber());
         if (stats)
         {
-            GPX_trkMetadataType metadata = *gpxmw->getTrackMetadata(gpxmw->getSelectedTrackNumber()); // copy metadata
+            GPX_trkMetadataType metadata = *gpxmw->getTrackMetadata(gpxmw->getSelectedTrackNumber());
             Dialog_trackProperties *dlg = new Dialog_trackProperties(metadata, *stats, this);
             if(dlg->exec() == QDialog::Accepted)
-            {
-                // set new metadata
-                gpxmw->setTrackMetadata(gpxmw->getSelectedTrackNumber(), metadata);
-
-                // update track properties
-                if (check_modified())
-                {
-                    ui->treeTracks->setCurrentTrackText(gpxmw->getItemName(gpxmw->getSelectedTrackNumber()));
-                    updating = true;
-                    updateTrack(ORIGIN_UNSPECIFIC);
-                    updating = false;
-                }
-            }
+                undoStack->push(new EditTrackPropertiesCommand(this, gpxmw->getSelectedTrackNumber(), metadata));
             delete dlg;
         }
     }
 }
 
-void GPXLab::on_pushButtonTrackEdit_clicked()
+void GPXLab::tree_doubleClicked(QTreeWidgetItem* item, int column)
 {
+    Q_UNUSED(item);
+    Q_UNUSED(column);
     on_actionEdit_Track_Properties_triggered();
 }
 
@@ -97,32 +90,28 @@ void GPXLab::on_actionGetAltitudeFromSRTM_triggered()
 {
     if (gpxmw)
     {
-        QList<QTreeWidgetItem*> items = ui->treeTracks->selectedItems();
-        if (items.count() > 0)
+        SelectCommand selectCommand(this, gpxmw->getSelectedTrackNumber());
+        int selectedTrackSegmentNumber = gpxmw->getSelectedTrackSegmentNumber();
+        if (selectedTrackSegmentNumber != -1)
         {
-            // set selection to parent track if a track segment is currently selected
-            if(items[0]->parent())
-                ui->treeTracks->setCurrentItem(items[0]->parent());
+            // select whole track
+            selectCommand.redoWithoutUpdate();
 
-            // open SRTM dialog
-            Dialog_srtm *dlg = new Dialog_srtm(gpxmw, this);
-            if(dlg->exec() == QDialog::Accepted)
-            {
-                // set new altitude values
-                if (gpxmw->setAltitudeValues(dlg->getValues(), gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber()) == GPX_model::GPXM_OK)
-                {
-                    // update track properties
-                    if (check_modified())
-                    {
-                        updating = true;
-                        updateFile();
-                        updateTrack(ORIGIN_UNSPECIFIC);
-                        updating = false;
-                    }
-                }
-            }
-            delete dlg;
+            // generate values for whole track
+            gpxmw->generateDiagramValues(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber());
         }
+
+        // open SRTM dialog
+        Dialog_srtm *dlg = new Dialog_srtm(gpxmw, this);
+        if(dlg->exec() == QDialog::Accepted)
+            undoStack->push(new SetAltitudeCommand(this, gpxmw->getSelectedTrackNumber(), dlg->getValues()));
+
+        if (selectedTrackSegmentNumber != -1)
+        {
+            selectCommand.undo();
+        }
+
+        delete dlg;
     }
 }
 
@@ -185,19 +174,7 @@ void GPXLab::on_pushButtonTrackRemove_clicked()
 {
     if (gpxmw)
     {
-        if (gpxmw->removeTrack(gpxmw->getSelectedTrackNumber()) == GPX_model::GPXM_OK)
-        {
-            if (check_modified())
-            {
-                gpxmw->setSelectedTrack(gpxmw->getSelectedTrackNumber());
-                gpxmw->setSelectedPointByNumber(-1);
-                updating = true;
-                updateFile();
-                build();
-                updateTrack(ORIGIN_UNSPECIFIC);
-                updating = false;
-            }
-        }
+        undoStack->push(new RemoveTrackCommand(this, gpxmw->getSelectedTrackNumber()));
     }
 }
 
@@ -205,15 +182,11 @@ void GPXLab::on_pushButtonTrackMoveDown_clicked()
 {
     if (gpxmw)
     {
-        if (gpxmw->moveTrackDown(gpxmw->getSelectedTrackNumber()) == GPX_model::GPXM_OK)
+        if (gpxmw->getSelectedTrackNumber() < gpxmw->getNumTracks() - 1)
         {
-            if (check_modified())
-            {
-                gpxmw->setSelectedTrack(gpxmw->getSelectedTrackNumber() + 1);
-                updating = true;
-                build(true);
-                updating = false;
-            }
+            undoStack->push(new MoveTrackDownCommand(this, gpxmw->getSelectedTrackNumber()));
+            SelectCommand selectCommand(this, gpxmw->getSelectedTrackNumber() + 1);
+            selectCommand.redo();
         }
     }
 }
@@ -222,16 +195,28 @@ void GPXLab::on_pushButtonTrackMoveUp_clicked()
 {
     if (gpxmw)
     {
-        if (gpxmw->moveTrackUp(gpxmw->getSelectedTrackNumber()) == GPX_model::GPXM_OK)
+        if (gpxmw->getSelectedTrackNumber() > 0)
         {
-            if (check_modified())
-            {
-                gpxmw->setSelectedTrack(gpxmw->getSelectedTrackNumber() - 1);
-                updating = true;
-                build(true);
-                updating = false;
-            }
+            undoStack->push(new MoveTrackUpCommand(this, gpxmw->getSelectedTrackNumber()));
+            SelectCommand selectCommand(this, gpxmw->getSelectedTrackNumber() - 1);
+            selectCommand.redo();
         }
+    }
+}
+
+void GPXLab::on_actionSplit_Track_triggered()
+{
+    if (gpxmw)
+    {
+        undoStack->push(new SplitTrackCommand(this, gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), gpxmw->getSelectedPointNumber()));
+    }
+}
+
+void GPXLab::on_actionCombine_Track_triggered()
+{
+    if (gpxmw)
+    {
+        undoStack->push(new CombineTrackCommand(this, gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), gpxmw->getSelectedPointNumber()));
     }
 }
 
@@ -279,6 +264,12 @@ void GPXLab::on_actionShow_Only_Selected_Track_toggled(bool checked)
         ui->mapWidget->setShowOnlySelectedTrack(checked);
         ui->mapWidget->selectTrack(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber());
     }
+}
+
+void GPXLab::on_actionRestore_Default_View_triggered()
+{
+    restoreGeometry(defaultGeometry);
+    restoreState(defaultState);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -395,67 +386,32 @@ bool GPXLab::eventFilter(QObject *obj, QEvent *event)
     return QWidget::eventFilter(obj, event);
 }
 
-void GPXLab::on_actionShowFile_toggled(bool checked)
-{
-    QAction *action = ui->dockWidgetFile->toggleViewAction();
-    if (action->isChecked() != checked)
-        action->trigger();
-}
-
-void GPXLab::on_actionShowTracks_toggled(bool checked)
-{
-    QAction *action = ui->dockWidgetTracks->toggleViewAction();
-    if (action->isChecked() != checked)
-        action->trigger();
-}
-
-void GPXLab::on_actionShowDiagrams_toggled(bool checked)
-{
-    QAction *action = ui->dockWidgetDiagrams->toggleViewAction();
-    if (action->isChecked() != checked)
-        action->trigger();
-}
-
-void GPXLab::on_actionShowTrackPoints_toggled(bool checked)
-{
-    QAction *action = ui->dockWidgetPoints->toggleViewAction();
-    if (action->isChecked() != checked)
-        action->trigger();
-}
-
-void GPXLab::on_actionShowToolbar_toggled(bool checked)
-{
-    QAction *action = ui->mainToolBar->toggleViewAction();
-    if (action->isChecked() != checked)
-        action->trigger();
-}
-
 void GPXLab::on_dockWidgetFile_visibilityChanged(bool visible)
 {
-    ui->actionShowFile->setChecked(visible);
+    Q_UNUSED(visible);
     update_size();
 }
 
 void GPXLab::on_dockWidgetTracks_visibilityChanged(bool visible)
 {
-    ui->actionShowTracks->setChecked(visible);
+    Q_UNUSED(visible);
     update_size();
 }
 
 void GPXLab::on_dockWidgetDiagrams_visibilityChanged(bool visible)
 {
-    ui->actionShowDiagrams->setChecked(visible);
+    Q_UNUSED(visible);
     update_size();
 }
 
 void GPXLab::on_dockWidgetPoints_visibilityChanged(bool visible)
 {
-    ui->actionShowTrackPoints->setChecked(visible);
+    Q_UNUSED(visible);
     update_size();
 }
 
 void GPXLab::on_mainToolBar_visibilityChanged(bool visible)
 {
-    ui->actionShowToolbar->setChecked(visible);
+    Q_UNUSED(visible);
     update_size();
 }

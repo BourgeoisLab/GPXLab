@@ -22,6 +22,12 @@
 #include "srtm.h"
 #include "gpx_wrapper.h"
 
+/**
+ * @addtogroup Dialogs Dialogs
+ * @brief Dialogues
+ * @{
+ */
+
 namespace Ui {
 class Dialog_srtm;
 }
@@ -31,13 +37,13 @@ class Dialog_srtm;
  *
  * @brief Dialog subclass to get altitude values from SRTM
  *
- * The dialog can be used to get altitude values from SRTM.
+ * The dialogue can be used to get altitude values from SRTM.
  *
  * @see GPX_model and SRTM
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 25 Oct 2014
+ * @version 1.1
+ * @date 3 Dec 2014
  */
 class Dialog_srtm : public QDialog
 {
@@ -46,7 +52,7 @@ class Dialog_srtm : public QDialog
 public:
 
     /**
-     * @brief Constructs the dialog
+     * @brief Constructs the dialogue
      * @param gpxmw GPX_model wrapper
      * @param parent Parent
      */
@@ -77,5 +83,7 @@ private:
     void setModified(bool modified);
     bool generateSRTMAltitudeValues(int option);
 };
+
+/** @} Dialogs */
 
 #endif // _DIALOG_SRTM_H_

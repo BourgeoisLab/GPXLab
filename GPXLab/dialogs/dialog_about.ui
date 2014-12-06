@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>250</height>
+    <width>450</width>
+    <height>300</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>400</width>
-    <height>250</height>
+    <width>450</width>
+    <height>300</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>400</width>
-    <height>250</height>
+    <width>450</width>
+    <height>300</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -33,8 +33,8 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>210</y>
-     <width>381</width>
+     <y>260</y>
+     <width>431</width>
      <height>32</height>
     </rect>
    </property>
@@ -97,9 +97,9 @@
    <property name="geometry">
     <rect>
      <x>90</x>
-     <y>120</y>
-     <width>301</width>
-     <height>81</height>
+     <y>140</y>
+     <width>351</width>
+     <height>111</height>
     </rect>
    </property>
    <property name="html">
@@ -137,9 +137,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="labelLinkSourceCode">
    <property name="geometry">
     <rect>
-     <x>170</x>
+     <x>190</x>
      <y>90</y>
-     <width>220</width>
+     <width>251</width>
      <height>20</height>
     </rect>
    </property>
@@ -152,7 +152,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>90</x>
      <y>70</y>
-     <width>80</width>
+     <width>100</width>
      <height>20</height>
     </rect>
    </property>
@@ -169,9 +169,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="labelLinkHomepage">
    <property name="geometry">
     <rect>
-     <x>170</x>
+     <x>190</x>
      <y>70</y>
-     <width>220</width>
+     <width>251</width>
      <height>20</height>
     </rect>
    </property>
@@ -184,7 +184,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>90</x>
      <y>90</y>
-     <width>80</width>
+     <width>100</width>
      <height>20</height>
     </rect>
    </property>
@@ -196,6 +196,38 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="text">
     <string>Source Code:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_6">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>110</y>
+     <width>100</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Latest Release:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelLinkRelease">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>110</y>
+     <width>251</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://github.com/bourgeoislab/gpxlab/releases&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://github.com/bourgeoislab/gpxlab/releases&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
  </widget>

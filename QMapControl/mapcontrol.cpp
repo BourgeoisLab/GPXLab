@@ -405,6 +405,16 @@ namespace qmapcontrol
         return layermanager->currentZoom();
     }
 
+    int MapControl::minZoom() const
+    {
+        return layermanager->minZoom();
+    }
+
+    int MapControl::maxZoom() const
+    {
+        return layermanager->maxZoom();
+    }
+
     void MapControl::scrollLeft(int pixel)
     {
         layermanager->scrollView(QPoint(-pixel,0));

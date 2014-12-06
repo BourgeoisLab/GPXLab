@@ -19,7 +19,7 @@
 #include "ui_dialog_srtm.h"
 #include "qutils.h"
 
-const QString Dialog_srtm::dlgName = "Get Altitude From SRTM";
+const QString Dialog_srtm::dlgName = "Get Altitude From Database";
 
 Dialog_srtm::Dialog_srtm(const GPX_wrapper *gpxmw, QWidget *parent) :
     QDialog(parent),

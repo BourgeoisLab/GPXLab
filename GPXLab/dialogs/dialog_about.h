@@ -20,6 +20,12 @@
 
 #include <QDialog>
 
+/**
+ * @addtogroup Dialogs Dialogs
+ * @brief Dialogues
+ * @{
+ */
+
 namespace Ui {
 class Dialog_about;
 }
@@ -27,11 +33,11 @@ class Dialog_about;
 /**
  * @class Dialog_about
  *
- * @brief About dialog
+ * @brief About dialogue
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 25 Oct 2014
+ * @version 1.1
+ * @date 6 Dec 2014
  */
 class Dialog_about : public QDialog
 {
@@ -40,7 +46,7 @@ class Dialog_about : public QDialog
 public:
 
     /**
-     * @brief Constructor
+     * @brief Constructs the dialogue
      * @param parent Parent
      */
     explicit Dialog_about(QWidget *parent = 0);
@@ -49,5 +55,7 @@ public:
 private:
     Ui::Dialog_about *ui;
 };
+
+/** @} Dialogs */
 
 #endif // _DIALOG_ABOUT_H_

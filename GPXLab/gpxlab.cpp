@@ -19,28 +19,65 @@
 #include "ui_gpxlab.h"
 #include "qutils.h"
 
+#include "selectcommand.h"
+#include "appendtrackcommand.h"
+
 //////////////////////////////////////////////////////////////////////////////
 
 const QString GPXLab::organisationName = "BourgeoisLab";
 
 const QString GPXLab::appName = "GPXLab";
 
-const QString GPXLab::appVersion = "0.1";
+const QString GPXLab::appVersion = "0.2.0";
 
 //////////////////////////////////////////////////////////////////////////////
 
 GPXLab::GPXLab(const QString &fileName, QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::GPXLab),
     gpxmw(NULL),
-    updating(false),
+    ui(new Ui::GPXLab),
+    updatingLevel(0),
     closing(false)
 {
     // setup UI
     ui->setupUi(this);
 
+    // store default settings
+    defaultState = saveState();
+    defaultGeometry = saveGeometry();
+
+    // load settings
+    loadSettings();
+
     // set window title
     setWindowTitle(appName);
+
+    // initialize widgets
+    ui->mapWidget->init(settings.doPersistentCaching, -1, settings.cachePath);
+
+
+    zoomSlider = new QSlider(Qt::Horizontal, this);
+    zoomSlider->setMinimumWidth(10);
+    zoomSlider->setMaximumWidth(100);
+    zoomSlider->setMinimum(0);
+    zoomSlider->setMaximum(0);
+    ui->mainToolBar->insertWidget(ui->actionMapZoom, zoomSlider);
+    connect(zoomSlider, SIGNAL(valueChanged(int)), this, SLOT(zoom_valueChanged(int)));
+    connect(ui->mapWidget, SIGNAL(viewChanged(const QPointF&, int)), this, SLOT(map_viewChanged(const QPointF&, int)));
+
+    // undo stack
+    undoStack = new QUndoStack(this);
+    undoStack->setUndoLimit(undoLimit);
+    undoAction = undoStack->createUndoAction(this, tr("&Undo"));
+    undoAction->setShortcuts(QKeySequence::Undo);
+    undoAction->setIcon(QIcon(":/images/undo.png"));
+    redoAction = undoStack->createRedoAction(this, tr("&Redo"));
+    redoAction->setShortcuts(QKeySequence::Redo);
+    redoAction->setIcon(QIcon(":/images/redo.png"));
+    ui->menuEdit->addAction(undoAction);
+    ui->menuEdit->addAction(redoAction);
+    ui->menuEdit->addSeparator();
+    connect(undoStack, SIGNAL(indexChanged(int)), this, SLOT(undo_indexChanged(int)));
 
     // build recent files action
     for (int i = 0; i < MaxRecentFiles; ++i)
@@ -62,32 +99,43 @@ GPXLab::GPXLab(const QString &fileName, QWidget *parent) :
     // build context menus
     QAction *separator = new QAction(this);
     separator->setSeparator(true);
-    ui->dockWidgetFile->addAction(ui->actionShowFile);
-    ui->dockWidgetFile->addAction(ui->actionAppend_File);
+    addAction(ui->dockWidgetFile->toggleViewAction());
+    addAction(ui->dockWidgetTracks->toggleViewAction());
+    addAction(ui->dockWidgetDiagrams->toggleViewAction());
+    addAction(ui->dockWidgetPoints->toggleViewAction());
+    addAction(ui->mainToolBar->toggleViewAction());
+    addAction(separator);
+    addAction(ui->actionRestore_Default_View);
+    ui->menuView->addAction(ui->dockWidgetFile->toggleViewAction());
+    ui->menuView->addAction(ui->dockWidgetTracks->toggleViewAction());
+    ui->menuView->addAction(ui->dockWidgetDiagrams->toggleViewAction());
+    ui->menuView->addAction(ui->dockWidgetPoints->toggleViewAction());
+    ui->menuView->addAction(ui->mainToolBar->toggleViewAction());
+    ui->menuView->addSeparator();
+    ui->menuView->addAction(ui->actionRestore_Default_View);
+    ui->dockWidgetFile->addAction(ui->dockWidgetFile->toggleViewAction());
     ui->dockWidgetFile->addAction(ui->actionEdit_File_Properties);
-    ui->dockWidgetTracks->addAction(ui->actionShowTracks);
-    ui->dockWidgetTracks->addAction(ui->actionAppend_File);
+    ui->dockWidgetTracks->addAction(ui->dockWidgetTracks->toggleViewAction());
     ui->dockWidgetTracks->addAction(ui->actionEdit_Track_Properties);
     ui->dockWidgetTracks->addAction(ui->actionGetAltitudeFromSRTM);
-    ui->dockWidgetDiagrams->addAction(ui->actionShowDiagrams);
-    ui->dockWidgetDiagrams->addAction(ui->actionEdit_Track_Properties);
-    ui->dockWidgetDiagrams->addAction(ui->actionGetAltitudeFromSRTM);
-    ui->diagramWidget->addAction(ui->actionShowDiagrams);
-    ui->diagramWidget->addAction(ui->actionEdit_Track_Properties);
-    ui->diagramWidget->addAction(ui->actionGetAltitudeFromSRTM);
-    ui->dockWidgetPoints->addAction(ui->actionShowTrackPoints);
+    ui->dockWidgetDiagrams->addAction(ui->dockWidgetDiagrams->toggleViewAction());
+    ui->diagramWidget->addAction(ui->dockWidgetDiagrams->toggleViewAction());
+    ui->dockWidgetPoints->addAction(ui->dockWidgetPoints->toggleViewAction());
     ui->mapWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->mapWidget, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(map_showContextMenu(const QPoint&)));
 
-    // connect signals for track / track point selection
+    // connect signals for track & track point selection
     connect(ui->diagramWidget, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(diagram_selectionChanged(QMouseEvent*)));
     connect(ui->mapWidget, SIGNAL(selectionChanged(int, int, double, double)), this, SLOT(map_selectionChanged(int, int, double, double)));
     connect(ui->tableWidgetPoints, SIGNAL(selectionChanged(int)), this, SLOT(table_selectionChanged(int)));
+    connect(ui->treeTracks, SIGNAL(itemDoubleClicked(QTreeWidgetItem* , int)), this, SLOT(tree_doubleClicked(QTreeWidgetItem*, int)));
     connect(ui->treeTracks, SIGNAL(itemSelectionChanged()), this, SLOT(tree_selectionChanged()));
 
     // open file if any passed as argument
     if (!fileName.isEmpty())
+    {
         openFile(fileName);
+    }
 }
 
 GPXLab::~GPXLab()
@@ -97,20 +145,39 @@ GPXLab::~GPXLab()
         delete gpxmw;
 }
 
+void GPXLab::loadSettings()
+{
+    QSettings qsettings;
+    restoreGeometry(qsettings.value("geometry").toByteArray());
+    restoreState(qsettings.value("windowState").toByteArray());
+    ui->tableWidgetPoints->restoreState(qsettings.value("tableState").toByteArray());
+    settings.load();
+}
+
+void GPXLab::saveSettings()
+{
+    QSettings qsettings;
+    qsettings.setValue("geometry", saveGeometry());
+    qsettings.setValue("windowState", saveState());
+    qsettings.setValue("tableState", ui->tableWidgetPoints->saveState());
+    settings.save();
+}
+
 void GPXLab::openFile(QString fileName)
 {
     if (fileName.isEmpty())
         fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", "GPX (*.gpx);;NMEA (*.txt *.nmea)");
     if (!fileName.isEmpty())
     {
+        SelectCommand selectCommand(this, 0);
+        const GPX_metadataType *metadata;
+
         // delete old GPX_Wrapper if necessary
         if (gpxmw != NULL)
             delete gpxmw;
 
         // create new GPX_Wrapper
         gpxmw = new GPX_wrapper(appName);
-        if (gpxmw == NULL)
-            return; // out of memory
 
         // load file
         ui->statusBar->showMessage(tr("Loading file: ") + fileName);
@@ -124,16 +191,24 @@ void GPXLab::openFile(QString fileName)
             // set current file
             setCurrentFile(fileName);
 
-            // select first track
-            gpxmw->setSelectedTrack(0);
-            gpxmw->setSelectedPointByNumber(-1);
-
-            // update all
-            updating = true;
+            // update file properties
             updateFile();
+
+            // begin update of track widgets
+            beginUpdate();
+
+            // build stuff
             build();
-            updateTrack(ORIGIN_UNSPECIFIC);
-            updating = false;
+
+            // center map and zoom in
+            metadata = gpxmw->getModelMetadata();
+            ui->mapWidget->setViewAndZoomIn(metadata->bounds);
+
+            // select first track
+            selectCommand.redo();
+
+            // end update
+            endUpdate();
 
             // enable / disable actions
             ui->actionAppend_File->setEnabled(true);
@@ -143,8 +218,6 @@ void GPXLab::openFile(QString fileName)
             ui->actionEdit_File_Properties->setEnabled(true);
             ui->actionEdit_Track_Properties->setEnabled(true);
             ui->actionGetAltitudeFromSRTM->setEnabled(true);
-            ui->pushButtonFileEdit->setEnabled(true);
-            ui->pushButtonTrackEdit->setEnabled(true);
             ui->actionFit_View->setEnabled(true);
             ui->actionFit_Track->setEnabled(true);
             ui->actionFit_Point->setEnabled(true);
@@ -154,6 +227,8 @@ void GPXLab::openFile(QString fileName)
             ui->pushButtonTrackRemove->setEnabled(true);
             ui->pushButtonTrackMoveUp->setEnabled(true);
             ui->pushButtonTrackMoveDown->setEnabled(true);
+            ui->actionSplit_Track->setEnabled(true);
+            ui->actionCombine_Track->setEnabled(true);
             break;
 
         default:
@@ -176,24 +251,17 @@ void GPXLab::appendFiles(QStringList &fileNames)
             for (int i = 0; i < fileNames.size(); ++i)
             {
                 ui->statusBar->showMessage(tr("Loading file: ") + fileNames.at(i));
-                if (gpxmw->load(fileNames.at(i), false) != GPX_model::GPXM_OK)
-                    QMessageBox::critical(this, appName, tr("Failed to append \"") + fileNames.at(i) + "\".");
+                undoStack->push(new AppendTrackCommand(this, fileNames.at(i)));
             }
             ui->statusBar->showMessage("");
 
-            if (check_modified())
-            {
-                // select last track
-                gpxmw->setSelectedTrack(gpxmw->getNumTracks() - 1);
-                gpxmw->setSelectedPointByNumber(-1);
+            // center map and zoom in
+            const GPX_metadataType *metadata = gpxmw->getModelMetadata();
+            ui->mapWidget->setViewAndZoomIn(metadata->bounds);
 
-                // update all
-                updating = true;
-                updateFile();
-                build();
-                updateTrack(ORIGIN_UNSPECIFIC);
-                updating = false;
-            }
+            // select last track
+            SelectCommand selectCommand(this, gpxmw->getNumTracks() - 1);
+            selectCommand.redo();
         }
     }
 }
@@ -218,12 +286,19 @@ void GPXLab::saveFile(QString fileName)
                     setCurrentFile(fileName);
 
                     // update file properties (in case file name changed)
-                    updating = true;
                     updateFile();
-                    updating = false;
+
+                    // begin update of track widgets
+                    beginUpdate();
+
+                    // end update
+                    endUpdate();
 
                     // enable / disable actions
                     ui->actionSave_File->setEnabled(false);
+
+                    // clear undo stack
+                    undoStack->clear();
                 break;
 
                 default:
@@ -242,11 +317,18 @@ void GPXLab::closeFile()
         delete gpxmw;
         gpxmw = NULL;
 
-        // clear all
-        updating = true;
+        // clear file properties
         updateFile();
-        updateTrack(ORIGIN_UNSPECIFIC);
-        updating = false;
+
+        // begin update of track widgets
+        beginUpdate();
+
+        // clear widgets
+        updateTrack();
+        updatePoint();
+
+        // end update
+        endUpdate();
 
         // disable actions
         ui->actionAppend_File->setEnabled(false);
@@ -255,8 +337,6 @@ void GPXLab::closeFile()
         ui->actionEdit_File_Properties->setEnabled(false);
         ui->actionEdit_Track_Properties->setEnabled(false);
         ui->actionGetAltitudeFromSRTM->setEnabled(false);
-        ui->pushButtonFileEdit->setEnabled(false);
-        ui->pushButtonTrackEdit->setEnabled(false);
         ui->actionFit_View->setEnabled(false);
         ui->actionFit_Track->setEnabled(false);
         ui->actionFit_Point->setEnabled(false);
@@ -266,10 +346,31 @@ void GPXLab::closeFile()
         ui->pushButtonTrackRemove->setEnabled(false);
         ui->pushButtonTrackMoveUp->setEnabled(false);
         ui->pushButtonTrackMoveDown->setEnabled(false);
+        ui->actionSplit_Track->setEnabled(false);
+        ui->actionCombine_Track->setEnabled(false);
+
+        // clear undo stack
+        undoStack->clear();
     }
 }
 
 //////////////////////////////////////////////////////////////////////////////
+
+void GPXLab::beginUpdate()
+{
+    ++updatingLevel;
+    ui->mapWidget->suspendUpdate(true);
+}
+
+void GPXLab::endUpdate()
+{
+    --updatingLevel;
+    ui->mapWidget->suspendUpdate(false);
+    if (updatingLevel == 0)
+    {
+        ui->mapWidget->updateRequestNew();
+    }
+}
 
 void GPXLab::updateFile()
 {
@@ -301,7 +402,7 @@ void GPXLab::updateFile()
     }
 }
 
-void GPXLab::updateTrack(updateOrigin_e origin)
+void GPXLab::updateTrack()
 {
     if (gpxmw)
     {
@@ -327,19 +428,9 @@ void GPXLab::updateTrack(updateOrigin_e origin)
             ui->labelTrackHeightIntUp->setText(QString::number(stats->heightIntUp, 'f', 0) + " m");
             ui->labelTrackHeightIntDown->setText(QString::number(stats->heightIntDown, 'f', 0) + " m");
 
-            // Track tree
-            if (origin != ORIGIN_TREE)
-            {
-                ui->statusBar->showMessage(tr("Updating track tree..."));
-                ui->treeTracks->select(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber());
-            }
-
             // Map
-            if (origin != ORIGIN_MAP)
-            {
-                ui->statusBar->showMessage(tr("Updating map..."));
-                ui->mapWidget->selectTrack(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber());
-            }
+            ui->statusBar->showMessage(tr("Updating map..."));
+            ui->mapWidget->selectTrack(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber());
 
             // Map menu
             ui->statusBar->showMessage(tr("Updating map menu..."));
@@ -357,25 +448,18 @@ void GPXLab::updateTrack(updateOrigin_e origin)
                 }
             }
 
+            // Track tree
+            ui->statusBar->showMessage(tr("Updating track tree..."));
+            ui->treeTracks->select(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber());
+
             // Diagram
-            if (origin != ORIGIN_DIAGRAM)
-            {
-                ui->statusBar->showMessage(tr("Updating diagram..."));
-                gpxmw->generateDiagramValues(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber());
-                ui->diagramWidget->setData(gpxmw->getDiagramTimeValues(), gpxmw->getDiagramAltitudeValues(), gpxmw->getDiagramSpeedValues());
-            }
+            ui->statusBar->showMessage(tr("Updating diagram..."));
+            gpxmw->generateDiagramValues(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber());
+            ui->diagramWidget->setData(gpxmw->getDiagramTimeValues(), gpxmw->getDiagramAltitudeValues(), gpxmw->getDiagramSpeedValues());
 
             // Point list
-            if (origin != ORIGIN_TABLE)
-            {
-                ui->statusBar->showMessage(tr("Updating point list..."));
-                ui->tableWidgetPoints->build(gpxmw);
-
-            }
-
-            // Point selection
-            ui->statusBar->showMessage(tr("Updating point selection..."));
-            updatePoint(origin);
+            ui->statusBar->showMessage(tr("Updating point list..."));
+            ui->tableWidgetPoints->build(gpxmw);
 
             ui->statusBar->showMessage("");
             QApplication::restoreOverrideCursor();
@@ -411,30 +495,29 @@ void GPXLab::updateTrack(updateOrigin_e origin)
     ui->tableWidgetPoints->clear();
 }
 
-void GPXLab::updatePoint(updateOrigin_e origin)
+void GPXLab::updatePoint()
 {
     if (gpxmw)
     {
         const GPX_wptType *wpt = gpxmw->getSelectedPoint();
         if (wpt)
         {
-            if (origin != ORIGIN_MAP)
-                ui->mapWidget->selectPoint(wpt->latitude, wpt->longitude);
-            if (origin != ORIGIN_DIAGRAM)
-                ui->diagramWidget->setMarkerValue(wpt->timestamp);
-            if (origin != ORIGIN_TABLE)
-                ui->tableWidgetPoints->selectRow(gpxmw->getSelectedPointNumber());
-        }
-        else
-        {
-            if (origin != ORIGIN_MAP)
-                ui->mapWidget->selectedPointSetVisible(false);
-            if (origin != ORIGIN_DIAGRAM)
-                ui->diagramWidget->setMarkerValue(0.0);
-            if (origin != ORIGIN_TABLE)
-                ui->tableWidgetPoints->selectRow(0);
+            QApplication::setOverrideCursor(Qt::WaitCursor);
+            QApplication::processEvents();
+
+            ui->statusBar->showMessage(tr("Updating point list..."));
+            ui->mapWidget->selectPoint(wpt->latitude, wpt->longitude);
+            ui->diagramWidget->setMarkerValue(wpt->timestamp);
+            ui->tableWidgetPoints->selectRow(gpxmw->getSelectedPointNumber());
+
+            ui->statusBar->showMessage("");
+            QApplication::restoreOverrideCursor();
+            return;
         }
     }
+    ui->mapWidget->selectedPointSetVisible(false);
+    ui->diagramWidget->setMarkerValue(0.0);
+    ui->tableWidgetPoints->selectRow(0);
 }
 
 void GPXLab::build(bool select)
@@ -444,26 +527,11 @@ void GPXLab::build(bool select)
         QApplication::setOverrideCursor(Qt::WaitCursor);
         QApplication::processEvents();
 
-        // Track tree
-        ui->statusBar->showMessage(tr("Generating track tree..."));
-        ui->treeTracks->build(gpxmw);
-        if (select)
-            ui->treeTracks->select(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber());
-
         // Map
         ui->statusBar->showMessage(tr("Generating map..."));
+        ui->mapWidget->build(gpxmw);
         if (select)
-        {
-            ui->mapWidget->suspendUpdate(true);
-            ui->mapWidget->build(gpxmw);
             ui->mapWidget->selectTrack(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber());
-            ui->mapWidget->suspendUpdate(false);
-            ui->mapWidget->updateRequestNew();
-        }
-        else
-        {
-            ui->mapWidget->build(gpxmw);
-        }
 
         // Map menu
         ui->statusBar->showMessage(tr("Generating map menu..."));
@@ -494,53 +562,52 @@ void GPXLab::build(bool select)
             mapContextMenu.addAction(action);
         }
 
+        // Track tree
+        ui->statusBar->showMessage(tr("Generating track tree..."));
+        ui->treeTracks->build(gpxmw);
+        if (select)
+            ui->treeTracks->select(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber());
+
         ui->statusBar->showMessage("");
         QApplication::restoreOverrideCursor();
     }
+}
+
+void GPXLab::setTrackName(int trackNumber, const QString& name)
+{
+    ui->treeTracks->setTrackName(trackNumber, name);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
 void GPXLab::map_selectionChanged(int trackNumber, int trackSegmentNumber, double lat, double lon)
 {
-    if (updating || closing)
+    if (updatingLevel || closing)
         return;
 
     if (gpxmw)
     {
-        if (gpxmw->setSelectedTrack(trackNumber, trackSegmentNumber) == GPX_model::GPXM_OK)
-        {
-            updating = true;
-            updateTrack(ORIGIN_MAP);
-            updating = false;
-        }
-        if (gpxmw->setSelectedPointByCoord(lat, lon) == GPX_model::GPXM_OK)
-        {
-            updating = true;
-            updatePoint(ORIGIN_MAP);
-            updating = false;
-        }
+        SelectCommand selectCommand(this, trackNumber, trackSegmentNumber, lat, lon);
+        selectCommand.redo();
     }
 }
 
 void GPXLab::map_contextMenuSelectionChanged()
 {
+    if (updatingLevel || closing)
+        return;
+
     QAction *action = qobject_cast<QAction *>(sender());
     if (action)
     {
-        if (gpxmw->setSelectedTrack(action->data().toInt()) == GPX_model::GPXM_OK)
-        {
-            gpxmw->setSelectedPointByNumber(-1);
-            updating = true;
-            updateTrack(ORIGIN_MAP_MENU);
-            updating = false;
-        }
+        SelectCommand selectCommand(this, action->data().toInt());
+        selectCommand.redo();
     }
 }
 
 void GPXLab::tree_selectionChanged()
 {
-    if (updating || closing)
+    if (updatingLevel || closing)
         return;
 
     if (gpxmw)
@@ -549,40 +616,21 @@ void GPXLab::tree_selectionChanged()
         if (items.count() > 0)
         {
             QList<QVariant> data = items[0]->data(0, Qt::UserRole).toList();
-            if (gpxmw->setSelectedTrack(data.at(0).toInt(), data.at(1).toInt()) == GPX_model::GPXM_OK)
-            {
-                gpxmw->setSelectedPointByNumber(-1);
-                updating = true;
-                updateTrack(ORIGIN_TREE);
-                updating = false;
-            }
-        }
-        else
-        {
-            if (gpxmw->setSelectedTrack(-1, -1))
-            {
-                gpxmw->setSelectedPointByNumber(-1);
-                updating = true;
-                updateTrack(ORIGIN_TREE);
-                updating = false;
-            }
+            SelectCommand selectCommand(this, data.at(0).toInt(), data.at(1).toInt());
+            selectCommand.redo();
         }
     }
 }
 
 void GPXLab::table_selectionChanged(int pointNumber)
 {
-    if (updating || closing)
+    if (updatingLevel || closing)
         return;
 
     if (gpxmw)
     {
-        if (gpxmw->setSelectedPointByNumber(pointNumber) == GPX_model::GPXM_OK)
-        {
-            updating = true;
-            updatePoint(ORIGIN_TABLE);
-            updating = false;
-        }
+        SelectCommand selectCommand(this, gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), pointNumber);
+        selectCommand.redo();
     }
 }
 
@@ -590,18 +638,27 @@ void GPXLab::diagram_selectionChanged(QMouseEvent* event)
 {
     Q_UNUSED(event);
 
-    if (closing)
+    if (updatingLevel || closing)
         return;
 
     if (gpxmw)
     {
-        if (gpxmw->setSelectedPointByTimestamp(ui->diagramWidget->getMarkerValue()) == GPX_model::GPXM_OK)
-        {
-            updating = true;
-            updatePoint(ORIGIN_DIAGRAM);
-            updating = false;
-        }
+        SelectCommand selectCommand(this, gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), (time_t)ui->diagramWidget->getMarkerValue());
+        selectCommand.redo();
     }
+}
+
+void GPXLab::map_viewChanged(const QPointF &coordinate, int zoom)
+{
+    Q_UNUSED(coordinate);
+    zoomSlider->setMinimum(ui->mapWidget->minZoom());
+    zoomSlider->setMaximum(ui->mapWidget->maxZoom());
+    zoomSlider->setValue(zoom);
+}
+
+void GPXLab::zoom_valueChanged(int value)
+{
+    ui->mapWidget->setZoom(value);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -634,7 +691,7 @@ void GPXLab::updateRecentFileActions()
         actionOpenRecentFile[i]->setVisible(false);
 }
 
-void GPXLab::map_showContextMenu(const QPoint& pos) // this is a slot
+void GPXLab::map_showContextMenu(const QPoint& pos)
 {
     if (gpxmw)
     {
@@ -649,6 +706,9 @@ void GPXLab::map_showContextMenu(const QPoint& pos) // this is a slot
         menu.addAction(separator);
         menu.addAction(ui->actionFollow_Item);
         menu.addAction(ui->actionShow_Only_Selected_Track);
+        menu.addAction(separator);
+        menu.addAction(ui->actionSplit_Track);
+        menu.addAction(ui->actionCombine_Track);
         menu.exec(ui->mapWidget->mapToGlobal(pos));
     }
 }
@@ -682,7 +742,7 @@ int GPXLab::check_need_save()
     int ret = QMessageBox::NoButton;
     if (gpxmw)
     {
-        if (gpxmw->isModified())
+        if (!undoStack->isClean())
         {
             QMessageBox msgBox;
             msgBox.setText(tr("The file has been modified."));
@@ -697,22 +757,32 @@ int GPXLab::check_need_save()
     return ret;
 }
 
-bool GPXLab::check_modified()
+void GPXLab::undo_indexChanged(int idx)
 {
+    Q_UNUSED(idx);
+
     if (gpxmw)
     {
-        if (gpxmw->isModified())
+        // check if modified
+        if (!undoStack->isClean())
         {
-            // enable / disable actions
+            // enable save action
             ui->actionSave_File->setEnabled(true);
 
             // set window title
             setWindowTitle("*" + gpxmw->getFileName() + " - " + appName);
-
-            return true;
+        }
+        else
+        {
+            // set window title
+            setWindowTitle(gpxmw->getFileName() + " - " + appName);
         }
     }
-    return false;
+    else
+    {
+        // set window title
+        setWindowTitle(appName);
+    }
 }
 
 void GPXLab::closeEvent(QCloseEvent *event)
@@ -725,5 +795,6 @@ void GPXLab::closeEvent(QCloseEvent *event)
     {
         event->accept();
         closing = true;
+        saveSettings();
     }
 }

@@ -25,6 +25,11 @@
 using namespace std;
 
 /**
+ * @ingroup GPX_model
+ * @{
+ */
+
+/**
  * @namespace NMEAFile
  *
  * @brief Functions to load NMEA files.
@@ -49,5 +54,7 @@ namespace NMEAFile
      */
     GPX_model::retCode_e load(ifstream* fp, GPX_model* gpxm, const string& name = "");
 }
+
+/** @} GPX_model */
 
 #endif // _NMEAFILE_H_

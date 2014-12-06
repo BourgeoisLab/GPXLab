@@ -22,6 +22,12 @@
 #include "gpx_wrapper.h"
 
 /**
+ * @addtogroup Widgets Widgets
+ * @brief Widgets related functions
+ * @{
+ */
+
+/**
  * @class QTreeWidgetTracks
  *
  * @brief QTreeWidget subclass
@@ -31,8 +37,8 @@
  * @see QTreeWidget
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 7 Nov 2014
+ * @version 1.1
+ * @date 28 Nov 2014
  */
 class QTreeWidgetTracks : public QTreeWidget
 {
@@ -59,15 +65,18 @@ public:
     void select(int trackNumber, int trackSegmentNumber = -1);
 
     /**
-     * @brief Sets the text of the selected track
-     * @param text New text
+     * @brief Sets the text of a track
+     * @param trackNumber Track number
+     * @param name New name
      */
-    void setCurrentTrackText(const QString& text);
+    void setTrackName(int trackNumber, const QString& name);
 
 signals:
 
 public slots:
 
 };
+
+/** @} Widgets */
 
 #endif // _QTREEWIDGETTRACKS_H_

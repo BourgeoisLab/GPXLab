@@ -31,19 +31,30 @@ static char gBuffer[BUFFER_SIZE];
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define PARSING_NONE            0
-#define PARSING_GPX             1
-#define PARSING_METADATA        2
-#define PARSING_METADATA_LINK   3
-#define PARSING_METADATA_AUTHOR 4
-#define PARSING_TRK             5
-#define PARSING_TRK_LINK        6
-#define PARSING_TRKSEG          7
-#define PARSING_TRKPT           8
-#define PARSING_TRKPT_LINK      9
+#define PARSING_NONE                    0
+#define PARSING_GPX                     1
+#define PARSING_EXTENSIONS              2
+#define PARSING_METADATA                3
+#define PARSING_METADATA_LINK           4
+#define PARSING_METADATA_AUTHOR         5
+#define PARSING_METADATA_EXTENSIONS     6
+#define PARSING_TRK                     7
+#define PARSING_TRK_LINK                8
+#define PARSING_TRK_EXTENSIONS          9
+#define PARSING_TRKSEG                  10
+#define PARSING_TRKSEG_EXTENSIONS       11
+#define PARSING_TRKPT                   12
+#define PARSING_TRKPT_LINK              13
+#define PARSING_TRKPT_EXTENSIONS        14
 
 static bool gOverwriteMetadata = false;
 static int gVersion = 0;
+
+static GPX_extensionsType *gExtension = NULL;
+static string gExtensionStr = "";
+static bool gExtensionHasContent = false;
+static int gExtensionPrevState = PARSING_NONE;
+static int gExtensionLevelDepth = 0;
 
 static int getChar(void* ptr)
 {
@@ -94,13 +105,23 @@ static void openTag(void* pXml, char* pTag)
 
     case PARSING_GPX:
         if (stricmp(pTag, "metadata") == 0)
+        {
             xml->state = PARSING_METADATA;
+        }
         else if (stricmp(pTag, "trk") == 0)
         {
             // add new track
             GPX_trkType trk(gpxm->trk.size());
             gpxm->trk.push_back(trk);
             xml->state = PARSING_TRK;
+        }
+        else if (stricmp(pTag, "extensions") == 0)
+        {
+            gExtensionPrevState = PARSING_GPX;
+            gExtension = &gpxm->extensions;
+            gExtensionStr = "";
+            gExtensionLevelDepth = xml->recursionDepth;
+            xml->state = PARSING_EXTENSIONS;
         }
         break;
 
@@ -122,6 +143,14 @@ static void openTag(void* pXml, char* pTag)
             GPX_trkType trk(gpxm->trk.size());
             gpxm->trk.push_back(trk);
             xml->state = PARSING_TRK;
+        }
+        else if (stricmp(pTag, "extensions") == 0)
+        {
+            gExtensionPrevState = PARSING_METADATA;
+            gExtension = &gpxm->metadata.extensions;
+            gExtensionStr = "";
+            gExtensionLevelDepth = xml->recursionDepth;
+            xml->state = PARSING_METADATA_EXTENSIONS;
         }
 
         if (gVersion == 10)
@@ -156,6 +185,14 @@ static void openTag(void* pXml, char* pTag)
             gpxm->trk.back().metadata.links.push_back(link);
             xml->state = PARSING_TRK_LINK;
         }
+        else if (stricmp(pTag, "extensions") == 0)
+        {
+            gExtensionPrevState = PARSING_TRK;
+            gExtension = &gpxm->trk.back().extensions;
+            gExtensionStr = "";
+            gExtensionLevelDepth = xml->recursionDepth;
+            xml->state = PARSING_TRK_EXTENSIONS;
+        }
 
         if (gVersion == 10)
         {
@@ -179,6 +216,14 @@ static void openTag(void* pXml, char* pTag)
             gpxm->trk.back().trkseg.back().trkpt.push_back(wpt);
             xml->state = PARSING_TRKPT;
         }
+        else if (stricmp(pTag, "extensions") == 0)
+        {
+            gExtensionPrevState = PARSING_TRKSEG;
+            gExtension = &gpxm->trk.back().trkseg.back().extensions;
+            gExtensionStr = "";
+            gExtensionLevelDepth = xml->recursionDepth;
+            xml->state = PARSING_TRKSEG_EXTENSIONS;
+        }
         break;
 
     case PARSING_TRKPT:
@@ -188,6 +233,14 @@ static void openTag(void* pXml, char* pTag)
             GPX_linkType link;
             gpxm->trk.back().trkseg.back().trkpt.back().links.push_back(link);
             xml->state = PARSING_TRKPT_LINK;
+        }
+        else if (stricmp(pTag, "extensions") == 0)
+        {
+            gExtensionPrevState = PARSING_TRKPT;
+            gExtension = &gpxm->trk.back().trkseg.back().trkpt.back().extensions;
+            gExtensionStr = "";
+            gExtensionLevelDepth = xml->recursionDepth;
+            xml->state = PARSING_TRKPT_EXTENSIONS;
         }
 
         if (gVersion == 10)
@@ -202,6 +255,17 @@ static void openTag(void* pXml, char* pTag)
         break;
 
     case PARSING_TRKPT_LINK:
+        break;
+
+    case PARSING_EXTENSIONS:
+    case PARSING_METADATA_EXTENSIONS:
+    case PARSING_TRK_EXTENSIONS:
+    case PARSING_TRKSEG_EXTENSIONS:
+    case PARSING_TRKPT_EXTENSIONS:
+        gExtensionStr += "<";
+        gExtensionStr += pTag;
+        gExtensionStr += ">";
+        gExtensionHasContent = false;
         break;
     }
 }
@@ -366,6 +430,15 @@ static void tagContent(void* pXml, char* pTag, char* pContent)
             else if (stricmp(pTag, "type") == 0)
                 gpxm->trk.back().trkseg.back().trkpt.back().links.back().type = sContent;
             break;
+
+        case PARSING_EXTENSIONS:
+        case PARSING_METADATA_EXTENSIONS:
+        case PARSING_TRK_EXTENSIONS:
+        case PARSING_TRKSEG_EXTENSIONS:
+        case PARSING_TRKPT_EXTENSIONS:
+            gExtensionHasContent = true;
+            gExtensionStr += pContent;
+            break;
     }
 }
 
@@ -471,6 +544,19 @@ static void tagAttribute(void* pXml, char* pTag, char *pAttribute, char* pConten
                     gpxm->trk.back().trkseg.back().trkpt.back().links.back().href = sContent;
             }
             break;
+
+        case PARSING_EXTENSIONS:
+        case PARSING_METADATA_EXTENSIONS:
+        case PARSING_TRK_EXTENSIONS:
+        case PARSING_TRKSEG_EXTENSIONS:
+        case PARSING_TRKPT_EXTENSIONS:
+            gExtensionStr.resize(gExtensionStr.size() - 1); // remove '>'
+            gExtensionStr += " ";
+            gExtensionStr += pAttribute;
+            gExtensionStr += "=\"";
+            gExtensionStr += pContent;
+            gExtensionStr += "\">";
+            break;
     }
 }
 
@@ -532,6 +618,41 @@ static void closeTag(void* pXml, char* pTag)
             if (stricmp(pTag, "link") == 0)
                 xml->state = PARSING_TRKPT;
             break;
+
+        case PARSING_EXTENSIONS:
+        case PARSING_METADATA_EXTENSIONS:
+        case PARSING_TRK_EXTENSIONS:
+        case PARSING_TRKSEG_EXTENSIONS:
+        case PARSING_TRKPT_EXTENSIONS:
+            if (stricmp(pTag, "extensions") == 0)
+            {
+                gExtension = NULL;
+                xml->state = gExtensionPrevState;
+            }
+            else
+            {
+                if (gExtensionHasContent)
+                {
+                    gExtensionStr += "</";
+                    gExtensionStr += pTag;
+                    gExtensionStr += ">";
+                }
+                else
+                {
+                    gExtensionStr.resize(gExtensionStr.size() - 1); // remove '>'
+                    gExtensionStr += "/>";
+                }
+
+                gExtensionHasContent = true; // for nested tags
+
+                if (xml->recursionDepth == gExtensionLevelDepth + 1)
+                {
+                    if (gExtension)
+                        gExtension->extension.push_back(gExtensionStr);
+                    gExtensionStr = "";
+                }
+            }
+            break;
     }
 }
 
@@ -553,6 +674,7 @@ GPX_model::retCode_e GPXFile::load(ifstream* fp, GPX_model* gpxm, bool overwrite
 
     gVersion = 0;
     gOverwriteMetadata = overwriteMetadata;
+    gExtension = NULL;
 
     if (UXML_parseFile(&uXML) != 0)
         return GPX_model::GPXM_ERR_FAILED;

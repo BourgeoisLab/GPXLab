@@ -23,9 +23,15 @@
 #include "gpx_model.h"
 
 /**
+ * @defgroup GPX_wrapper GPX model wrapper
+ * @brief Qt wrapper for the GPX model
+ * @{
+ */
+
+/**
  * @class GPX_wrapper
  *
- * @brief Qt wrapper class for GPX_model.
+ * @brief Qt wrapper class for GPX_model
  *
  * Qt wrapper class for GPX_model.
  *
@@ -34,8 +40,8 @@
  * @see GPX_Model
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 31 Oct 2014
+ * @version 1.1
+ * @date 28 Nov 2014
  */
 class GPX_wrapper
 {
@@ -89,10 +95,11 @@ public:
     const GPX_metadataType* getModelMetadata() const;
 
     /**
-     * @brief Sest the metadata of the model
+     * @brief Sets the metadata of the model
      * @param metadata New metadata
+     * @return Return code, GPXM_OK on success
      */
-    void setModelMetadata(const GPX_metadataType &metadata);
+    GPX_model::retCode_e setModelMetadata(const GPX_metadataType &metadata);
 
     /**
      * @brief Gets the number of tracks
@@ -118,8 +125,9 @@ public:
      * @brief Sets the metadata of a track
      * @param trackNumber Track number
      * @param metadata New metadata
+     * @return Return code, GPXM_OK on success
      */
-    void setTrackMetadata(int trackNumber, const GPX_trkMetadataType &metadata);
+    GPX_model::retCode_e setTrackMetadata(int trackNumber, const GPX_trkMetadataType &metadata);
 
     /**
      * @brief Gets statistics about an item (track or track segment)
@@ -138,9 +146,24 @@ public:
     const QString getItemName(int trackNumber, int trackSegmentNumber = -1) const;
 
     /**
+     * @brief Gets a track
+     * @param trackNumber Track number
+     * @return Track, NULL if invalid
+     */
+    const GPX_trkType *getTrack(int trackNumber) const;
+
+    /**
+     * @brief Gets a track segment
+     * @param trackNumber Track number
+     * @param trackSegmentNumber Track segment number
+     * @return Track segment, NULL if invalid
+     */
+    const GPX_trksegType *getTrackSegment(int trackNumber, int trackSegmentNumber) const;
+
+    /**
      * @brief Gets a track point
      * @param trackNumber Track number
-     * @param trackSegmentNumber Track segment number. If -1 for whole track
+     * @param trackSegmentNumber Track segment number, if -1 for whole track
      * @param pointNumber Point number starting from the given track segment
      * or first segment if trackSegmentNumber = -1
      * @return Track point, NULL if invalid
@@ -148,9 +171,9 @@ public:
     const GPX_wptType *getPoint(int trackNumber, int trackSegmentNumber, int pointNumber) const;
 
     /**
-     * @brief Gets number of points in the track or track segment
+     * @brief Gets the number of points in a track or track segment
      * @param trackNumber Track number
-     * @param trackSegmentNumber Track segment number. If -1 for whole track
+     * @param trackSegmentNumber Track segment number, if -1 for whole track
      * @return Number of points
      */
     int getNumPoints(int trackNumber, int trackSegmentNumber) const;
@@ -161,6 +184,14 @@ public:
      * @return Return code, GPXM_OK on success
      */
     GPX_model::retCode_e removeTrack(int trackNumber);
+
+    /**
+     * @brief Inserts a track
+     * @param position Insertion place
+     * @param trk Track to add
+     * @return Return code, GPXM_OK on success
+     */
+    GPX_model::retCode_e insertTrack(int position, const GPX_trkType &trk);
 
     /**
      * @brief Moves a track upward
@@ -175,6 +206,24 @@ public:
      * @return Return code, GPXM_OK on success
      */
     GPX_model::retCode_e moveTrackDown(int trackNumber);
+
+    /**
+     * @brief Splits a track in two track segments
+     * @param trackNumber Track number
+     * @param trackSegmentNumber Track segment number, if -1 for whole track
+     * @param pointNumber Point number at which the track is split
+     * @return Return code, GPXM_OK on success
+     */
+    GPX_model::retCode_e splitTrack(int trackNumber, int &trackSegmentNumber, int &pointNumber);
+
+    /**
+     * @brief Combines a track from two track segments
+     * @param trackNumber Track number
+     * @param trackSegmentNumber Track segment number, if -1 for whole track
+     * @param pointNumber Point number at which the track is combined
+     * @return Return code, GPXM_OK on success
+     */
+    GPX_model::retCode_e combineTrack(int trackNumber, int &trackSegmentNumber, int &pointNumber);
 
     /**
      * @brief Internally selects a track or track segment
@@ -199,10 +248,10 @@ public:
     /**
      * @brief Internally selects a track point from the selected track or track segment
      * given its item number
-     * @param number Item number
+     * @param pointNumber Item number
      * @return Return code, GPXM_OK on success
      */
-    GPX_model::retCode_e setSelectedPointByNumber(int number);
+    GPX_model::retCode_e setSelectedPointByNumber(int pointNumber);
 
     /**
      * @brief Internally selects a track point from the selected track or track segment
@@ -325,5 +374,7 @@ private:
     QVector<double> speedValues;
     QVector<double> altitudeValues;
 };
+
+/** @} GPX_wrapper */
 
 #endif // _GPX_WRAPPER_H_

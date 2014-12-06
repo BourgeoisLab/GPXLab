@@ -19,9 +19,16 @@
 #define _QMAPWIDGET_H_
 
 #include "mapcontrol.h"
+#include "linestringext.h"
 #include "gpx_wrapper.h"
 
 using namespace qmapcontrol;
+
+/**
+ * @addtogroup Widgets Widgets
+ * @brief Widgets related functions
+ * @{
+ */
 
 /**
  * @class QMapWidget
@@ -33,8 +40,8 @@ using namespace qmapcontrol;
  * @see MapControl
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 7 Nov 2014
+ * @version 1.1
+ * @date 28 Nov 2014
  */
 class QMapWidget : public MapControl
 {
@@ -50,7 +57,16 @@ public:
     explicit QMapWidget(QWidget *parent = 0, Qt::WindowFlags windowFlags = 0);
 
     /**
-     * @brief Generates the map accorind to the GPX_Model
+     * @brief Initializes the widget
+     * @note Call this function prior to any other function call
+     * @param doPersistentCaching Enable / disable persistent caching
+     * @param tileExpiry Time to keep tile in cache, 0 or -1 to disable and keep forever
+     * @param cachePath Path to the cache directory
+     */
+    void init(bool doPersistentCaching, int tileExpiry, QString &cachePath);
+
+    /**
+     * @brief Generates the map according to the GPX_Model
      * @param gpxmw GPX_model wrapper
      */
     void build(const GPX_wrapper *gpxmw);
@@ -65,7 +81,7 @@ public:
      * @param trackNumber Track number
      * @param trackSegmentNumber Track number segment, if -1 select all segments
      */
-    void selectTrack(int trackNumber, int trackSegmentNumber = -1);
+    void selectTrack(int trackNumber, int trackSegmentNumber);
 
     /**
      * @brief Selects a point given latitude/longitude coordinates
@@ -115,26 +131,27 @@ signals:
     void selectionChanged(int trackNumber, int trackSegmentNumber, double lat, double lon);
 
 private slots:
+
+    /**
+     * @brief Called when a geometry was clicked
+     * @param geometry Geometry clicked
+     * @param point Mouse coordinates
+     */
     void geometryClicked(Geometry* geometry, QPoint point);
 
 private:
-
-    void selectPoint(Point &point);
-
     QPen* linePen;
     QPen* linePenSelected;
     QPen* linePenSameTrack;
     QPen* pointPenSelected;
     QPen* pointsMiddle;
-    //QPen* pointsStart;
-    //QPen* pointsEnd;
-    QPen* pointsIntersection;
-    //QPen* pointsEndSegment;
     Layer* trackLayer;
     Point* selectedPoint;
-    Geometry* selectedTrack;
+    LineStringExt* selectedTrack;
     bool followSelection;
     bool showOnlySelectedTrack;
 };
+
+/** @} Widgets */
 
 #endif // QMAPWIDGET_H

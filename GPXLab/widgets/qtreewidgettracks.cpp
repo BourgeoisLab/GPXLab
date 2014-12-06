@@ -89,13 +89,18 @@ void QTreeWidgetTracks::select(int trackNumber, int trackSegmentNumber)
     }
 }
 
-void QTreeWidgetTracks::setCurrentTrackText(const QString& text)
+void QTreeWidgetTracks::setTrackName(int trackNumber, const QString& name)
 {
-    QTreeWidgetItem *item = currentItem();
-    if (item)
+    QList<QVariant> data;
+    QTreeWidgetItemIterator it(this);
+    while (*it)
     {
-        if (item->parent())
-            item = item->parent();
-        item->setText(0, text);
+        data = (*it)->data(0, Qt::UserRole).toList();
+        if (trackNumber == data.at(0).toInt() && -1 == data.at(1).toInt())
+        {
+            (*it)->setText(0, name);
+            return;
+        }
+        ++it;
     }
 }

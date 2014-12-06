@@ -81,10 +81,11 @@ const GPX_metadataType* GPX_wrapper::getModelMetadata() const
     return &gpxm->metadata;
 }
 
-void GPX_wrapper::setModelMetadata(const GPX_metadataType &metadata)
+GPX_model::retCode_e GPX_wrapper::setModelMetadata(const GPX_metadataType &metadata)
 {
     gpxm->metadata = metadata;
     modified = true;
+    return GPX_model::GPXM_OK;
 }
 
 int GPX_wrapper::getNumTracks() const
@@ -106,13 +107,15 @@ const GPX_trkMetadataType* GPX_wrapper::getTrackMetadata(int trackNumber) const
     return NULL;
 }
 
-void GPX_wrapper::setTrackMetadata(int trackNumber, const GPX_trkMetadataType &metadata)
+GPX_model::retCode_e GPX_wrapper::setTrackMetadata(int trackNumber, const GPX_trkMetadataType &metadata)
 {
     if ((size_t)trackNumber < gpxm->trk.size())
     {
         gpxm->trk[trackNumber].metadata = metadata;
         modified = true;
+        return GPX_model::GPXM_OK;
     }
+    return GPX_model::GPXM_ERR_INVALID_ARG;
 }
 
 const GPX_statsType* GPX_wrapper::getItemStats(int trackNumber, int trackSegmentNumber) const
@@ -148,6 +151,25 @@ const QString GPX_wrapper::getItemName(int trackNumber, int trackSegmentNumber) 
         }
     }
     return str;
+}
+
+const GPX_trkType *GPX_wrapper::getTrack(int trackNumber) const
+{
+    if ((size_t)trackNumber < gpxm->trk.size())
+        return &gpxm->trk[trackNumber];
+    return NULL;
+}
+
+const GPX_trksegType *GPX_wrapper::getTrackSegment(int trackNumber, int trackSegmentNumber) const
+{
+    if ((size_t)trackNumber < gpxm->trk.size())
+    {
+        if ((size_t)trackSegmentNumber < gpxm->trk[trackNumber].trkseg.size())
+        {
+            return &gpxm->trk[trackNumber].trkseg[trackSegmentNumber];
+        }
+    }
+    return NULL;
 }
 
 const GPX_wptType *GPX_wrapper::getPoint(int trackNumber, int trackSegmentNumber, int pointNumber) const
@@ -207,6 +229,21 @@ GPX_model::retCode_e GPX_wrapper::removeTrack(int trackNumber)
     return GPX_model::GPXM_ERR_FAILED;
 }
 
+GPX_model::retCode_e GPX_wrapper::insertTrack(int position, const GPX_trkType &trk)
+{
+    if ((size_t)position < gpxm->trk.size())
+    {
+        gpxm->trk.insert(gpxm->trk.begin() + position, trk);
+    }
+    else
+    {
+        gpxm->trk.insert(gpxm->trk.end(), trk);
+    }
+    gpxm->update(false);
+    modified = true;
+    return GPX_model::GPXM_OK;
+}
+
 GPX_model::retCode_e GPX_wrapper::moveTrackUp(int trackNumber)
 {
     if ((size_t)trackNumber < gpxm->trk.size() && trackNumber > 0)
@@ -215,7 +252,7 @@ GPX_model::retCode_e GPX_wrapper::moveTrackUp(int trackNumber)
         modified = true;
         return GPX_model::GPXM_OK;
     }
-    return GPX_model::GPXM_WARN_NOTHING_CHANGED;
+    return GPX_model::GPXM_ERR_INVALID_ARG;
 }
 
 GPX_model::retCode_e GPX_wrapper::moveTrackDown(int trackNumber)
@@ -226,13 +263,171 @@ GPX_model::retCode_e GPX_wrapper::moveTrackDown(int trackNumber)
         modified = true;
         return GPX_model::GPXM_OK;
     }
-    return GPX_model::GPXM_WARN_NOTHING_CHANGED;
+    return GPX_model::GPXM_ERR_INVALID_ARG;
+}
+
+GPX_model::retCode_e GPX_wrapper::splitTrack(int trackNumber, int &trackSegmentNumber, int &pointNumber)
+{
+    if ((size_t)trackNumber < gpxm->trk.size() && pointNumber != -1)
+    {
+        vector<GPX_trksegType>::iterator itTrkSeg = gpxm->trk[trackNumber].trkseg.end();
+
+        if (trackSegmentNumber == -1)
+        {
+            trackSegmentNumber = 0;
+            for (itTrkSeg = gpxm->trk[trackNumber].trkseg.begin(); itTrkSeg != gpxm->trk[trackNumber].trkseg.end(); ++itTrkSeg)
+            {
+                if ((size_t)pointNumber >= itTrkSeg->trkpt.size())
+                {
+                    pointNumber -= (int)itTrkSeg->trkpt.size();
+                    ++trackSegmentNumber;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+        else if ((size_t)trackSegmentNumber < gpxm->trk[trackNumber].trkseg.size())
+        {
+            if ((size_t)pointNumber < gpxm->trk[trackNumber].trkseg[trackSegmentNumber].trkpt.size())
+                itTrkSeg = gpxm->trk[trackNumber].trkseg.begin() + trackSegmentNumber;
+        }
+
+        if (itTrkSeg != gpxm->trk[trackNumber].trkseg.end())
+        {
+            GPX_trksegType newTrkSeg;
+
+            // copy second half to new track segment
+            vector<GPX_wptType>::iterator itTrkPt;
+            for (itTrkPt = itTrkSeg->trkpt.begin() + pointNumber; itTrkPt != itTrkSeg->trkpt.end(); ++itTrkPt)
+                newTrkSeg.trkpt.push_back(*itTrkPt);
+
+            // delete second half from current segment
+            itTrkSeg->trkpt.erase(itTrkSeg->trkpt.begin() + pointNumber, itTrkSeg->trkpt.end());
+
+            // insert new track segment
+            gpxm->trk[trackNumber].trkseg.insert(itTrkSeg + 1, newTrkSeg);
+
+            // update track
+            gpxm->updateTrack(gpxm->trk[trackNumber]);
+
+            // select new created segment
+            ++trackSegmentNumber;
+            pointNumber = 0;
+            setSelectedTrack(trackNumber, trackSegmentNumber);
+            setSelectedPointByNumber(pointNumber);
+
+            modified = true;
+            return GPX_model::GPXM_OK;
+        }
+    }
+    return GPX_model::GPXM_ERR_INVALID_ARG;
+}
+
+GPX_model::retCode_e GPX_wrapper::combineTrack(int trackNumber, int &trackSegmentNumber, int &pointNumber)
+{
+    if ((size_t)trackNumber < gpxm->trk.size() && pointNumber != -1)
+    {
+        vector<GPX_trksegType>::iterator itTrkSeg = gpxm->trk[trackNumber].trkseg.end();
+
+        if (gpxm->trk[trackNumber].trkseg.size() > 1)
+        {
+            if (trackSegmentNumber == -1)
+            {
+                trackSegmentNumber = 0;
+                for (itTrkSeg = gpxm->trk[trackNumber].trkseg.begin(); itTrkSeg != gpxm->trk[trackNumber].trkseg.end(); ++itTrkSeg)
+                {
+                    if ((size_t)pointNumber >= itTrkSeg->trkpt.size())
+                    {
+                        pointNumber -= (int)itTrkSeg->trkpt.size();
+                        ++trackSegmentNumber;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+            else if ((size_t)trackSegmentNumber < gpxm->trk[trackNumber].trkseg.size())
+            {
+                if ((size_t)pointNumber < gpxm->trk[trackNumber].trkseg[trackSegmentNumber].trkpt.size())
+                    itTrkSeg = gpxm->trk[trackNumber].trkseg.begin() + trackSegmentNumber;
+            }
+
+            if (itTrkSeg != gpxm->trk[trackNumber].trkseg.end())
+            {
+                bool combineWithPrevious;
+
+                if (itTrkSeg == gpxm->trk[trackNumber].trkseg.begin())
+                    combineWithPrevious = false;
+                else if (itTrkSeg == gpxm->trk[trackNumber].trkseg.end() - 1)
+                    combineWithPrevious = true;
+                else if ((size_t)pointNumber > itTrkSeg->trkpt.size()/2)
+                    combineWithPrevious = false;
+                else
+                    combineWithPrevious = true;
+
+                if (combineWithPrevious)
+                {
+                    pointNumber += (itTrkSeg-1)->trkpt.size();
+
+                    // combine with previous segment
+                    vector<GPX_wptType>::iterator itTrkPt;
+                    for (itTrkPt = itTrkSeg->trkpt.begin(); itTrkPt != itTrkSeg->trkpt.end(); ++itTrkPt)
+                        (itTrkSeg-1)->trkpt.push_back(*itTrkPt);
+
+                    // delete track segment
+                    gpxm->trk[trackNumber].trkseg.erase(itTrkSeg);
+
+                    // select combined segment
+                    if (gpxm->trk[trackNumber].trkseg.size() > 1)
+                        --trackSegmentNumber;
+                    else
+                        trackSegmentNumber = -1;
+                    setSelectedTrack(trackNumber, trackSegmentNumber);
+                    setSelectedPointByNumber(pointNumber);
+                }
+                else
+                {
+                    // combine with next segment
+                    vector<GPX_wptType>::iterator itTrkPt;
+                    for (itTrkPt = (itTrkSeg+1)->trkpt.begin(); itTrkPt != (itTrkSeg+1)->trkpt.end(); ++itTrkPt)
+                        itTrkSeg->trkpt.push_back(*itTrkPt);
+
+                    // copy extensions
+                    itTrkSeg->extensions = (itTrkSeg+1)->extensions;
+
+                    // delete track segment
+                    gpxm->trk[trackNumber].trkseg.erase(itTrkSeg+1);
+
+                    // select combined segment
+                    if (gpxm->trk[trackNumber].trkseg.size() == 1)
+                        trackSegmentNumber = -1;
+                    setSelectedTrack(trackNumber, trackSegmentNumber);
+                    setSelectedPointByNumber(0);
+                    setSelectedPointByNumber(pointNumber);
+                }
+
+                // update track
+                gpxm->updateTrack(gpxm->trk[trackNumber]);
+
+                modified = true;
+                return GPX_model::GPXM_OK;
+            }
+        }
+    }
+    return GPX_model::GPXM_ERR_INVALID_ARG;
 }
 
 GPX_model::retCode_e GPX_wrapper::setSelectedTrack(int trackNumber, int trackSegmentNumber)
 {
     if (trackNumber == selectedTrackNumber && trackSegmentNumber == selectedTrackSegmentNumber)
         return GPX_model::GPXM_WARN_NOTHING_CHANGED;
+
+    // clear selected point
+    selectedPointNumber = -1;
+    selectedPoint = NULL;
 
     if ((size_t)trackNumber < gpxm->trk.size())
     {
@@ -260,15 +455,14 @@ int GPX_wrapper::getSelectedTrackSegmentNumber() const
     return selectedTrackSegmentNumber;
 }
 
-GPX_model::retCode_e GPX_wrapper::setSelectedPointByNumber(int number)
+GPX_model::retCode_e GPX_wrapper::setSelectedPointByNumber(int pointNumber)
 {
-    if (selectedPoint)
-    if (number == selectedPointNumber)
+    if (pointNumber == selectedPointNumber)
         return GPX_model::GPXM_WARN_NOTHING_CHANGED;
 
     selectedPointNumber = -1;
     selectedPoint = NULL;
-    if (number == -1)
+    if (pointNumber == -1)
         return GPX_model::GPXM_OK;
 
     if (selectedTrackNumber == -1)
@@ -277,7 +471,7 @@ GPX_model::retCode_e GPX_wrapper::setSelectedPointByNumber(int number)
     }
     else if (selectedTrackSegmentNumber == -1)
     {
-        int n = number;
+        int n = pointNumber;
         vector<GPX_trksegType>::iterator trkseg;
         for (trkseg = gpxm->trk[selectedTrackNumber].trkseg.begin(); trkseg != gpxm->trk[selectedTrackNumber].trkseg.end(); ++trkseg)
         {
@@ -287,7 +481,7 @@ GPX_model::retCode_e GPX_wrapper::setSelectedPointByNumber(int number)
             }
             else
             {
-                selectedPointNumber = number;
+                selectedPointNumber = pointNumber;
                 selectedPoint = &trkseg->trkpt[n];
                 return GPX_model::GPXM_OK;
             }
@@ -295,9 +489,9 @@ GPX_model::retCode_e GPX_wrapper::setSelectedPointByNumber(int number)
     }
     else
     {
-        if ((size_t)number < gpxm->trk[selectedTrackNumber].trkseg[selectedTrackSegmentNumber].trkpt.size())
+        if ((size_t)pointNumber < gpxm->trk[selectedTrackNumber].trkseg[selectedTrackSegmentNumber].trkpt.size())
         {
-            selectedPointNumber = number;
+            selectedPointNumber = pointNumber;
             selectedPoint = &gpxm->trk[selectedTrackNumber].trkseg[selectedTrackSegmentNumber].trkpt[selectedPointNumber];
             return GPX_model::GPXM_OK;
         }

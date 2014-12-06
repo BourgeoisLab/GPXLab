@@ -23,6 +23,12 @@
 #include "gpx_wrapper.h"
 
 /**
+ * @addtogroup Widgets Widgets
+ * @brief Widgets related functions
+ * @{
+ */
+
+/**
  * @class PointTableModel
  *
  * @brief Model for point table
@@ -34,8 +40,8 @@
  * @see QAbstractTableModel
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 14 Nov 2014
+ * @version 1.1
+ * @date 2 Dec 2014
  */
 class PointTableModel : public QAbstractTableModel
 {
@@ -114,6 +120,20 @@ public:
      */
     explicit QTableWidgetPoints(QWidget *parent = 0);
 
+
+    /**
+     * @brief Restores the state
+     * @param state State
+     * @return True on success
+     */
+    bool restoreState(const QByteArray & state);
+
+    /**
+     * @brief Saves the current state
+     * @return State
+     */
+    QByteArray saveState() const;
+
     /**
      * @brief Generates table
      * @param gpxmw GPX_model wrapper
@@ -146,7 +166,8 @@ signals:
     void selectionChanged(int rowNumber);
 
 private slots:
-    void selectionChangedSlot(const QItemSelection  &selected, const QItemSelection  &deselected );
+    void selectionChangedExt(const QItemSelection  &selected, const QItemSelection  &deselected);
+    void onRestore_triggered();
     void on_actionDateTime_toggled(bool show);
     void on_actionTimeElapsed_toggled(bool show);
     void on_actionDistance_toggled(bool show);
@@ -170,9 +191,10 @@ private slots:
     void on_actionSource_toggled(bool show);
     void on_actionSymbol_toggled(bool show);
     void on_actionType_toggled(bool show);
-
 private:
-    const char **pLabels;
+    QByteArray defaultState;
 };
+
+/** @} Widgets */
 
 #endif // QTABLEWIDGETPOINTS_H

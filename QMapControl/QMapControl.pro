@@ -5,7 +5,7 @@ greaterThan(QT_MAJOR_VERSION, 4): cache()
 
 TARGET = qmapcontrol
 TEMPLATE = lib
-VERSION = 0.9.7.5
+VERSION = 0.9.7.6
 
 DEFINES += QMAPCONTROL_LIBRARY
 

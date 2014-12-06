@@ -23,6 +23,38 @@
 
 using namespace std;
 
+/**
+ * @defgroup GPX_model GPX model
+ * @brief Model representation of a GPX file
+ *
+ * This model can be used to represent a GPX file (GPS exchange format).
+ * The structure is based on the GPX version 1.1.
+ *
+ * The model is divided in tracks (GPX_trkType), track segments
+ * (GPX_trksegType) and track point (GPX_wptType).
+ *
+ * The model is represented by a tree like this:
+ * <PRE>
+ * GPX_model
+ *   creator
+ *   GPX_metadataType
+ *   GPX_extensionsType [0...*]
+ *   GPX_statsType [1]
+ *   GPX_trkType [0...*]
+ *     GPX_trkMetadataType [1]
+ *     GPX_extensionsType [0...*]
+ *     GPX_statsType [1]
+ *     GPX_trksegType [0...*]
+ *       GPX_extensionsType [0...*]
+ *       GPX_statsType [1]
+ *       GPX_wptType [0...*]
+ * </PRE>
+ *
+ * @see http://www.topografix.com/gpx.asp
+ *
+ * @{
+ */
+
 class GPX_trkType;
 class GPX_trksegType;
 class GPX_wptType;
@@ -138,31 +170,6 @@ struct GPX_statsType
  * @class GPX_model
  *
  * @brief Class representing the content of a GPX file
- *
- * This class can be used to represent a GPX file (GPS exchange format).
- * The structure is based on the GPX version 1.1.
- *
- * The model is divided in tracks (GPX_trkType), track segments
- * (GPX_trksegType) and track point (GPX_wptType).
- *
- * The model is represented by a tree like this:
- * <PRE>
- * GPX_model
- *   creator
- *   GPX_metadataType
- *   GPX_extensionsType [0...*]
- *   GPX_statsType [1]
- *   GPX_trkType [0...*]
- *     GPX_trkMetadataType [1]
- *     GPX_extensionsType [0...*]
- *     GPX_statsType [1]
- *     GPX_trksegType [0...*]
- *       GPX_extensionsType [0...*]
- *       GPX_statsType [1]
- *       GPX_wptType [0...*]
- * </PRE>
- *
- * @see http://www.topografix.com/gpx.asp
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
  * @version 1.0
@@ -403,16 +410,18 @@ private:
     /**
      * @brief Calculates the distance from a given point and set the member distance.
      * @param latitudeFrom Latitude of the point
-     * @param longitudeFrom Laongitude of the point
+     * @param longitudeFrom Longitude of the point
      */
     void setDistance(double latitudeFrom, double longitudeFrom);
 
     /**
      * @brief Calculates the heading to a given point and set the member heading.
      * @param latitudeTo Latitude of the point
-     * @param longitudeTo Laongitude of the point
+     * @param longitudeTo Longitude of the point
      */
     void setHeading(double latitudeTo, double longitudeTo);
 };
+
+/** @} GPX_model */
 
 #endif // _GPX_MODEL_H_

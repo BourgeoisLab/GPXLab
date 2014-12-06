@@ -84,10 +84,7 @@ void LineStringExt::draw(QPainter* painter, const MapAdapter* mapadapter, const 
         int dist = 0;
         QPoint A, B;
 
-        // draw first point
-        childPoints[i]->draw(painter, mapadapter, screensize, offset);
-        A = mapadapter->coordinateToDisplay(childPoints[i]->coordinate());
-
+        A = mapadapter->coordinateToDisplay(childPoints[0]->coordinate());
         for (i = 1; i < childPoints.size() - 1; i++)
         {
             // draw middle points
@@ -102,13 +99,16 @@ void LineStringExt::draw(QPainter* painter, const MapAdapter* mapadapter, const 
                 B = A;
                 A = mapadapter->coordinateToDisplay(childPoints[i]->coordinate());
                 dist += distance(A, B);
-                if (dist > 10)
+                if (dist > 12)
                 {
                     dist  = 0;
                     childPoints[i]->draw(painter, mapadapter, screensize, offset);
                 }
             }
         }
+
+        // draw first point
+        childPoints[0]->draw(painter, mapadapter, screensize, offset);
 
         // draw last point
         childPoints[i]->draw(painter, mapadapter, screensize, offset);

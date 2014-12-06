@@ -63,7 +63,11 @@ namespace qmapcontrol
         homelevel = -1;
         minsize = QSize(-1,-1);
         maxsize = QSize(-1,-1);
-        mywidget->show();
+
+        if(mywidget!=0)
+        {
+            mywidget->show();
+        }
     }
     Point::Point(qreal x, qreal y, QPixmap pixmap, QString name, enum Alignment alignment)
             : Geometry(name), X(x), Y(y), mypixmap(pixmap), myalignment(alignment)
@@ -98,8 +102,11 @@ namespace qmapcontrol
 */
     Point::~Point()
     {
-        delete mywidget;
-        mywidget = 0;
+        if(mywidget!=0)
+        {
+            delete mywidget;
+            mywidget = 0;
+        }
     }
 
     void Point::setPixmap( QPixmap qPixmap )
@@ -211,13 +218,14 @@ namespace qmapcontrol
 
     void Point::drawWidget(const MapAdapter* mapadapter, const QPoint offset)
     {
+        const QPointF c = QPointF(X, Y);
+        QPoint point = mapadapter->coordinateToDisplay(c);
+        point -= offset;
+
+        QPoint alignedtopleft = alignedPoint(point);
+
         if (mywidget!=0)
         {
-            const QPointF c = QPointF(X, Y);
-            QPoint point = mapadapter->coordinateToDisplay(c);
-            point -= offset;
-
-            QPoint alignedtopleft = alignedPoint(point);
             mywidget->setGeometry(alignedtopleft.x(), alignedtopleft.y(), displaysize.width(), displaysize.height());
         }
     }

@@ -23,6 +23,12 @@
 using namespace qmapcontrol;
 
 /**
+ * @addtogroup Widgets Widgets
+ * @brief Widgets related functions
+ * @{
+ */
+
+/**
  * @class LineStringExt
  *
  * @brief LineString subclass
@@ -33,8 +39,8 @@ using namespace qmapcontrol;
  * @see LineString
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 7 Nov 2014
+ * @version 1.1
+ * @date 28 Nov 2014
  */
 class LineStringExt : public LineString
 {
@@ -77,5 +83,7 @@ private:
     void draw(QPainter* painter, const MapAdapter* mapadapter, const QRect &screensize, const QPoint offset);
     static int distance(QPoint &A, QPoint &B);
 };
+
+/** @} Widgets */
 
 #endif // _LINESTRINGEXT_H_

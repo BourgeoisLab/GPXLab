@@ -27,7 +27,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../resources.qrc">
-    <normaloff>:/images/edit.png</normaloff>:/images/edit.png</iconset>
+    <normaloff>:/images/world_edit.png</normaloff>:/images/world_edit.png</iconset>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">

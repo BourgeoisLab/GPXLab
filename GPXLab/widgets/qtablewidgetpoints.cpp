@@ -255,9 +255,12 @@ QTableWidgetPoints::QTableWidgetPoints(QWidget *parent) :
     QTableView(parent)
 {
     QAction *menuActions[TABLE_NUM_COLS];
+    QAction *menuActionRestore = new QAction("Restore Default", this);
+    QAction *separator = new QAction(this);
+    separator->setSeparator(true);
 
     // build label array
-    pLabels = new const char*[TABLE_NUM_COLS];
+    const char *pLabels[TABLE_NUM_COLS];
     pLabels[TABLE_COL_DATETIME] = TABLE_COL_LABEL_DATETIME;
     pLabels[TABLE_COL_ELAPSED] = TABLE_COL_LABEL_ELAPSED;
     pLabels[TABLE_COL_DISTANCE] = TABLE_COL_LABEL_DISTANCE;
@@ -289,6 +292,8 @@ QTableWidgetPoints::QTableWidgetPoints(QWidget *parent) :
         menuActions[i]->setCheckable(true);
         horizontalHeader()->addAction(menuActions[i]);
     }
+    horizontalHeader()->addAction(separator);
+    horizontalHeader()->addAction(menuActionRestore);
 
     // activate context menu for heading
     horizontalHeader()->setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -317,6 +322,7 @@ QTableWidgetPoints::QTableWidgetPoints(QWidget *parent) :
     connect(menuActions[TABLE_COL_SOURCE], SIGNAL(toggled(bool)), this, SLOT(on_actionSource_toggled(bool)));
     connect(menuActions[TABLE_COL_SYMBOL], SIGNAL(toggled(bool)), this, SLOT(on_actionSymbol_toggled(bool)));
     connect(menuActions[TABLE_COL_TYPE], SIGNAL(toggled(bool)), this, SLOT(on_actionType_toggled(bool)));
+    connect(menuActionRestore, SIGNAL(triggered()), this, SLOT(onRestore_triggered()));
 
     // set default column state (show/hidden)
     menuActions[TABLE_COL_DATETIME]->setChecked(true);
@@ -378,8 +384,26 @@ QTableWidgetPoints::QTableWidgetPoints(QWidget *parent) :
             hideColumn(i);
     }
 
-    connect(selectionModel(),SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),this,SLOT(selectionChangedSlot(const QItemSelection&,const QItemSelection&)));
+    connect(selectionModel(),SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),this,SLOT(selectionChangedExt(const QItemSelection&,const QItemSelection&)));
 
+    // store default state
+    defaultState = saveState();
+}
+
+bool QTableWidgetPoints::restoreState(const QByteArray & state)
+{
+    if (horizontalHeader()->restoreState(state))
+    {
+        for (int i = 0; i < TABLE_NUM_COLS; ++i)
+            horizontalHeader()->actions().at(i)->setChecked(!isColumnHidden(i));
+        return true;
+    }
+    return false;
+}
+
+QByteArray QTableWidgetPoints::saveState() const
+{
+    return horizontalHeader()->saveState();
 }
 
 void QTableWidgetPoints::build(const GPX_wrapper *gpxmw)
@@ -397,11 +421,16 @@ void QTableWidgetPoints::clear()
     build(NULL);
 }
 
-void QTableWidgetPoints::selectionChangedSlot(const QItemSelection  &selected, const QItemSelection  &deselected )
+void QTableWidgetPoints::selectionChangedExt(const QItemSelection  &selected, const QItemSelection  &deselected )
 {
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
     emit(selectionChanged(getSelectedRow()));
+}
+
+void QTableWidgetPoints::onRestore_triggered()
+{
+    restoreState(defaultState);
 }
 
 void QTableWidgetPoints::selectRow(int rowNumber)

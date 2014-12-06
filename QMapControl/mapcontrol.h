@@ -28,7 +28,6 @@
  *
  * - Added 2 new mouse modes to allow panning and dragging but without zooming on mouse click
  * - Removed signal geometryClicked() in class MapControl since it is never emited
- * - Added a new point type: InvisiblePoint. The point is invisible but still clickable
  * - Added a function to consume the mouse event. This stops the emitting of the signal geometryClicked()
  * - Changed order of the mouse event propagation. Signal for the topmost geometry is emitted first.
  */
@@ -146,6 +145,18 @@ namespace qmapcontrol
          * @return returns the current zoom level
          */
         int currentZoom() const;
+
+        //! returns the minimal zoom level
+        /*!
+         * @return returns the minimal zoom level
+         */
+        int minZoom() const;
+
+        //! returns the maximal zoom level
+        /*!
+         * @return returns the maximal zoom level
+         */
+        int maxZoom() const;
 
         //! update screen
         void updateView() const;

@@ -21,6 +21,12 @@
 #include <QDialog>
 #include "gpx_model.h"
 
+/**
+ * @addtogroup Dialogs Dialogs
+ * @brief Dialogues
+ * @{
+ */
+
 namespace Ui {
 class Dialog_trackProperties;
 }
@@ -30,14 +36,14 @@ class Dialog_trackProperties;
  *
  * @brief Dialog subclass to edit track properties (metadata)
  *
- * The dialog can be used to see and modify track properties (metadata).
+ * The dialogue can be used to see and modify track properties (metadata).
  * Also it shows statistic information about the track.
  *
  * @see GPX_model
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 25 Oct 2014
+ * @version 1.1
+ * @date 6 Dec 2014
  */
 class Dialog_trackProperties : public QDialog
 {
@@ -46,7 +52,7 @@ class Dialog_trackProperties : public QDialog
 public:
 
     /**
-     * @brief Constructs the dialog
+     * @brief Constructs the dialogue
      * @param metadata Track properties (metadata) to modify
      * @param stats Statistic information about the track
      * @param parent Parent
@@ -78,5 +84,7 @@ private:
 private:
     void setModified(bool modified);
 };
+
+/** @} Dialogs */
 
 #endif // _DIALOG_TRACKPROPERTIES_H_

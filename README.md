@@ -7,7 +7,7 @@ What is GPXLab?
 ---------------
 GPXLab is an application to display and manage GPS tracks previously recorded with a GPS tracker.
 
-The idea is to give the user the possibility to merge several tracks into one single file and have statistic information about the summarized tracks or about a single track. Furthermore the user can see all tracks on a map and select there a track and/or a single track point. An altitude and a speed diagram and also a list of the track points offers visual information about the selected item.
+The idea is to give the user the possibility to combine several tracks into one single file and have statistic information about the summarized tracks or about a single track. Furthermore the user can see all tracks on a map and select there a track and/or a single track point. An altitude and a speed diagram and also a list of the track points offers visual information about the selected item.
 
 ![Demo](doc/demo.png?raw=true)
 
@@ -47,23 +47,39 @@ The source code was developed under Qt 5.3.2. There is no guarantee that the cod
 
 The project is separated in two sub-projects GPXLab and QMapControl. QMapControl is a widget to display a map. Since I had to made some modifications to the original code I added the modified version here. QMapControl is compiled as a library and linked to the main sub-project GPXLab.
 
-Both sub-projects are ready to build although it was only tested under Windows.
+Both sub-projects are ready to build, although it was only tested under Windows 7 (64bit).
  
 Credits
 -------
-- **QCustomPlot:** http://www.qcustomplot.com
-- **QMapControl:** http://www.medieninf.de/qmapcontrol
-- **Nuvola:** http://www.icon-king.com/projects/nuvola
+- **QCustomPlot Qt Widget:** http://www.qcustomplot.com
+- **QMapControl Qt Widget:** http://www.medieninf.de/qmapcontrol
+- **Nuvola Icons:** http://www.icon-king.com/projects/nuvola
+- **FactCow Icons:** http://www.fatcow.com
  
 Release Notes
 -------------
-**[0.1]**
-- Initial beta release
+**[v0.2.0 Beta]**
+- [update] Updated QMapControl to version 0.9.7.6.
+- [update] Changed some icons.
+- [update] Some minor GUI changes.
+- [new] Double clicking an item in the track selection opens the track properties dialogue.
+- [new] Added undo/redo functionality.
+- [new] Added functionality to split and combine a track.
+- [new] Window state and position is stored on application closing and restored on restart.
+- [new] Header state of point list is stored on application closing and restored on restart.
+- [new] Added control to change the map zoom.
+- [new] Added option to configure the map caching.
+- [fix] Docks don't disappear any more when tabbed.
+
+**[v0.1.0 Beta]**
+- [new] Initial beta release.
 
 Information
 -----------
 **Author:** Frédéric Bourgeois <bourgeoislab@gmail.com>
 
 **Project homepage:** http://bourgeoislab.wordpress.com/gpxlab
+
+**Latest release:** http://github.com/bourgeoislab/gpxlab/releases
 
 **Latest sources:** http://github.com/bourgeoislab/gpxlab

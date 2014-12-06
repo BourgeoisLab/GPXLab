@@ -21,6 +21,12 @@
 #include "qcustomplotext.h"
 
 /**
+ * @addtogroup Widgets Widgets
+ * @brief Widgets related functions
+ * @{
+ */
+
+/**
  * @class QDiagramWidget
  *
  * @brief QCustomPlotExt subclass
@@ -30,8 +36,8 @@
  * @see QCustomPlotExt
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 7 Nov 2014
+ * @version 1.1
+ * @date 6 Dec 2014
  */
 class QDiagramWidget : public QCustomPlotExt
 {
@@ -57,5 +63,7 @@ public:
      */
     void clear();
 };
+
+/** @} Widgets */
 
 #endif // _QDIAGRAMWIDGET_H_

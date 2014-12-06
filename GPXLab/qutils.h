@@ -22,6 +22,11 @@
 #include <QVector>
 
 /**
+ * @ingroup GPXLab
+ * @{
+ */
+
+/**
  * @namespace QUtils
  *
  * @brief Utility functions.
@@ -51,5 +56,7 @@ namespace QUtils
      */
     void movingAverage(QVector<double> &values, int order = 3);
 }
+
+/** @} GPXLab */
 
 #endif // _QUTILS_H_

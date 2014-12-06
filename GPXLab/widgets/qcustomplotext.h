@@ -21,6 +21,12 @@
 #include "qcustomplot.h"
 
 /**
+ * @addtogroup Widgets Widgets
+ * @brief Widgets related functions
+ * @{
+ */
+
+/**
  * @class QCustomPlotExt
  *
  * @brief QCustomPlot subclass
@@ -113,5 +119,7 @@ private:
     double markerValue;
     void updateMarker();
 };
+
+/** @} Widgets */
 
 #endif // _QCUSTOMPLOTEXT_H_

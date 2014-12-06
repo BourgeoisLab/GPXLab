@@ -25,6 +25,11 @@
 using namespace std;
 
 /**
+ * @ingroup GPX_model
+ * @{
+ */
+
+/**
  * @namespace GPXFile
  *
  * @brief Functions to load and save GPX files.
@@ -36,8 +41,8 @@ using namespace std;
  * @see http://www.topografix.com/gpx.asp
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 25 Oct 2014
+ * @version 1.1
+ * @date 30 Nov 2014
  */
 namespace GPXFile
 {
@@ -58,5 +63,7 @@ namespace GPXFile
      */
     GPX_model::retCode_e save(ofstream* fp, const GPX_model* gpxm);
 }
+
+/** @} GPX_model */
 
 #endif // _GPXFILE_H_

@@ -13,6 +13,9 @@
     <height>600</height>
    </rect>
   </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::ActionsContextMenu</enum>
+  </property>
   <property name="acceptDrops">
    <bool>true</bool>
   </property>
@@ -96,6 +99,8 @@
     </property>
     <addaction name="actionEdit_Track_Properties"/>
     <addaction name="actionGetAltitudeFromSRTM"/>
+    <addaction name="actionSplit_Track"/>
+    <addaction name="actionCombine_Track"/>
    </widget>
    <widget class="QMenu" name="menuMap">
     <property name="title">
@@ -112,12 +117,6 @@
     <property name="title">
      <string>View</string>
     </property>
-    <addaction name="actionShowFile"/>
-    <addaction name="actionShowTracks"/>
-    <addaction name="actionShowDiagrams"/>
-    <addaction name="actionShowTrackPoints"/>
-    <addaction name="separator"/>
-    <addaction name="actionShowToolbar"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -125,10 +124,23 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionSettings"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuTrack"/>
    <addaction name="menuMap"/>
+   <addaction name="menuSettings"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -152,6 +164,8 @@
    <addaction name="actionSave_File"/>
    <addaction name="actionSave_File_As"/>
    <addaction name="separator"/>
+   <addaction name="actionSettings"/>
+   <addaction name="separator"/>
    <addaction name="actionEdit_File_Properties"/>
    <addaction name="separator"/>
    <addaction name="actionEdit_Track_Properties"/>
@@ -163,6 +177,9 @@
    <addaction name="separator"/>
    <addaction name="actionShow_Only_Selected_Track"/>
    <addaction name="actionFollow_Item"/>
+   <addaction name="separator"/>
+   <addaction name="actionMapZoom"/>
+   <addaction name="separator"/>
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="styleSheet">
@@ -451,65 +468,23 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <property name="spacing">
-        <number>0</number>
+      <widget class="QLabel" name="labelFileName">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>16</height>
+        </size>
        </property>
-       <item>
-        <widget class="QLabel" name="labelFileName">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>16</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>16</height>
-          </size>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButtonFileEdit">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>Edit file properties</string>
-         </property>
-         <property name="icon">
-          <iconset resource="resources.qrc">
-           <normaloff>:/images/edit.png</normaloff>:/images/edit.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -565,6 +540,9 @@
         <widget class="QTreeWidgetTracks" name="treeTracks">
          <property name="contextMenuPolicy">
           <enum>Qt::NoContextMenu</enum>
+         </property>
+         <property name="expandsOnDoubleClick">
+          <bool>false</bool>
          </property>
          <attribute name="headerVisible">
           <bool>false</bool>
@@ -676,7 +654,7 @@
            </property>
            <property name="icon">
             <iconset resource="resources.qrc">
-             <normaloff>:/images/1downarrow.png</normaloff>:/images/1downarrow.png</iconset>
+             <normaloff>:/images/down.png</normaloff>:/images/down.png</iconset>
            </property>
            <property name="flat">
             <bool>true</bool>
@@ -708,7 +686,7 @@
            </property>
            <property name="icon">
             <iconset resource="resources.qrc">
-             <normaloff>:/images/1uparrow.png</normaloff>:/images/1uparrow.png</iconset>
+             <normaloff>:/images/up.png</normaloff>:/images/up.png</iconset>
            </property>
            <property name="flat">
             <bool>true</bool>
@@ -961,59 +939,20 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <widget class="QLabel" name="labelTrackName">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>16</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>16</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButtonTrackEdit">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>16</width>
-             <height>16</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16</width>
-             <height>16</height>
-            </size>
-           </property>
-           <property name="toolTip">
-            <string>Edit track properties</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/images/edit2.png</normaloff>:/images/edit2.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>16</width>
-             <height>16</height>
-            </size>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <widget class="QLabel" name="labelTrackName">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>16</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -1332,15 +1271,11 @@
    </widget>
   </widget>
   <action name="actionExit">
-   <property name="icon">
-    <iconset resource="resources.qrc">
-     <normaloff>:/images/exit.png</normaloff>:/images/exit.png</iconset>
-   </property>
    <property name="text">
     <string>Exit</string>
    </property>
    <property name="toolTip">
-    <string>Exit Application</string>
+    <string>Exit application</string>
    </property>
    <property name="shortcut">
     <string>Alt+F4</string>
@@ -1355,7 +1290,7 @@
     <string>Open File</string>
    </property>
    <property name="toolTip">
-    <string>Open File</string>
+    <string>Open file</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -1370,10 +1305,10 @@
      <normaloff>:/images/fileappend.png</normaloff>:/images/fileappend.png</iconset>
    </property>
    <property name="text">
-    <string>Append File</string>
+    <string>Append Files</string>
    </property>
    <property name="toolTip">
-    <string>Append File</string>
+    <string>Append files</string>
    </property>
   </action>
   <action name="actionSave_File">
@@ -1386,6 +1321,9 @@
    </property>
    <property name="text">
     <string>Save File</string>
+   </property>
+   <property name="toolTip">
+    <string>Save file</string>
    </property>
   </action>
   <action name="actionSave_File_As">
@@ -1400,7 +1338,7 @@
     <string>Save File As...</string>
    </property>
    <property name="toolTip">
-    <string>Save File As...</string>
+    <string>Save file as...</string>
    </property>
   </action>
   <action name="actionGetAltitudeFromSRTM">
@@ -1412,10 +1350,10 @@
      <normaloff>:/images/log.png</normaloff>:/images/log.png</iconset>
    </property>
    <property name="text">
-    <string>Get Altitude From SRTM</string>
+    <string>Get Altitude From Database</string>
    </property>
    <property name="toolTip">
-    <string>Get Altitude From SRTM</string>
+    <string>Get altitude from Database</string>
    </property>
   </action>
   <action name="actionEdit_File_Properties">
@@ -1424,13 +1362,13 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/edit.png</normaloff>:/images/edit.png</iconset>
+     <normaloff>:/images/world_edit.png</normaloff>:/images/world_edit.png</iconset>
    </property>
    <property name="text">
     <string>Edit File Properties</string>
    </property>
    <property name="toolTip">
-    <string>Edit File Properties</string>
+    <string>Edit file properties</string>
    </property>
   </action>
   <action name="actionEdit_Track_Properties">
@@ -1439,13 +1377,13 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/images/edit2.png</normaloff>:/images/edit2.png</iconset>
+     <normaloff>:/images/map_edit.png</normaloff>:/images/map_edit.png</iconset>
    </property>
    <property name="text">
     <string>Edit Track Properties</string>
    </property>
    <property name="toolTip">
-    <string>Edit Track Properties</string>
+    <string>Edit track properties</string>
    </property>
   </action>
   <action name="actionFit_View">
@@ -1526,77 +1464,7 @@
     <string>Show Only Selected Track</string>
    </property>
    <property name="toolTip">
-    <string>Show Only Selected Track</string>
-   </property>
-  </action>
-  <action name="actionShowFile">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>File</string>
-   </property>
-   <property name="toolTip">
-    <string>Show/hide file panel</string>
-   </property>
-  </action>
-  <action name="actionShowTracks">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Tracks</string>
-   </property>
-   <property name="toolTip">
-    <string>Show/hide tracks panel</string>
-   </property>
-  </action>
-  <action name="actionShowDiagrams">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Diagrams</string>
-   </property>
-   <property name="toolTip">
-    <string>Show/hide diagrams panel</string>
-   </property>
-  </action>
-  <action name="actionShowTrackPoints">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Track Points</string>
-   </property>
-   <property name="toolTip">
-    <string>Show/hide track points panel</string>
-   </property>
-  </action>
-  <action name="actionShowToolbar">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Toolbar</string>
-   </property>
-   <property name="toolTip">
-    <string>Show/hide toolbar</string>
+    <string>Show only selected track</string>
    </property>
   </action>
   <action name="actionAbout">
@@ -1610,6 +1478,75 @@
    </property>
    <property name="text">
     <string>Close File</string>
+   </property>
+   <property name="toolTip">
+    <string>Close file</string>
+   </property>
+  </action>
+  <action name="actionSplit_Track">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/link_break.png</normaloff>:/images/link_break.png</iconset>
+   </property>
+   <property name="text">
+    <string>Split Track</string>
+   </property>
+   <property name="toolTip">
+    <string>Split track</string>
+   </property>
+  </action>
+  <action name="actionCombine_Track">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/link.png</normaloff>:/images/link.png</iconset>
+   </property>
+   <property name="text">
+    <string>Combine Track</string>
+   </property>
+   <property name="toolTip">
+    <string>Combine track</string>
+   </property>
+  </action>
+  <action name="actionRestore_Default_View">
+   <property name="text">
+    <string>Restore Default View</string>
+   </property>
+   <property name="toolTip">
+    <string>Restore default view</string>
+   </property>
+  </action>
+  <action name="actionMapZoom">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/zoom.png</normaloff>
+     <disabledoff>:/images/zoom.png</disabledoff>:/images/zoom.png</iconset>
+   </property>
+   <property name="text">
+    <string>Map Zoom</string>
+   </property>
+   <property name="toolTip">
+    <string>Map Zoom</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/cog.png</normaloff>:/images/cog.png</iconset>
+   </property>
+   <property name="text">
+    <string>Settings</string>
+   </property>
+   <property name="toolTip">
+    <string>Settings</string>
    </property>
   </action>
   <zorder>dockWidgetFile</zorder>

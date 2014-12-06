@@ -23,6 +23,12 @@
 using namespace std;
 
 /**
+ * @addtogroup Functions Functions
+ * @brief Specific functions
+ * @{
+ */
+
+/**
  * @class SRTM
  *
  * @brief Lookup functions for altitude values given latitude/longitude
@@ -40,18 +46,18 @@ using namespace std;
  *
  * Each data file covers a one-degree-of-latitude by one-degree-of-longitude
  * block of Earth's surface. The first seven characters indicate the
- * southwest corner of the block, with N, S, E, and W referring to north,
+ * south west corner of the block, with N, S, E, and W referring to north,
  * south, east, and west. Thus, the "N34W119.hgt" file covers latitudes 34
- * to 35 North and longitudes 118-119 West (this file includes downtown Los
- * Angeles, California). The filename extension ".hgt" simply stands for the
+ * to 35 North and longitudes 118-119 West (this file includes down town Los
+ * Angeles, California). The file name extension ".hgt" simply stands for the
  * word "height", meaning elevation. It is NOT a format type. These files
  * are in "raw" format (no headers and not compressed), 16-bit signed
  * integers, elevation measured in meters above sea level, in a "geographic"
  * (latitude and longitude array) projection, with data voids indicated by
  * -32768. International 3-arc-second files have 1201 columns and 1201 rows
- * of data, with a total filesize of 2,884,802 bytes ( = 1201 x 1201 x 2).
+ * of data, with a total file size of 2,884,802 bytes ( = 1201 x 1201 x 2).
  * United States 1-arc-second files have 3601 columns and 3601 rows of data,
- * with a total filesize of 25,934,402 bytes ( = 3601 x 3601 x 2). For more
+ * with a total file size of 25,934,402 bytes ( = 3601 x 3601 x 2). For more
  * information read the text file "SRTM_Topo.txt" at
  * http://edcftp.cr.usgs.gov/pub/data/srtm/Readme.html
  *
@@ -159,5 +165,7 @@ private:
      */
     short *fixVoid(short *inAltitudes);
 };
+
+/** @} Functions */
 
 #endif // _SRTM_H_
