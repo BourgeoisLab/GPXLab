@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -26,7 +26,7 @@ Dialog_about::Dialog_about(QWidget *parent) :
     ui->setupUi(this);
 
     ui->labelMain->setText(GPXLab::appName + " " + GPXLab::appVersion);
-    ui->labelCopyright->setText(" ©2014 " + GPXLab::organisationName);
+    ui->labelCopyright->setText("© 2014 - 2015 " + GPXLab::organisationName);
     ui->labelLinkHomepage->setOpenExternalLinks(true);
     ui->labelLinkSourceCode->setOpenExternalLinks(true);
     ui->labelLinkRelease->setOpenExternalLinks(true);

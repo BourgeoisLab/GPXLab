@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -32,18 +32,19 @@
  *
  * @image html demo.png
  *
- * The view is divided into 6 different parts:
+ * The view is divided into seven different parts:
  * - Statistic information about all tracks
- * - Track and track segment selection
+ * - Calendar for track selection
+ * - Track tree for track selection
  * - Statistic information about the selected track or track segment
  * - Map showing all tracks
- * - Altitude and speed diagram of the selected track or track segment
+ * - Diagram of the selected track or track segment
  * - List of the track points of the selected track or track segment
  *
  * Except the map all other parts can be hid to maximize the map view.
  *
  * @section Features Features & Functions
- * - Support opening GPX (v1.0 or v1.1) and NMEA files
+ * - Support opening GPX (v1.0 or v1.1), NMEA and SpoQ files
  * - Combine several tracks into one single GPX file
  * - Rearrange the tracks (move/add/delete)
  * - Modify the meta data of the GPX file and of any tracks inside the file
@@ -54,18 +55,18 @@
  * - Show a list of the track points
  * 
  * @section FileFormat Supported File Formats
- * Currently only GPX and NMEA files are supported. If you have a file
+ * Currently GPX, NMEA and SpoQ files are supported. If you have a file
  * in another format you may use GPSBabel (http://www.gpsbabel.org) to 
  * convert it into a GPX file.
  *
  * @section License License
  *
- * This software is free software and licensed under GPL version 3. 
+ * GPXLab is free software and licensed under GPL version 3. 
  *
  * @section Compiling Compiling
  *
- * The source code was developed under Qt 5.3.2. There is no guarantee that
- * the code will compile with previous or even later versions.
+ * The source code was developed under Qt 5.3.2 / 5.3.3. There is no guarantee
+ * that the code will compile with previous or even later versions.
  *
  * The project is separated in two sub-projects GPXLab and QMapControl.
  * QMapControl is a widget to display a map. Since I had to made some
@@ -83,6 +84,24 @@
  * - <b> FactCow Icons:</b> http://www.fatcow.com
  * 
  * @section ReleaseNotes Release Notes
+ *
+ * <b>[v0.3.0]</b>
+ * - [update] Updated QMapControl to version 0.9.7.8.
+ * - [update] Updated QCustomPlot to version 1.3.0.
+ * - [update] Updated copyright to "2014 - 2015".
+ * - [new] Track on the map is highlighted when the mouse cursor is moved over it.
+ * - [new] Show some point properties when the mouse cursor is over the point.
+ * - [new] Added functionality to insert/delete track points.
+ * - [new] Added functionality to set the start time of a track.
+ * - [new] Added functionality to move a single track point using SHIFT + mouse click.
+ * - [new] Added a calendar to select a track by date.
+ * - [new] Diagram curves can be changed to show other properties.
+ * - [new] Support SpoQ files (.act and .xml).
+ * - [new] Support Garmin's TrackPointExtension heart rate extension.
+ * - [fix] Ignore upper/lower case to detect file type.
+ * - [fix] Draw tracks  with 0 or only 1 point correctly.
+ * - [fix] Changed way of iteration in GPX_wrapper.
+ * - [fix] Fixed bug in NMEA sentence parser.
  *
  * <b>[v0.2.0 Beta]</b>
  * - [update] Updated QMapControl to version 0.9.7.6.
@@ -134,8 +153,8 @@ class GPXLab;
  * @brief Main application class
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.1
- * @date 6 Dec 2014
+ * @version 1.2
+ * @date 5 Feb 2015
  */
 class GPXLab : public QMainWindow
 {
@@ -143,14 +162,19 @@ class GPXLab : public QMainWindow
 
 public:
 
-    /** Organization name */
+    /** @brief Organization name */
     static const QString organisationName;
 
-    /** Application name */
+    /** @brief Application name */
     static const QString appName;
 
-    /** Application version */
+    /** @brief Application version */
     static const QString appVersion;
+
+    /** @brief Application main color */
+    static const QColor appColor;
+
+public:
 
     /**
      * @brief Constructs the main application
@@ -162,22 +186,20 @@ public:
 
     /**
      * @brief Opens a file and creates a new GPX_model
-     * @param fileName File to open.
-     * If fileName is empty an open file dialogue is shown.
+     * @param fileName File to open, if empty an open file dialogue is shown
+     * @return True on success
      */
-    void openFile(QString fileName = "");
+    bool openFile(QString fileName = "");
 
     /**
      * @brief Appends files to the GPX_model
-     * @param fileNames Files to append.
-     * If the list is empty an open files dialogue is shown.
+     * @param fileNames Files to append, if empty an open files dialogue is shown
      */
     void appendFiles(QStringList &fileNames);
 
     /**
      * @brief Saves the current GPX_model to a file
-     * @param fileName File name.
-     * If fileName is empty an save file dialogue is shown.
+     * @param fileName File name, if empty an save file dialogue is shown
      */
     void saveFile(QString fileName = "");
 
@@ -186,55 +208,130 @@ public:
      */
     void closeFile();
 
-    /**
-     * @brief Begins an update of widgets containing track properties
-     * Call this function prior to any updateTrack(), updatePoint() or build()
-     * to avoid doing update stuff several times
-     * @note Call endUpdate() when finished
-     */
-    void beginUpdate();
-
-    /**
-     * @brief Ends an update of widgets containing track properties
-     * @see beginUpdate()
-     */
-    void endUpdate();
-
-    /**
-     * @brief Updates all widgets showing file properties
-     */
-    void updateFile();
-
-    /**
-     * @brief Updates all widgets showing track properties
-     */
-    void updateTrack();
-
-    /**
-     * @brief Updates all widgets showing point properties
-     */
-    void updatePoint();
-
-    /**
-     * @brief Generates the content of all widgets showing track properties
-     * @param select If true selects the current track
-     */
-    void build(bool select = false);
-
-    /**
-     * @brief Sets a track name
-     * @param trackNumber Track number
-     * @param name New track name
-     */
-    void setTrackName(int trackNumber, const QString& name);
-
-    /**
-     * @brief GPX_model wrapper
-     * @note Used in the command classes
-     */
-    GPX_wrapper* gpxmw;
-
 private slots:
+
+    /**
+     * @brief Called when a file is successfully loaded
+     */
+    void fileLoaded();
+
+    /**
+     * @brief Called when a file is successfully saved
+     */
+    void fileSaved();
+
+    /**
+     * @brief Called when the GPX_model is cleared
+     */
+    void modelCleared();
+
+    /**
+     * @brief Called when properties of the GPX_model changed
+     */
+    void modelPropertiesChanged();
+
+    /**
+     * @brief Called when the metadata of the GPX_model changed
+     */
+    void modelMetadataChanged();
+
+    /**
+     * @brief Called when the metadata of a track changed
+     * @param trackNumber Track number
+     */
+    void trackMetadataChanged(int trackNumber);
+
+    /**
+     * @brief Called when a track was inserted
+     * @param trackNumber Track Number
+     * @param track Track
+     */
+    void trackInserted(int trackNumber, const GPX_trkType &track);
+
+    /**
+     * @brief Called when a track was deleted
+     * @param trackNumber Track number
+     */
+    void trackDeleted(int trackNumber);
+
+    /**
+     * @brief Called when a track was moved up
+     * @param trackNumber Track number
+     */
+    void trackMovedUp(int trackNumber);
+
+    /**
+     * @brief Called when a track was moved down
+     * @param trackNumber Track number
+     */
+    void trackMovedDown(int trackNumber);
+
+    /**
+     * @brief Called when a track was splited
+     * @param trackNumber Track number
+     */
+    void trackSplited(int trackNumber);
+
+    /**
+     * @brief Called when two track segments were combined
+     * @param trackNumber Track number
+     */
+    void trackCombined(int trackNumber);
+
+    /**
+     * @brief Signal when a track was time shifted
+     * @param trackNumber Track number
+     * @param seconds Amounts of seconds shifted
+     */
+    void trackTimeShifted(int trackNumber, long seconds);
+
+    /**
+     * @brief Called when a new track was selected
+     * @param trackNumber Track number
+     * @param trackSegmentNumber Track segment number
+     * @param pointNumber Point number, -1 for no point selected
+     * @param wpt Point
+     */
+    void trackSelectionChanged(int trackNumber, int trackSegmentNumber, int pointNumber, const GPX_wptType *trkpt);
+
+    /**
+     * @brief Called when a point was edited
+     * @param trackNumber Track number
+     * @param trackSegmentNumber Track segment number
+     * @param pointNumber Point number
+     * @param properties Properties changed (bit field)
+     */
+    void pointEdited(int trackNumber, int trackSegmentNumber, int pointNumber, GPX_wrapper::TrackPointProperty properties);
+
+    /**
+     * @brief Called when a point was inserted
+     * @param trackNumber Track number
+     * @param trackSegmentNumber Track segment number
+     * @param pointNumber Point number
+     * @param trkpt Point
+     */
+    void pointInserted(int trackNumber, int trackSegmentNumber, int pointNumber, const GPX_wptType& trkpt);
+
+    /**
+     * @brief Called when a point was deleted
+     * @param trackNumber Track number
+     * @param trackSegmentNumber Track segment number
+     * @param pointNumber Point number
+     */
+    void pointDeleted(int trackNumber, int trackSegmentNumber, int pointNumber);
+
+    /**
+     * @brief Called when a new point was selected
+     * @param pointNumber Point number
+     * @param trkpt Point
+     */
+    void pointSelectionChanged(int pointNumber, const GPX_wptType *trkpt);
+
+    /**
+     * @brief Sets the main window title
+     */
+    void setMainWindowTitle();
+
     void on_actionExit_triggered();
 
     void on_actionOpen_triggered();
@@ -269,7 +366,11 @@ private slots:
 
     void map_selectionChanged(int trackNumber, int trackSegmentNumber, double lat, double lon);
 
+    void map_selectionChanged(int pointNumber);
+
     void map_viewChanged(const QPointF &coordinate, int zoom);
+
+    void cal_selectionChanged(int trackNumber);
 
     void zoom_valueChanged(int value);
 
@@ -301,9 +402,7 @@ private slots:
 
     void map_showContextMenu(const QPoint& pos);
 
-    void map_contextMenuSelectionChanged();
-
-    void undo_indexChanged(int idx);
+    void mapmenu_selectionChanged();
 
     void on_actionSplit_Track_triggered();
 
@@ -313,72 +412,18 @@ private slots:
 
     void on_actionSettings_triggered();
 
+    void on_actionDelete_Point_triggered();
+
+    void on_actionSetStartTime_triggered();
+
+    void on_actionInsert_Point_triggered();
+
 private:
 
-    /**
-     * @brief Maximal number of undo commands stored
-     * @see undoStack
-     */
-    static const int undoLimit = 10;
-
-    /**
-     * @brief Maximal number of recent files shown in the menu
-     */
-    static const int MaxRecentFiles = 5;
-
-    /**
-     * @brief UI
-     */
-    Ui::GPXLab* ui;
-
-    /**
-     * @brief Application settings
-     */
-    Settings settings;
-
-    /**
-     * @brief Updating flag to prevent update-loops
-     */
-    int updatingLevel;
-
-    /**
-     * @brief Closing flag to prevent unnecessary stuff
-     * Set on closeEvent().
-     */
-    bool closing;
-
-    /**
-     * @brief Open recent file actions
-     */
-    QAction *actionOpenRecentFile[MaxRecentFiles];
-
-    /**
-     * @brief Map context menu for track selection
-     */
-    QMenu mapContextMenu;
-
-    /**
-     * @brief Undo stack
-     */
-    QUndoStack *undoStack;
-
-    /**
-     * @brief Menu action to undo
-     */
-    QAction *undoAction;
-
-    /**
-     * @brief Menu action to redo
-     */
-    QAction *redoAction;
-
-    QSlider *zoomSlider;
-
-    QByteArray defaultState;
-    QByteArray defaultGeometry;
-
-    void loadSettings();
-    void saveSettings();
+    void updateActions(bool enabled);
+    void updateRecentFiles();
+    void updateFileProperties(bool clear);
+    void updateTrackProperties(bool clear);
     int check_need_save();
     void update_size();
     void closeEvent(QCloseEvent *event);
@@ -387,8 +432,29 @@ private:
     void dragEnterEvent(QDragEnterEvent *event);
     void getOffsets(int &left, int &right, int &top, int &bottom);
     bool eventFilter(QObject *obj, QEvent *event);
-    void setCurrentFile(const QString &fileName);
-    void updateRecentFileActions();
+
+private:
+
+    /** @brief UI */
+    Ui::GPXLab* ui;
+
+    /** @brief GPX_model wrapper */
+    GPX_wrapper* gpxmw;
+
+    /** @brief Application settings */
+    Settings* settings;
+
+    /** @brief Undo stack */
+    QUndoStack *undoStack;
+
+    /** @brief Closing flag to prevent unnecessary stuff */
+    bool closing;
+
+    /** @brief Open recent file actions */
+    QAction **actionOpenRecentFile;
+
+    /** @brief Slider to change zoom of map */
+    QSlider *zoomSlider;
 };
 
 /** @} GPXLab */

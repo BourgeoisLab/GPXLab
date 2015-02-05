@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -37,8 +37,8 @@ class Dialog_settings;
  * @brief Settings dialogue
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 4 Dec 2014
+ * @version 1.1
+ * @date 4 Jan 2015
  */
 class Dialog_settings : public QDialog
 {
@@ -51,23 +51,21 @@ public:
      * @param settings Settings
      * @param parent Parent
      */
-    explicit Dialog_settings(Settings &settings, QWidget *parent = 0);
+    explicit Dialog_settings(Settings *settings, QWidget *parent = 0);
     ~Dialog_settings();
 
 private slots:
+
     void on_checkBoxMapPersistentCache_toggled(bool checked);
-
     void on_lineEditMapCachePath_editingFinished();
-    
     void on_pushButtonMapCacheLocationSelect_clicked();
-
     void on_pushButtonMapClearCache_clicked();
-
     void on_pushButtonMapCacheLocationDefault_clicked();
 
 private:
+
     Ui::Dialog_settings *ui;
-    Settings &settings;
+    Settings *settings;
 };
 
 /** @} Dialogs */

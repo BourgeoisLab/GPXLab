@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -14,148 +14,107 @@
  *   You should have received a copy of the GNU General Public License      *
  *   along with This program. If not, see <http://www.gnu.org/licenses/>.   *
  ****************************************************************************/
- 
+
+#include "gpxlab.h"
+#include "qutils.h"
 #include "osmmapadapter.h"
 #include "maplayer.h"
 #include "geometrylayer.h"
 #include "point.h"
-#include "linestringext.h"
-#include "arrowpoint.h"
+#include "qmaptrack.h"
 #include "invisiblepoint.h"
 #include "circlepoint.h"
-#include "imagepoint.h"
 #include "qmapwidget.h"
+#include "pointeditcommand.h"
+#include "pointinsertcommand.h"
+#include "pointdeletecommand.h"
 
 QMapWidget::QMapWidget(QWidget *parent, Qt::WindowFlags windowFlags) :
     MapControl(QSize(200,200), MapControl::PanningNoZoom, true, false, parent, windowFlags),
-    selectedPoint(NULL),
-    selectedTrack(NULL),
+    selectedTrack(-1),
     followSelection(false),
     showOnlySelectedTrack(false)
-{
-}
-
-void QMapWidget::init(bool doPersistentCaching, int tileExpiry, QString &cachePath)
 {
     // create OpenStreetMap adapter
     MapAdapter* OSMAdapter = new OSMMapAdapter();
 
-    // create a layer for the map
-    trackLayer = new MapLayer("Map", OSMAdapter);
+    // create a layer for the tracks
+    trackLayer = new MapLayer("Tracks", OSMAdapter, true);
     addLayer(trackLayer);
     trackLayer->setVisible(false);
 
-    // enable persitent cache of tiles
-    if (doPersistentCaching)
-        enablePersistentCache(tileExpiry, QDir(cachePath));
-
-    // set pen properties
-    linePen = new QPen(QColor(0, 0, 255, 100));
-    linePen->setWidth(5);
-    linePenSelected = new QPen(QColor(255, 0, 0, 255));
-    linePenSelected->setWidth(5);
-    linePenSameTrack = new QPen(QColor(255, 0, 0, 150));
-    linePenSameTrack->setWidth(5);
-    pointsMiddle = new QPen(QColor(100, 0, 0, 255));
-    pointPenSelected = new QPen(QColor(3, 201, 48, 255));
-    pointPenSelected->setWidth(3);
-
-    // connect click events of the layer
+    // connect mouse events of the tracks layer
     connect(trackLayer, SIGNAL(geometryClicked(Geometry*, QPoint)), this, SLOT(geometryClicked(Geometry*, QPoint)));
+    connect(trackLayer, SIGNAL(geometryOver(Geometry*, QPoint)), this, SLOT(geometryOver(Geometry*, QPoint)));
+    connect(this, SIGNAL(mouseEventCoordinate(const QMouseEvent*, const QPointF)), this, SLOT(mouseEventCoordinate(const QMouseEvent*, const QPointF)));
+
+    // create a layer for the geometries on the "top"
+    Layer *topLayer = new GeometryLayer("Top", OSMAdapter, false);
+    addLayer(topLayer);
+    topLayer->setVisible(true);
+
+    // add selected point to "top" layer
+    pointPenSelected = new QPen(GPXLab::appColor);
+    pointPenSelected->setWidth(3);
+    selectedPoint = new CirclePoint(0.0, 0.0, 10, "", Point::Middle, pointPenSelected);
+    selectedPoint->setVisible(false);
+    topLayer->addGeometry(selectedPoint);
+
+    // add over point to "top" layer
+    overPointWidget = new QLabel(this);
+    QPalette sample_palette;
+    QFont font( "Arial", 10, QFont::Bold);
+    overPointWidget->setFont(font);
+    sample_palette.setColor(QPalette::Window, QColor(255,255,255,200));
+    sample_palette.setColor(QPalette::WindowText, Qt::blue);
+    overPointWidget->setAutoFillBackground(true);
+    overPointWidget->setPalette(sample_palette);
+    overPointWidget->setText("");
+    overPointWidget->setMouseTracking(true);
+    overPoint = new Point(0.0, 0.0, overPointWidget, "", Point::BottomLeft);
+    overPoint->setVisible(false);
+    topLayer->addGeometry(overPoint);
 
     // disable map at start
     setEnabled(false);
 }
 
-void QMapWidget::build(const GPX_wrapper *gpxmw)
+void QMapWidget::init(GPX_wrapper *gpxmw, QUndoStack *undoStack, bool doPersistentCaching, QString &cachePath)
 {
+    this->gpxmw = gpxmw;
+    this->undoStack = undoStack;
+
+    // enable persitent cache of tiles
+    if (doPersistentCaching)
+        enablePersistentCache(QDir(cachePath));
+}
+
+void QMapWidget::build(bool zoomIn)
+{
+    const GPX_trkType *trk;
+
     suspendUpdate(true);
+
+    // clear if necessary
+    clear();
 
     // enable and set layers visible
     setEnabled(true);
     trackLayer->setVisible(true);
 
-    // delete old tracks
-    trackLayer->clearGeometries(true);
-
     // add new tracks
     if (gpxmw->initTrkIteration() > 0)
     {
         int trackNumber = 0;
-        int trackSegmentNumber = 0;
-        int pointNumber = 0;
-        int numTrackSegments;
-        int numPoints;
-        const GPX_trkType* trk;
-        const GPX_trksegType* trkseg;
-        const GPX_wptType* wpt;
-        Point *point;
-        QList<Point*> points;
         while ((trk = gpxmw->getNextTrk()))
-        {
-            trackSegmentNumber = 0;
-            numTrackSegments = gpxmw->initTrksegIteration(trackNumber);
-            if (numTrackSegments  > 0)
-            {
-                while ((trkseg = gpxmw->getNextTrkseg(trackNumber)))
-                {
-                    pointNumber = 0;
-                    numPoints = gpxmw->initWptIteration(trackNumber, trackSegmentNumber);
-                    if (numPoints > 0)
-                    {
-                        points.clear();
-                        while ((wpt = gpxmw->getNextWpt(trackNumber, trackSegmentNumber)))
-                        {
-                            if (pointNumber == 0)
-                            {
-                                if (trackSegmentNumber == 0)
-                                {
-                                    // first point of first segment
-                                    point = new ImagePoint(wpt->longitude, wpt->latitude, ":/images/flag_green.png", QString::fromStdString(wpt->name), Point::BottomLeft);
-                                }
-                                else
-                                {
-                                    // first point of other segments
-                                    point = new ImagePoint(wpt->longitude, wpt->latitude, ":/images/flag_blue.png", QString::fromStdString(wpt->name), Point::BottomLeft);
-                                }
-                            }
-                            else if (pointNumber == (numPoints - 1))
-                            {
-                                if (trackSegmentNumber == (numTrackSegments - 1))
-                                {
-                                    // last point of last segment
-                                    point = new ImagePoint(wpt->longitude, wpt->latitude, ":/images/flag_finish.png", QString::fromStdString(wpt->name), Point::BottomLeft);
-                                }
-                                else
-                                {
-                                    // last point of other segments
-                                    point = new ImagePoint(wpt->longitude, wpt->latitude, ":/images/flag_red.png", QString::fromStdString(wpt->name), Point::BottomLeft);
-                                }
-                            }
-                            else
-                            {
-                                // middle points
-                                point = new ArrowPoint(wpt->longitude, wpt->latitude, 6, -wpt->heading, QString::fromStdString(wpt->name), Point::Middle, pointsMiddle);
-                            }
-                            points.append(point);
-                            ++pointNumber;
-                        }
-                        trackLayer->addGeometry(new LineStringExt(trackNumber, numTrackSegments == 1 ? -1 : trackSegmentNumber, points, gpxmw->getItemName(trackNumber, trackSegmentNumber), linePen));
-                    }
-                    ++trackSegmentNumber;
-                }
-            }
-            ++trackNumber;
-        }
+            trackLayer->addGeometry(new QMapTrack(gpxmw, trackNumber++, trk));
     }
 
-    // add selected point
-    selectedPoint = new CirclePoint(0.0, 0.0, 10, "", Point::Middle, pointPenSelected);
-    selectedPoint->setCoordinate(QPointF(0.0,0.0));
-    selectedPoint->setVisible(false);
-    trackLayer->addGeometry(selectedPoint);
-
-    selectedTrack = NULL;
+    if (zoomIn)
+    {
+        const GPX_metadataType *metadata = gpxmw->getModelMetadata();
+        setViewAndZoomIn(metadata->bounds);
+    }
 
     suspendUpdate(false);
     updateRequestNew();
@@ -166,8 +125,85 @@ void QMapWidget::clear()
     setEnabled(false);
     trackLayer->setVisible(false);
     trackLayer->clearGeometries(true);
-    selectedPoint = NULL;
-    selectedTrack = NULL;
+    selectedTrack = -1;
+    selectedPointSetVisible(false);
+}
+
+void QMapWidget::keyPressEvent(QKeyEvent *event)
+{
+    int numPoints = gpxmw->getNumPoints(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber());
+    int pointNumber = gpxmw->getSelectedPointNumber();
+    switch (event->key())
+    {
+    case Qt::Key_Left:
+    case Qt::Key_Up:
+        if (pointNumber == -1)
+        {
+            emit selectionChanged(numPoints - 1);
+        }
+        else if (pointNumber > 0)
+        {
+            if (event->modifiers() & Qt::ControlModifier)
+            {
+                int newPointNumber = pointNumber - 10;
+                if (newPointNumber < 0)
+                    newPointNumber = 0;
+                emit selectionChanged(newPointNumber);
+            }
+            else
+            {
+                emit selectionChanged(pointNumber - 1);
+            }
+        }
+        break;
+
+    case Qt::Key_Right:
+    case Qt::Key_Down:
+        if (pointNumber == -1)
+        {
+            emit selectionChanged(0);
+        }
+        else if (pointNumber < numPoints - 1)
+        {
+            if (event->modifiers() & Qt::ControlModifier)
+            {
+                int newPointNumber = pointNumber + 10;
+                if (newPointNumber > numPoints - 1)
+                    newPointNumber = numPoints - 1;
+                emit selectionChanged(newPointNumber);
+            }
+            else
+            {
+                emit selectionChanged(pointNumber + 1);
+            }
+        }
+        break;
+
+    case Qt::Key_Insert:
+        if (pointNumber < numPoints - 1)
+        {
+            GPX_wptType wpt;
+            const GPX_wptType *wptA = gpxmw->getPoint(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), pointNumber);
+            const GPX_wptType *wptB = gpxmw->getPoint(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), pointNumber + 1);
+            wpt.altitude = wptA->altitude + (wptB->altitude - wptA->altitude)/2;
+            wpt.latitude = wptA->latitude + (wptB->latitude - wptA->latitude)/2;
+            wpt.longitude = wptA->longitude + (wptB->longitude - wptA->longitude)/2;
+            wpt.timestamp = wptA->timestamp + (wptB->timestamp - wptA->timestamp)/2;
+            undoStack->push(new PointInsertCommand(gpxmw, gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), pointNumber + 1, wpt));
+        }
+        break;
+
+    case Qt::Key_Delete:
+        if (pointNumber >= 0)
+            undoStack->push(new PointDeleteCommand(gpxmw, gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), pointNumber));
+        break;
+    }
+}
+
+void QMapWidget::leaveEvent(QEvent *event)
+{
+    Q_UNUSED(event);
+    geometryOver(NULL, QPoint());
 }
 
 void QMapWidget::setViewAndZoomIn(const GPX_boundsType &bounds)
@@ -183,34 +219,28 @@ void QMapWidget::setViewAndZoomIn(const GPX_boundsType &bounds)
 
 void QMapWidget::setViewAndZoomInSelectedPoint()
 {
-    if (selectedPoint)
+    if (selectedPoint->isVisible())
     {
-        if (selectedPoint->isVisible())
-        {
-            suspendUpdate(true);
-            setView(selectedPoint);
-            setZoom(14);
-            suspendUpdate(false);
-            updateRequestNew();
-        }
+        suspendUpdate(true);
+        setView(selectedPoint);
+        setZoom(14);
+        suspendUpdate(false);
+        updateRequestNew();
     }
 }
 
 void QMapWidget::setFollowSelection(bool follow)
 {
     followSelection = follow;
-    if (selectedPoint)
+    if (followSelection)
     {
-        if (followSelection)
-        {
-            if (selectedPoint->isVisible())
-                setView(selectedPoint);
-            followGeometry(selectedPoint);
-        }
-        else
-        {
-            stopFollowing(selectedPoint);
-        }
+        if (selectedPoint->isVisible())
+            setView(selectedPoint);
+        followGeometry(selectedPoint);
+    }
+    else
+    {
+        stopFollowing(selectedPoint);
     }
 }
 
@@ -219,55 +249,38 @@ void QMapWidget::setShowOnlySelectedTrack(bool only)
     showOnlySelectedTrack = only;
 }
 
-void QMapWidget::selectTrack(int trackNumber, int trackSegmentNumber)
+void QMapWidget::selectTrack(int trackNumber)
 {
-    QList<QPointF> view;
-    LineStringExt* track;
-    QList<Geometry*> tracks = trackLayer->getGeometries();
+    QMapTrack* track;
+    QList<Geometry*> tracks = trackLayer->getGeometries(); // copy list
+    QList<QPointF> view = QList<QPointF>();
 
     // suspend redraw
     suspendUpdate(true);
 
     for(QList<Geometry*>::iterator iter = tracks.begin(); iter != tracks.end(); ++iter)
     {
-        track = dynamic_cast<LineStringExt*>(*iter);
+        track = dynamic_cast<QMapTrack*>(*iter);
         if (track)
         {
             if (track->getTrackNumber() == trackNumber)
             {
-                if (trackSegmentNumber == track->getTrackSegmentNumber() || trackSegmentNumber == -1)
+                // send selected track to front (= back of the list)
+                trackLayer->sendGeometryToBack(*iter);
+                track->setVisible(true);
+                selectedTrack = track->getTrackNumber();
+
+                // bounding box for followSelection
+                if (followSelection)
                 {
-                    // selected track
-                    track->setSelected(true);
-                    track->setPen(linePenSelected);
-
-                    // send new selected track to front (= back of the list)
-                    trackLayer->sendGeometryToBack(*iter);
-                    track->setVisible(true);
-
-                    // bounding box for followSelection
-                    if (followSelection)
-                    {
-                        view.append(track->boundingBox().topLeft());
-                        view.append(track->boundingBox().bottomRight());
-                    }
-                }
-                else
-                {
-                    // friend ( same track number)
-                    track->setSelected(false);
-                    track->setPen(linePenSameTrack);
-
-                    // send friend of new selected track to front (= back of the list)
-                    trackLayer->sendGeometryToBack(*iter);
-                    track->setVisible(true);
+                    QRectF box = track->boundingBox();
+                    view.append(box.topLeft());
+                    view.append(box.bottomRight());
                 }
             }
             else
             {
                 // other track number
-                track->setSelected(false);
-                track->setPen(linePen);
                 if (showOnlySelectedTrack)
                     track->setVisible(false);
                 else
@@ -276,15 +289,8 @@ void QMapWidget::selectTrack(int trackNumber, int trackSegmentNumber)
         }
     }
 
-    // hide selected point and send to front (= back of the list)
-    if (selectedPoint)
-    {
-        selectedPoint->setVisible(false);
-        trackLayer->sendGeometryToBack(selectedPoint);
-    }
-
     // set view and zoom if followSelection
-    if (followSelection)
+    if (followSelection && view.size() > 0)
         MapControl::setViewAndZoomIn(view);
 
     // redraw
@@ -292,23 +298,26 @@ void QMapWidget::selectTrack(int trackNumber, int trackSegmentNumber)
     updateRequestNew();
 }
 
-void QMapWidget::selectPoint(double lat, double lon)
+void QMapWidget::selectedPointSetVisible(bool visible, double lat, double lon)
 {
-    if (selectedPoint)
-    {
-        suspendUpdate(true);
-        selectedPoint->setVisible(true);
-        selectedPoint->setCoordinate(QPointF(lon, lat));
-        suspendUpdate(false);
-        updateRequestNew();
-    }
+    selectedPoint->setCoordinate(QPointF(lon, lat));
+    selectedPoint->setVisible(visible);
 }
 
-void QMapWidget::selectedPointSetVisible(bool visible)
+void QMapWidget::overPointSetVisible(bool visible, const GPX_wptType *trkpt)
 {
-    if (selectedPoint)
+    if (visible)
     {
-        selectedPoint->setVisible(visible);
+            QString text = QUtils::seconds_to_DHMS(trkpt->elapsedTime);
+            text += "\n" + QString::number(trkpt->distanceTot, 'f', 1) + " km";
+            overPointWidget->setText(text);
+            overPoint->setCoordinate(QPointF(trkpt->longitude, trkpt->latitude));
+            overPoint->setVisible(true);
+            return;
+    }
+    else
+    {
+        overPoint->setVisible(false);
     }
 }
 
@@ -316,48 +325,223 @@ void QMapWidget::geometryClicked(Geometry* geometry, QPoint point)
 {
     static QPoint lastPoint(0,0);
 
-    if (geometry == selectedPoint)
-        return;
-
-    if (geometry == selectedTrack && lastPoint == point)
-        return;
-
-    LineStringExt* track = dynamic_cast<LineStringExt*>(geometry);
+    QMapTrack* track = dynamic_cast<QMapTrack*>(geometry);
     if (track)
     {
-        if (geometry->hasClickedPoints())
-        {
-            QList<Geometry*> points = geometry->clickedPoints();
-            if (points.size() > 0)
-            {
-                Point *p = dynamic_cast<Point*>(points[0]);
-                if (p)
-                {
-                    if (selectedTrack && geometry != selectedTrack)
-                    {
-                        // send last selected track and track segments to back (= front of the list)
-                        QListIterator<Geometry*> iter(trackLayer->getGeometries());
-                        iter.toBack();
-                        suspendUpdate(true);
-                        while (iter.hasPrevious())
-                        {
-                            LineStringExt* trackLoop = dynamic_cast<LineStringExt*>(iter.previous());
-                            if (trackLoop)
-                            {
-                                if (trackLoop->getTrackNumber() == selectedTrack->getTrackNumber())
-                                    trackLayer->sendGeometryToFront(trackLoop);
-                            }
-                        }
-                        suspendUpdate(false);
-                    }
+        if (track->getTrackNumber() == selectedTrack && lastPoint == point)
+            return;
 
-                    // emit selection changed
-                    emit(selectionChanged(track->getTrackNumber(), track->getTrackSegmentNumber(), p->coordinate().y(), p->coordinate().x()));
+        if (selectedTrack != -1 && track->getTrackNumber() != selectedTrack)
+        {
+            // send last selected track and track segments to back (= front of the list)
+            QListIterator<Geometry*> iter(trackLayer->getGeometries());
+            iter.toBack();
+            while (iter.hasPrevious())
+            {
+                QMapTrack* trackLoop = dynamic_cast<QMapTrack*>(iter.previous());
+                if (trackLoop)
+                {
+                    if (trackLoop->getTrackNumber() == selectedTrack)
+                    {
+                        trackLayer->sendGeometryToFront(trackLoop);
+                        break;
+                    }
                 }
             }
         }
-        selectedTrack = track;
+
+        // emit selection changed
+        const GPX_wptType *trkpt = track->getTouchedPoint();
+        emit(selectionChanged(track->getTrackNumber(), track->getTouchedSegmentNumber(), trkpt->latitude, trkpt->longitude));
     }
     lastPoint = point;
     trackLayer->consumeMouseEvent();
+}
+
+void QMapWidget::geometryOver(Geometry* geometry, QPoint point)
+{
+    Q_UNUSED(point);
+
+    QMapTrack* trackOver = dynamic_cast<QMapTrack*>(geometry);
+
+    // suspend redraw
+    suspendUpdate(true);
+
+    // highlight track
+    QList<Geometry*> tracks = trackLayer->getGeometries();
+    for(QList<Geometry*>::iterator iter = tracks.begin(); iter != tracks.end(); ++iter)
+    {
+        QMapTrack* track = dynamic_cast<QMapTrack*>(*iter);
+        if (track)
+        {
+            if (track->getTrackNumber() != selectedTrack)
+            {
+                if (trackOver && track->getTrackNumber() == trackOver->getTrackNumber())
+                    track->setMouseOver(true);
+                else
+                    track->setMouseOver(false);
+            }
+        }
+    }
+
+    // highlight point of selected track
+    if (trackOver && trackOver->getTrackNumber() == selectedTrack)
+        overPointSetVisible(true, trackOver->getTouchedPoint());
+    else
+        overPointSetVisible(false);
+
+    // redraw
+    suspendUpdate(false);
+    updateRequestNew();
+
+    trackLayer->consumeMouseEvent();
+}
+
+void QMapWidget::insertTrack(int trackNumber, const GPX_trkType &track)
+{
+    // suspend redraw
+    suspendUpdate(true);
+
+    // change track numbers
+    QList<Geometry*> &tracks = trackLayer->getGeometries();
+    for(QList<Geometry*>::iterator itTrack = tracks.begin(); itTrack != tracks.end(); ++itTrack)
+    {
+        QMapTrack* track = dynamic_cast<QMapTrack*>(*itTrack);
+        if (track)
+        {
+            if (track->getTrackNumber() >= trackNumber)
+                track->setTrackNumber(track->getTrackNumber() + 1);
+        }
+    }
+
+    // insert new track
+    trackLayer->addGeometry(new QMapTrack(gpxmw, trackNumber, &track));
+
+    // redraw
+    suspendUpdate(false);
+    updateRequestNew();
+
+}
+
+void QMapWidget::deleteTrack(int trackNumber)
+{
+    Geometry* trackToDelete = NULL;
+
+    // suspend redraw
+    suspendUpdate(true);
+
+    // change track numbers
+    QList<Geometry*> &tracks = trackLayer->getGeometries();
+    for(QList<Geometry*>::iterator itTrack = tracks.begin(); itTrack != tracks.end(); ++itTrack)
+    {
+        QMapTrack* track = dynamic_cast<QMapTrack*>(*itTrack);
+        if (track)
+        {
+            if (track->getTrackNumber() == trackNumber)
+                trackToDelete = *itTrack;
+            if (track->getTrackNumber() > trackNumber)
+                track->setTrackNumber(track->getTrackNumber() - 1);
+        }
+    }
+
+    // erase track
+    if (trackToDelete)
+        trackLayer->removeGeometry(trackToDelete);
+
+    // redraw
+    suspendUpdate(false);
+    updateRequestNew();
+}
+
+void QMapWidget::moveTrackUp(int trackNumber)
+{
+    // change track numbers
+    QList<Geometry*> &tracks = trackLayer->getGeometries();
+    for(QList<Geometry*>::iterator itTrack = tracks.begin(); itTrack != tracks.end(); ++itTrack)
+    {
+        QMapTrack* track = dynamic_cast<QMapTrack*>(*itTrack);
+        if (track)
+        {
+            if (track->getTrackNumber() == trackNumber)
+                track->setTrackNumber(trackNumber - 1);
+            else if (track->getTrackNumber() == trackNumber - 1)
+                track->setTrackNumber(trackNumber);
+        }
+    }
+}
+
+void QMapWidget::moveTrackDown(int trackNumber)
+{
+    // change track numbers
+    QList<Geometry*> &tracks = trackLayer->getGeometries();
+    for(QList<Geometry*>::iterator itTrack = tracks.begin(); itTrack != tracks.end(); ++itTrack)
+    {
+        QMapTrack* track = dynamic_cast<QMapTrack*>(*itTrack);
+        if (track)
+        {
+            if (track->getTrackNumber() == trackNumber)
+                track->setTrackNumber(trackNumber + 1);
+            else if (track->getTrackNumber() == trackNumber + 1)
+                track->setTrackNumber(trackNumber);
+        }
+    }
+}
+
+void QMapWidget::editPoint(int trackNumber, int pointNumber)
+{
+    QList<Geometry*> &tracks = trackLayer->getGeometries();
+    for(QList<Geometry*>::iterator itTrack = tracks.begin(); itTrack != tracks.end(); ++itTrack)
+    {
+        QMapTrack* track = dynamic_cast<QMapTrack*>(*itTrack);
+        if (track)
+        {
+            if (track->getTrackNumber() == trackNumber)
+            {
+                track->redrawPoint(pointNumber - 1);
+                track->redrawPoint(pointNumber);
+                break;
+            }
+        }
+    }
+}
+
+void QMapWidget::mouseEventCoordinate(const QMouseEvent* evnt, const QPointF coordinate)
+{
+    if (isMousePressed() && gpxmw->getSelectedPointNumber() >= 0 &&
+        evnt->button() == 1 && evnt->modifiers() & Qt::ShiftModifier)
+    {
+        GPX_wrapper::TrackPointProperty properties[3] = {GPX_wrapper::latitude, GPX_wrapper::longitude, GPX_wrapper::timestamp};
+        double values[3];
+
+        // set new coordinates
+        values[0] = coordinate.y();
+        values[1] = coordinate.x();
+
+        // interpolate new timestamp
+        if (gpxmw->getSelectedPointNumber() > 0 &&
+            gpxmw->getSelectedPointNumber() < gpxmw->getNumPoints(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber()) - 1)
+        {
+            const GPX_wptType *wptA = gpxmw->getPoint(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), gpxmw->getSelectedPointNumber() - 1);
+            const GPX_wptType *wptB = gpxmw->getPoint(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), gpxmw->getSelectedPointNumber() + 1);
+
+            double dLat, dLon;
+            dLat = coordinate.y() - wptA->latitude;
+            dLon = coordinate.x() - wptA->longitude;
+            double dAX = sqrt(dLat * dLat + dLon * dLon);
+            dLat = wptB->latitude - coordinate.y();
+            dLon = wptB->longitude - coordinate.x();
+            double dXB = sqrt(dLat * dLat + dLon * dLon);
+
+            values[2] = (wptB->getTime() - wptA->getTime())* dAX / (dAX + dXB) + wptA->getTime();
+
+            undoStack->push(new PointEditCommand(gpxmw, gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), gpxmw->getSelectedPointNumber(),
+                                                 3, properties, values));
+        }
+        else
+        {
+            undoStack->push(new PointEditCommand(gpxmw, gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), gpxmw->getSelectedPointNumber(),
+                                                 2, properties, values));
+        }
+        selectedPointSetVisible(true, coordinate.y(), coordinate.x());
+    }
 }

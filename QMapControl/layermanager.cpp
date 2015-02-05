@@ -485,6 +485,27 @@ namespace qmapcontrol
         return false;
     }
 
+    bool LayerManager::mouseMoveEvent(const QMouseEvent* evnt)
+    {
+        if ( mapcontrol && !mapcontrol->mouseWheelEventsEnabled() )
+        {
+            return false;
+        }
+
+        Layer* l;
+        //foreach( Layer* l, mylayers )
+        for (int i = mylayers.count() - 1; i >= 0; --i)
+        {
+            l = mylayers.at(i);
+            if (l && l->isVisible() )
+            {
+                if (l->mouseMoveEvent(evnt, mapmiddle_px))
+                    return true;
+            }
+        }
+        return false;
+    }
+
     void LayerManager::updateRequest(QRectF rect)
     {
         if (getViewport().contains(rect.topLeft()) || getViewport().contains(rect.bottomRight()))

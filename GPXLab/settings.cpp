@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -20,32 +20,78 @@
 #include <QStandardPaths>
 #include "settings.h"
 
-Settings::Settings()
+Settings::Settings(QMainWindow *parent) :
+    undoLimit(50),
+    maxRecentFiles(5),
+    parent(parent)
 {
+    // save default window layout
+    defaultState = parent->saveState();
+    defaultGeometry = parent->saveGeometry();
 }
 
 void Settings::load()
 {
     QSettings qsettings;
+    parent->restoreGeometry(qsettings.value("geometry").toByteArray());
+    parent->restoreState(qsettings.value("windowState").toByteArray());
+    recentFiles = qsettings.value("recentFileList").toStringList();
     doPersistentCaching = qsettings.value("doPersistentCaching", true).toBool();
     cachePath = qsettings.value("cachePath", "").toString();
     if (cachePath.isEmpty())
         cachePath = defaultCachePath();
+    emit settingsChanged(true);
 }
 
 void Settings::save()
 {
     QSettings qsettings;
+    qsettings.setValue("geometry", parent->saveGeometry());
+    qsettings.setValue("windowState", parent->saveState());
+    qsettings.setValue("recentFileList", recentFiles);
     qsettings.setValue("doPersistentCaching", doPersistentCaching);
     qsettings.setValue("cachePath", cachePath);
+    emit settingsChanged(false);
 }
+
+void Settings::restoreLayout()
+{
+    // restore default window layout
+    parent->restoreGeometry(defaultGeometry);
+    parent->restoreState(defaultState);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void Settings::addToRecentFile(const QString &fileName)
+{
+    recentFiles.removeAll(fileName);
+    recentFiles.prepend(fileName);
+    while (recentFiles.size() > maxRecentFiles)
+        recentFiles.removeLast();
+}
+
+void Settings::removeFromRecentFile(const QString &fileName)
+{
+    recentFiles.removeAll(fileName);
+}
+
+//////////////////////////////////////////////////////////////////////////////
 
 void Settings::clearCache()
 {
     QDir cache(cachePath);
-    cache.setFilter(QDir::Files);
-    foreach(QString cacheFile, cache.entryList())
-        cache.remove(cacheFile);
+
+    cache.setFilter( QDir::NoDotAndDotDot | QDir::Files );
+    foreach(QString dirItem, cache.entryList())
+        cache.remove(dirItem);
+
+    cache.setFilter( QDir::NoDotAndDotDot | QDir::Dirs );
+    foreach( QString dirItem, cache.entryList())
+    {
+        QDir subDir( cache.absoluteFilePath( dirItem ) );
+        subDir.removeRecursively();
+    }
 }
 
 QString Settings::defaultCachePath()

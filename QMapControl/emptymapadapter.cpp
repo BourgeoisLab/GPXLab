@@ -92,7 +92,7 @@ namespace qmapcontrol
 
     }
 
-    bool EmptyMapAdapter::isValid(int x, int y, int z) const
+    bool EmptyMapAdapter::isTileValid(int x, int y, int z) const
     {
         if (mMax_zoom < mMin_zoom)
         {

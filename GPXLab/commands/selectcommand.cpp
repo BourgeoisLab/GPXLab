@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -17,9 +17,9 @@
  
 #include "selectcommand.h"
 
-SelectCommand::SelectCommand(GPXLab *gpxlab, int trackNumber, int trackSegmentNumber, int pointNumber, QUndoCommand *parent) :
+SelectCommand::SelectCommand(GPX_wrapper *gpxmw, int trackNumber, int trackSegmentNumber, int pointNumber, QUndoCommand *parent) :
     QUndoCommand(parent),
-    gpxlab(gpxlab),
+    gpxmw(gpxmw),
     trackNumber(trackNumber),
     trackSegmentNumber(trackSegmentNumber),
     pointNumber(pointNumber),
@@ -29,9 +29,9 @@ SelectCommand::SelectCommand(GPXLab *gpxlab, int trackNumber, int trackSegmentNu
 {
 }
 
-SelectCommand::SelectCommand(GPXLab *gpxlab, int trackNumber, int trackSegmentNumber, double lat, double lon, QUndoCommand *parent) :
+SelectCommand::SelectCommand(GPX_wrapper *gpxmw, int trackNumber, int trackSegmentNumber, double lat, double lon, QUndoCommand *parent) :
     QUndoCommand(parent),
-    gpxlab(gpxlab),
+    gpxmw(gpxmw),
     trackNumber(trackNumber),
     trackSegmentNumber(trackSegmentNumber),
     pointNumber(-2),
@@ -41,9 +41,9 @@ SelectCommand::SelectCommand(GPXLab *gpxlab, int trackNumber, int trackSegmentNu
 {
 }
 
-SelectCommand::SelectCommand(GPXLab *gpxlab, int trackNumber, int trackSegmentNumber, time_t timestamp, QUndoCommand *parent) :
+SelectCommand::SelectCommand(GPX_wrapper *gpxmw, int trackNumber, int trackSegmentNumber, time_t timestamp, QUndoCommand *parent) :
     QUndoCommand(parent),
-    gpxlab(gpxlab),
+    gpxmw(gpxmw),
     trackNumber(trackNumber),
     trackSegmentNumber(trackSegmentNumber),
     pointNumber(-2),
@@ -60,78 +60,20 @@ void SelectCommand::undo()
 
 void SelectCommand::redo()
 {
-    int tmpTrackNumber = gpxlab->gpxmw->getSelectedTrackNumber();
-    int tmpTrackSegmentNumber = gpxlab->gpxmw->getSelectedTrackSegmentNumber();
-    int tmpPointNumber = gpxlab->gpxmw->getSelectedPointNumber();
+    // temporary copy old values
+    int tmpTrackNumber = gpxmw->getSelectedTrackNumber();
+    int tmpTrackSegmentNumber = gpxmw->getSelectedTrackSegmentNumber();
+    int tmpPointNumber = gpxmw->getSelectedPointNumber();
 
-    // begin update of track widgets
-    gpxlab->beginUpdate();
-
-    // select track
-    if (gpxlab->gpxmw->setSelectedTrack(trackNumber, trackSegmentNumber) == GPX_model::GPXM_OK)
-    {
-        gpxlab->updateTrack();
-    }
-
-    // select point
+    // set new values
     if (pointNumber != -2)
-    {
-        if (gpxlab->gpxmw->setSelectedPointByNumber(pointNumber) == GPX_model::GPXM_OK)
-        {
-            gpxlab->updatePoint();
-        }
-    }
+        gpxmw->select(trackNumber, trackSegmentNumber, pointNumber);
     else if (timestamp != 0)
-    {
-        if (gpxlab->gpxmw->setSelectedPointByTimestamp(timestamp) == GPX_model::GPXM_OK)
-        {
-            gpxlab->updatePoint();
-        }
-    }
+        gpxmw->select(trackNumber, trackSegmentNumber, timestamp);
     else
-    {
-        if (gpxlab->gpxmw->setSelectedPointByCoord(lat, lon) == GPX_model::GPXM_OK)
-        {
-            gpxlab->updatePoint();
-        }
-    }
+        gpxmw->select(trackNumber, trackSegmentNumber, lat, lon);
 
-    // end update
-    gpxlab->endUpdate();
-
-    trackNumber = tmpTrackNumber;
-    trackSegmentNumber = tmpTrackSegmentNumber;
-    pointNumber = tmpPointNumber;
-}
-
-void SelectCommand::undoWithoutUpdate()
-{
-    redoWithoutUpdate();
-}
-
-void SelectCommand::redoWithoutUpdate()
-{
-    int tmpTrackNumber = gpxlab->gpxmw->getSelectedTrackNumber();
-    int tmpTrackSegmentNumber = gpxlab->gpxmw->getSelectedTrackSegmentNumber();
-    int tmpPointNumber = gpxlab->gpxmw->getSelectedPointNumber();
-
-    // select track
-    gpxlab->gpxmw->setSelectedTrack(trackNumber, trackSegmentNumber);
-
-    // select point
-    if (pointNumber != -2)
-    {
-        gpxlab->gpxmw->setSelectedPointByNumber(pointNumber);
-    }
-    else if (timestamp != 0)
-    {
-        gpxlab->gpxmw->setSelectedPointByTimestamp(timestamp);
-    }
-    else
-    {
-        gpxlab->gpxmw->setSelectedPointByCoord(lat, lon);
-    }
-
+    // store old values
     trackNumber = tmpTrackNumber;
     trackSegmentNumber = tmpTrackSegmentNumber;
     pointNumber = tmpPointNumber;

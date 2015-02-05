@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -31,7 +31,7 @@ using namespace std;
  * The structure is based on the GPX version 1.1.
  *
  * The model is divided in tracks (GPX_trkType), track segments
- * (GPX_trksegType) and track point (GPX_wptType).
+ * (GPX_trksegType) and track points (GPX_wptType).
  *
  * The model is represented by a tree like this:
  * <PRE>
@@ -112,9 +112,18 @@ struct GPX_boundsType
 /**
  * @brief Any extension to the standard GPX format
  */
-struct GPX_extensionsType
+struct GPX_extType
 {
-    vector <string>         extension;          /**< Any extensions element */
+    vector <string>         extension;          /**< Any extension element */
+};
+
+/**
+* @brief Garmin's TrackPointExtension GPX extension
+*/
+struct GPX_extTPExtType
+{
+    unsigned int            heartrate;          /**< Heart rate [bpm] */
+    vector <string>         other;              /**< Any other extension element */
 };
 
 /**
@@ -131,7 +140,7 @@ struct GPX_metadataType
     int                     millisecond;        /**< GMT creation date of the file (0-999) [ms] */
     string                  keywords;           /**< Keywords associated with the file */
     GPX_boundsType          bounds;             /**< Minimum and maximum coordinates */
-    GPX_extensionsType      extensions;         /**< Extensions */
+    GPX_extType          extensions;         /**< Extensions */
 };
 
 /**
@@ -144,7 +153,7 @@ struct GPX_trkMetadataType
     string                  desc;               /**< Description of track */
     string                  src;                /**< Source of data */
     vector <GPX_linkType>   links;              /**< Links to external information about track */
-    unsigned int            number;             /**< Track number */
+    size_t                  number;             /**< Track number */
     string                  type;               /**< Type (classification) of the track */
 };
 
@@ -172,8 +181,8 @@ struct GPX_statsType
  * @brief Class representing the content of a GPX file
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 25 Oct 2014
+ * @version 1.1
+ * @date 10 Jan 2015
  */
 class GPX_model
 {
@@ -197,14 +206,16 @@ public:
      */
     enum fileType_e
     {
+        GPXM_FILE_AUTOMATIC,                    /**< Automatic detection */
         GPXM_FILE_NOT_SUPPORTED,                /**< Not supported */
         GPXM_FILE_GPX,                          /**< GPX file */
-        GPXM_FILE_NMEA                          /**< NMEA file */
+        GPXM_FILE_NMEA,                         /**< NMEA file */
+        GPXM_FILE_ACT                           /**< ACT file */
     };
 
     const string            creator;            /**< Creator of the GPX file */
     GPX_metadataType        metadata;           /**< Information about the GPX file */
-    GPX_extensionsType      extensions;         /**< Extensions */
+    GPX_extType             extensions;         /**< Extensions */
     GPX_statsType           stats;              /**< Statistic information */
     vector <GPX_trkType>    trk;                /**< A list of tracks */
 
@@ -231,10 +242,11 @@ public:
     /**
      * @brief Parses a file and add its content to the model
      * @param fileName File to parse
+     * @param fileType Specify type of file, GPXM_FILE_AUTOMATIC for automatic detection
      * @param overwriteMetadata If true the model metadata is overwritten with the metadata of the new file
      * @return Return code, GPXM_OK on success
      */
-    retCode_e load(const string& fileName, bool overwriteMetadata = false);
+    retCode_e load(const string& fileName, fileType_e fileType = GPXM_FILE_AUTOMATIC, bool overwriteMetadata = false);
 
     /**
      * @brief Saves the content of the model to a file
@@ -274,8 +286,8 @@ private:
  * @brief Track class holding a list of track segments
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 25 Oct 2014
+ * @version 1.1
+ * @date 10 Jan 2015
  */
 class GPX_trkType
 {
@@ -283,7 +295,7 @@ public:
     friend class GPX_model;
 
     GPX_trkMetadataType     metadata;           /**< Information about the track */
-    GPX_extensionsType      extensions;         /**< Extensions */
+    GPX_extType             extensions;         /**< Extensions */
     GPX_statsType           stats;              /**< Statistic information */
     vector <GPX_trksegType> trkseg;             /**< List of track segments */
 
@@ -291,7 +303,7 @@ public:
      * @brief Constructs a new track
      * @param number Track number
      */
-    GPX_trkType(unsigned int number);
+    GPX_trkType(size_t number);
 
 private:
 
@@ -309,15 +321,15 @@ private:
  * @brief Track segment class holding a list of points which are logically connected in order
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 25 Oct 2014
+ * @version 1.1
+ * @date 10 Jan 2015
  */
 class GPX_trksegType
 {
 public:
     friend class GPX_trkType;
 
-    GPX_extensionsType      extensions;         /**< Extensions */
+    GPX_extType             extensions;         /**< Extensions */
     GPX_statsType           stats;              /**< Statistic information */
     vector <GPX_wptType>    trkpt;              /**< List of track points */
 
@@ -343,8 +355,8 @@ private:
  * @brief Track point class representing a single GPS localization point
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 25 Oct 2014
+ * @version 1.1
+ * @date 10 Jan 2015
  */
 class GPX_wptType
 {
@@ -372,10 +384,11 @@ public:
     vector <GPX_linkType>   links;              /**< Links to additional information about the point */
     string                  sym;                /**< Symbol name */
     string                  type;               /**< Type (classification) of the point */
-    GPX_extensionsType      extensions;         /**< Extensions */
+    GPX_extType             extensions;         /**< Extensions */
+    GPX_extTPExtType        extensionsGarmin;   /**< Garmin extensions */
     float                   speed;              /**< Ground speed [km/h] */
     float                   heading;            /**< Heading angle [deg] */
-    double                  distance;           /**< Distance from the previous point [km] */
+    double                  leglength;          /**< Distance from the previous point [m] */
     double                  distanceTot;        /**< Distance from first point [km] */
     unsigned int            elapsedTime;        /**< Time elapsed since start [s] */
 
@@ -383,6 +396,17 @@ public:
      * @brief Constructs a new track point
      */
     GPX_wptType();
+
+    /**
+     * @brief Clears all properties
+     */
+    void clear();
+
+    /**
+     * @brief Gets the timestamp
+     * @return Timestamp
+     */
+    double getTime() const;
 
     /**
      * @brief Checks if the reference track point has the same time
@@ -411,6 +435,7 @@ private:
      * @brief Calculates the distance from a given point and set the member distance.
      * @param latitudeFrom Latitude of the point
      * @param longitudeFrom Longitude of the point
+     * @see http://www.movable-type.co.uk/scripts/latlong.html
      */
     void setDistance(double latitudeFrom, double longitudeFrom);
 
@@ -418,6 +443,7 @@ private:
      * @brief Calculates the heading to a given point and set the member heading.
      * @param latitudeTo Latitude of the point
      * @param longitudeTo Longitude of the point
+     * @see http://www.movable-type.co.uk/scripts/latlong.html
      */
     void setHeading(double latitudeTo, double longitudeTo);
 };

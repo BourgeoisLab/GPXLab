@@ -24,6 +24,7 @@
 */
 
 #include "imagemanager.h"
+#include "mapnetwork.h"
 #include <QCryptographicHash>
 #include <QPainter>
 #include <QDateTime>
@@ -39,7 +40,7 @@ namespace qmapcontrol
               emptyPixmap(QPixmap(1,1)),
               loadingPixmap(QPixmap(256,256)),
               net(new MapNetwork(this)),
-              doPersistentCaching(false)
+              diskCache( new QNetworkDiskCache(this))
     {
         emptyPixmap.fill(Qt::transparent);
         
@@ -73,32 +74,15 @@ namespace qmapcontrol
         if ( net->imageIsLoading(url) )
         {
             //currently loading an image
-            //return loadingPixmap;
             return loadingPixmap;
         }
-        else if ( QPixmapCache::find( md5hex(url), &pm) )
+        else if ( QPixmapCache::find(url, &pm) )
         {
            //image found in cache, use this version
             return pm;
         }
-        else if ( doPersistentCaching ) //image disk-caching (persistent) enabled 
-                  
-        {
-            if ( tileExist(url) && 
-                  !tileCacheExpired(url) )
-            {
-                loadTile(url,pm);
-                QPixmapCache::insert(md5hex(url), pm);
-                return pm;
-            }
-            else
-            {
-                //no file yet, go and request an image
-                net->loadImage(host, url);
-            }
-        }
         //is image cached (memory)
-        else if ( QPixmapCache::find(md5hex(url), &pm) && 
+        else if ( QPixmapCache::find(url, &pm) &&
                   !pm.isNull() )
         {
             //we had a valid copy cached in memory (not disk) so return this
@@ -121,19 +105,19 @@ namespace qmapcontrol
     QPixmap ImageManager::prefetchImage(const QString& host, const QString& url)
     {
         // TODO See if this actually helps on the N900 & Symbian Phones
-#if defined Q_WS_QWS || defined Q_WS_MAEMO_5 || defined Q_WS_S60
-        // on mobile devices we don´t want the display refreshing when tiles are received which are
-        // prefetched... This is a performance issue, because mobile devices are very slow in
-        // repainting the screen
-        prefetch.append(url);
-#endif
+        #if defined Q_WS_QWS || defined Q_WS_MAEMO_5 || defined Q_WS_S60
+            // on mobile devices we don´t want the display refreshing when tiles are received which are
+            // prefetched... This is a performance issue, because mobile devices are very slow in
+            // repainting the screen
+            prefetch.append(url);
+        #endif
         return getImage(host, url);
     }
 
     void ImageManager::receivedImage(const QPixmap pixmap, const QString& url)
     {
         //qDebug() << "ImageManager::receivedImage";
-        QPixmapCache::insert(md5hex(url), pixmap);
+        QPixmapCache::insert(url, pixmap);
 
         //remove from failed list (if exists) as it has now come good
         if (failedFetches.contains(url))
@@ -141,35 +125,21 @@ namespace qmapcontrol
             failedFetches.remove(url);
         }
 
-        if (doPersistentCaching && !tileExist(url))
-        {
-            saveTile(url,pixmap);
-        }
-
         if (!prefetch.contains(url))
         {
-            emit(imageReceived());
+            emit imageReceived();
         }
         else
         {
-
-#if defined Q_WS_QWS || defined Q_WS_MAEMO_5 || defined Q_WS_S60
-            prefetch.remove(prefetch.indexOf(url));
-#endif
+            #if defined Q_WS_QWS || defined Q_WS_MAEMO_5 || defined Q_WS_S60
+                prefetch.remove(prefetch.indexOf(url));
+            #endif
         }
-    }
-
-    QString ImageManager::md5hex( QString qUrl )
-    {
-        return QString( QCryptographicHash::hash( qUrl.toUtf8(), QCryptographicHash::Md5).toHex() );
     }
 
     void ImageManager::loadingQueueEmpty()
     {
-        emit(loadingFinished());
-        //((Layer*)this->parent())->removeZoomImage();
-        //qDebug() << "size of image-map: " << images.size();
-        //qDebug() << "size: " << QPixmapCache::cacheLimit();
+        emit loadingFinished();
     }
 
     void ImageManager::abortLoading()
@@ -182,77 +152,22 @@ namespace qmapcontrol
         net->setProxy(host, port, username, password);
     }
 
-    void ImageManager::setCacheDir(int expiry, const QDir& path)
+    void ImageManager::setCacheDir(const QDir& path, const int qDiskSizeMB)
     {
-        doPersistentCaching = true;
-        cachedTileExpiry = expiry;
-        cacheDir = path;
-        if (!cacheDir.exists())
+        if ( !path.absolutePath().isEmpty() )
         {
-            cacheDir.mkpath(cacheDir.absolutePath());
-        }
-    }
-
-    bool ImageManager::saveTile(QString tileName,QPixmap tileData)
-    {
-        tileName.replace("/","-");
-
-        QFile file(cacheDir.absolutePath() + "/" + md5hex(tileName) );
-
-        //qDebug() << "writing: " << file.fileName();
-        if (!file.open(QIODevice::ReadWrite )){
-            qDebug()<<"error reading file";
-            return false;
-        }
-        QByteArray bytes;
-        QBuffer buffer(&bytes);
-        buffer.open(QIODevice::WriteOnly);
-        tileData.save(&buffer, "PNG");
-
-        file.write(bytes);
-        file.close();
-        return true;
-    }
-    bool ImageManager::loadTile(QString tileName,QPixmap &tileData)
-    {
-        tileName.replace("/","-");
-        QFile file(cacheDir.absolutePath() + "/" + md5hex(tileName) );
-        if (!file.open(QIODevice::ReadOnly )) {
-            return false;
-        }
-        tileData.loadFromData( file.readAll() );
-
-        file.close();
-        return true;
-    }
-
-    bool ImageManager::tileCacheExpired(QString tileName)
-    {
-        tileName.replace("/","-");
-        QFile file(cacheDir.absolutePath() + "/" + md5hex(tileName) );
-        if (file.exists() && cachedTileExpiry > 0)
-        {
-            QFileInfo fileInfo( file );
-            if ( fileInfo.lastModified().msecsTo( QDateTime::currentDateTime() ) > ( cachedTileExpiry * 1000 * 60 ) )
+            QDir cacheDir = path;
+            if (!cacheDir.exists())
             {
-                cacheDir.remove( file.fileName() );
-                return true;
+                cacheDir.mkpath( cacheDir.absolutePath() );
             }
-        }
-        return false;
-    }
-
-    bool ImageManager::tileExist(QString tileName)
-    {
-        tileName.replace("/","-");
-        QFile file(cacheDir.absolutePath() + "/" + md5hex(tileName) );
-        if (file.exists())
-        {
-            return true;
+            diskCache->setCacheDirectory( cacheDir.absolutePath() );
+            diskCache->setMaximumCacheSize( qDiskSizeMB *1024*1024 ); //Megabytes to bytes
+            net->setDiskCache(diskCache);
         }
         else
         {
-            return false;
+            net->setDiskCache(0);
         }
     }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -22,6 +22,7 @@
 #include "gpx_model.h"
 #include "nmeafile.h"
 #include "gpxfile.h"
+#include "actfile.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -37,12 +38,14 @@ GPX_model::fileType_e GPX_model::getFileType(const string& fileName)
         ext = fileName.substr(dotPos + 1);
 
     for (size_t i = 0; i < ext.length(); ++i)
-        tolower(ext[i]);
+        ext[i] = tolower(ext[i]);
 
     if (ext == "gpx")
         return GPXM_FILE_GPX;
     if (ext == "txt" || ext == "nmea")
         return GPXM_FILE_NMEA;
+    if (ext == "act")
+        return GPXM_FILE_ACT;
     return GPXM_FILE_NOT_SUPPORTED;
 }
 
@@ -58,7 +61,7 @@ GPX_model::GPX_model(const string& creator, const string& fileName) :
 {
     clearMetadata();
     memset(&stats, 0, sizeof(GPX_statsType));
-    load(fileName, true);
+    load(fileName, GPXM_FILE_AUTOMATIC, true);
 }
 
 void GPX_model::clearMetadata()
@@ -85,16 +88,16 @@ void GPX_model::clearMetadata()
     metadata.extensions.extension.clear();
 }
 
-GPX_model::retCode_e GPX_model::load(const string& fileName, bool overwriteMetadata)
+GPX_model::retCode_e GPX_model::load(const string& fileName, fileType_e fileType, bool overwriteMetadata)
 {
     ifstream fp;
-    fileType_e fileType;
     string name;
     size_t dotPos, slashPos;
     retCode_e ret = GPXM_OK;
 
     // get file type
-    fileType = getFileType(fileName);
+    if (fileType == GPXM_FILE_AUTOMATIC)
+        fileType = getFileType(fileName);
     if (fileType == GPXM_FILE_NOT_SUPPORTED)
         return GPXM_ERR_INVALID_ARG;
 
@@ -129,6 +132,10 @@ GPX_model::retCode_e GPX_model::load(const string& fileName, bool overwriteMetad
     else if (fileType == GPXM_FILE_NMEA)
     {
         ret = NMEAFile::load(&fp, this, name);
+    }
+    else if (fileType == GPXM_FILE_ACT)
+    {
+        ret = ACTFile::load(&fp, this);
     }
 
     // close file
@@ -252,7 +259,7 @@ void GPX_model::updateTrack(GPX_trkType &track, bool propagate)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-GPX_trkType::GPX_trkType(unsigned int number)
+GPX_trkType::GPX_trkType(size_t number)
 {
     memset(&stats, 0, sizeof(GPX_statsType));
     metadata.number = number;
@@ -336,7 +343,7 @@ void GPX_trksegType::update(bool propagate, time_t trackStartTime, const GPX_wpt
         const GPX_wptType* nextWpt = NULL;
         float lasthei = 0.0f, deltahei;
         vector<GPX_wptType>::iterator itrkpt;
-        stats.points = trkpt.size();
+        stats.points = (int)trkpt.size();
         for (itrkpt = trkpt.begin(); itrkpt != trkpt.end(); ++itrkpt)
         {
             if ((itrkpt + 1) == trkpt.end())
@@ -377,7 +384,7 @@ void GPX_trksegType::update(bool propagate, time_t trackStartTime, const GPX_wpt
                     stats.bounds.minlon = itrkpt->longitude;
                 if (itrkpt->longitude > stats.bounds.maxlon)
                     stats.bounds.maxlon = itrkpt->longitude;
-                stats.distance += itrkpt->distance;
+                stats.distance += itrkpt->leglength/1000;
                 deltahei = (float)itrkpt->altitude - lasthei;
                 lasthei = (float)itrkpt->altitude;
                 if (deltahei > 0)
@@ -404,7 +411,14 @@ void GPX_trksegType::update(bool propagate, time_t trackStartTime, const GPX_wpt
 
 GPX_wptType::GPX_wptType()
 {
+    clear();
+}
+
+void GPX_wptType::clear()
+{
+    fix.clear();
     sat = 0;
+    timestamp = 0;
     millisecond = 0;
     magvar = 0.0f;
     altitude = 0.0;
@@ -416,11 +430,20 @@ GPX_wptType::GPX_wptType()
     geoidheight = 0.0f;
     latitude = 0.0;
     longitude = 0.0;
+    name.clear();
+    cmt.clear();
+    desc.clear(); 
+    src.clear();
+    links.clear(); 
+    sym.clear();
+    type.clear();
+    extensions.extension.clear();
     speed = 0.0f;
     heading = 0.0f;
-    timestamp = 0;
-    distance = 0.0;
+    leglength = 0.0;
     distanceTot = 0.0;
+    elapsedTime = 0;
+    extensionsGarmin.heartrate = 0;
 }
 
 void GPX_wptType::update(time_t trackStartTime, const GPX_wptType* prevWpt, const GPX_wptType *nextWpt)
@@ -430,13 +453,13 @@ void GPX_wptType::update(time_t trackStartTime, const GPX_wptType* prevWpt, cons
         unsigned int deltaT = (unsigned int)(timestamp - prevWpt->timestamp) * 1000;
         deltaT += (millisecond - prevWpt->millisecond);
         setDistance(prevWpt->latitude, prevWpt->longitude);
-        speed = (float)(distance / deltaT)*3600000.0f;
-        distanceTot = distance + prevWpt->distanceTot;
+        speed = (float)(leglength / deltaT)*3600.0f;
+        distanceTot = leglength/1000 + prevWpt->distanceTot;
         elapsedTime = (unsigned int)(timestamp - trackStartTime);
     }
     else
     {
-        distance = 0.0;
+        leglength = 0.0;
         distanceTot = 0.0;
         speed = 0.0;
         elapsedTime = 0;
@@ -452,6 +475,11 @@ void GPX_wptType::update(time_t trackStartTime, const GPX_wptType* prevWpt, cons
     }
 }
 
+double GPX_wptType::getTime() const
+{
+    return timestamp + (double)millisecond/1000;
+}
+
 bool GPX_wptType::isSameTime(const GPX_wptType &wptRef) const
 {
     if (timestamp != wptRef.timestamp)
@@ -464,7 +492,7 @@ bool GPX_wptType::isSameTime(const GPX_wptType &wptRef) const
 void GPX_wptType::setDistance(double latitudeFrom, double longitudeFrom)
 {
     const double Deg2Rad = 0.01745329252;
-    const double EarthRadius = 6372.795;
+    const double EarthRadius = 6372795;
     double latitudeArc = (latitude - latitudeFrom) * Deg2Rad;
     double longitudeArc = (longitude - longitudeFrom) * Deg2Rad;
     double latitudeH = sin(latitudeArc / 2.0f);
@@ -473,7 +501,7 @@ void GPX_wptType::setDistance(double latitudeFrom, double longitudeFrom)
     latitudeH *= latitudeH;
     lontitudeH *= lontitudeH;
     tmp = latitudeH + cos(latitude * Deg2Rad) * cos(latitudeFrom * Deg2Rad) * lontitudeH;
-    distance = 2.0f * asin(sqrt(tmp)) * EarthRadius;
+    leglength = 2.0f * asin(sqrt(tmp)) * EarthRadius;
 }
 
 void GPX_wptType::setHeading(double latitudeTo, double longitudeTo)

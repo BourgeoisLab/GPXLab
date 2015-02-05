@@ -155,29 +155,33 @@ namespace qmapcontrol
 
     }
 
-    bool TileMapAdapter::isValid(int x, int y, int z) const
+    bool TileMapAdapter::isTileValid(int x, int y, int z) const
     {
         if (mMax_zoom < mMin_zoom)
         {
             z= mMin_zoom - z;
         }
 
-        if (x<0 || x>pow(2.0,z)-1 ||
-            y<0 || y>pow(2.0,z)-1)
+        if (x<0 || x > (1 << z)-1 ||
+            y<0 || y > (1 << z)-1)
         {
             return false;
         }
+
         return true;
 
     }
+
     int TileMapAdapter::tilesonzoomlevel(int zoomlevel) const
     {
         return int(pow(2.0, zoomlevel));
     }
+
     int TileMapAdapter::xoffset(int x) const
     {
         return x;
     }
+
     int TileMapAdapter::yoffset(int y) const
     {
         return y;

@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -15,12 +15,12 @@
  *   along with This program. If not, see <http://www.gnu.org/licenses/>.   *
  ****************************************************************************/
 
-#ifndef _LINESTRINGEXT_H_
-#define _LINESTRINGEXT_H_
+#ifndef QCALENDARWIDGETEXT_H
+#define QCALENDARWIDGETEXT_H
 
-#include "linestring.h"
-
-using namespace qmapcontrol;
+#include <QCalendarWidget>
+#include <QTextCharFormat>
+#include "gpx_wrapper.h"
 
 /**
  * @addtogroup Widgets Widgets
@@ -29,61 +29,74 @@ using namespace qmapcontrol;
  */
 
 /**
- * @class LineStringExt
+ * @class QCalendarWidgetExt
  *
- * @brief LineString subclass
+ * @brief QCalendarWidget subclass
  *
- * Extends the LineString class by adding two private members trackNumber
- * and trackSegmentNumber.
+ * Extends the QCalendarWidget class.
  *
- * @see LineString
+ * @see QCalendarWidget
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.1
- * @date 28 Nov 2014
+ * @version 1.0
+ * @date 11 Jan 2015
  */
-class LineStringExt : public LineString
+class QCalendarWidgetExt : public QCalendarWidget
 {
     Q_OBJECT
+
 public:
 
     /**
      * @brief Constructor
-     * @param trackNumber Corresponding track number
-     * @param trackSegmentNumber Corresponding track segment number
-     * @param points A list of points
-     * @param name The name of the LineString
-     * @param pen A QPen can be used to modify the look of the line
+     * @param parent Parent
      */
-    LineStringExt(int trackNumber, int trackSegmentNumber, QList<Point*> const points, QString name, QPen* pen);
+    QCalendarWidgetExt(QWidget *parent = 0);
+    ~QCalendarWidgetExt();
 
     /**
-     * @brief Gets track number
-     * @return Track number
+     * @brief Initializes the widget
+     * @note Call this function prior to any other function
+     * @param gpxmw GPX_model wrapper
      */
-    int getTrackNumber() const;
+    void init(const GPX_wrapper *gpxmw);
 
     /**
-     * @brief Gets track segment number
-     * @return Track segment number
+     * @brief Builds the widget
      */
-    int getTrackSegmentNumber() const;
+    void build();
 
     /**
-     * @brief Sets line as selected
-     * @param selected True is selected
+     * @brief Clears the widget
      */
-    void setSelected(bool selected);
+    void clear();
+
+    /**
+     * @brief Selects a date corresponding to the track
+     * @param trackNumber Track number
+     */
+    void select(int trackNumber);
+
+signals:
+
+    /**
+     * @brief Signal when a new date was selected with a track on this day
+     * @see selectionChangedExt()
+     * @param trackNumber Track number
+     */
+    void selectionChanged(int trackNumber);
+
+private slots:
+
+    void selectionChangedExt();
 
 private:
-    const int trackNumber;
-    const int trackSegmentNumber;
-    bool  selected;
 
-    void draw(QPainter* painter, const MapAdapter* mapadapter, const QRect &screensize, const QPoint offset);
-    static int distance(QPoint &A, QPoint &B);
+    const GPX_wrapper *gpxmw;
+    QTextCharFormat format;
+    bool selecting;
 };
 
 /** @} Widgets */
 
-#endif // _LINESTRINGEXT_H_
+#endif // QCALENDARWIDGETEXT_H

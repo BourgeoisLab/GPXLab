@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -19,7 +19,7 @@
 #define EDITTRACKPROPERTIESCOMMAND_H
 
 #include <QUndoCommand>
-#include "gpxlab.h"
+#include "gpx_wrapper.h"
 
 /**
  * @addtogroup Commands Commands
@@ -33,8 +33,8 @@
  * @brief Edit track properties command
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 28 Nov 2014
+ * @version 1.1
+ * @date 4 Jan 2015
  */
 class EditTrackPropertiesCommand : public QUndoCommand
 {
@@ -42,12 +42,12 @@ public:
 
     /**
      * @brief Constructor
-     * @param gpxlab Pointer to application
+     * @param gpxmw GPX_model wrapper
      * @param trackNumber Track number
      * @param metadata Metadata of track
      * @param parent Parent
      */
-    EditTrackPropertiesCommand(GPXLab *gpxlab, int trackNumber, GPX_trkMetadataType &metadata, QUndoCommand *parent = 0);
+    EditTrackPropertiesCommand(GPX_wrapper *gpxmw, int trackNumber, GPX_trkMetadataType &metadata, QUndoCommand *parent = 0);
 
     /**
      * @brief Undo the command
@@ -60,7 +60,8 @@ public:
     void redo();
 
 private:
-    GPXLab *gpxlab;
+
+    GPX_wrapper *gpxmw;
     int trackNumber;
     GPX_trkMetadataType metadata;
 };

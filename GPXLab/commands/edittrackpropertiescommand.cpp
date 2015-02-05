@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -17,9 +17,9 @@
  
 #include "edittrackpropertiescommand.h"
 
-EditTrackPropertiesCommand::EditTrackPropertiesCommand(GPXLab *gpxlab, int trackNumber, GPX_trkMetadataType &metadata, QUndoCommand *parent) :
+EditTrackPropertiesCommand::EditTrackPropertiesCommand(GPX_wrapper *gpxmw, int trackNumber, GPX_trkMetadataType &metadata, QUndoCommand *parent) :
     QUndoCommand(parent),
-    gpxlab(gpxlab),
+    gpxmw(gpxmw),
     trackNumber(trackNumber),
     metadata(metadata)
 {
@@ -32,24 +32,12 @@ void EditTrackPropertiesCommand::undo()
 
 void EditTrackPropertiesCommand::redo()
 {
-    GPX_trkMetadataType tmpMetadata = *gpxlab->gpxmw->getTrackMetadata(trackNumber);
+    // temporary copy old values
+    GPX_trkMetadataType tmpMetadata = *gpxmw->getTrackMetadata(trackNumber);
 
-    // set new metadata
-    if (gpxlab->gpxmw->setTrackMetadata(trackNumber, metadata) == GPX_model::GPXM_OK)
-    {
-        // update file properties
-        gpxlab->setTrackName(trackNumber, gpxlab->gpxmw->getItemName(trackNumber));
+    // set new values
+    gpxmw->setTrackMetadata(trackNumber, metadata);
 
-        // begin update of track widgets
-        gpxlab->beginUpdate();
-
-        // update track properties
-        gpxlab->updateTrack();
-
-        // end update
-        gpxlab->endUpdate();
-    }
-
-    // store metadata
+    // store old values
     metadata = tmpMetadata;
 }

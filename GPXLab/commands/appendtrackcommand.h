@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -19,7 +19,7 @@
 #define APPENDTRACKCOMMAND_H
 
 #include <QUndoCommand>
-#include "gpxlab.h"
+#include "gpx_wrapper.h"
 
 /**
  * @addtogroup Commands Commands
@@ -33,8 +33,8 @@
  * @brief Append track command
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 28 Nov 2014
+ * @version 1.1
+ * @date 4 Jan 2015
  */
 class AppendTrackCommand : public QUndoCommand
 {
@@ -42,11 +42,12 @@ public:
 
     /**
      * @brief Constructor
-     * @param gpxlab Pointer to application
+     * @param gpxmw GPX_model wrapper
      * @param fileName File containing tracks to append
+     * @param fileType File type, GPXM_FILE_AUTOMATIC for automatic detection
      * @param parent Parent
      */
-    AppendTrackCommand(GPXLab *gpxlab, const QString &fileName, QUndoCommand *parent = 0);
+    AppendTrackCommand(GPX_wrapper *gpxmw, const QString &fileName, GPX_model::fileType_e fileType, QUndoCommand *parent = 0);
 
     /**
      * @brief Undo the command
@@ -59,9 +60,11 @@ public:
     void redo();
 
 private:
-    GPXLab *gpxlab;
+
+    GPX_wrapper *gpxmw;
     const QString fileName;
     int numTracksBeforeAppend;
+    GPX_model::fileType_e fileType;
 };
 
 /** @} Commands */

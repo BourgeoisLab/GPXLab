@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -124,11 +124,6 @@ public:
     string getFileURL() const;
 
 private:
-    const int tileSize;
-    int    iLatitude;
-    int    iLongitude;
-    bool   failed;
-    short* lookup;
 
     /**
      * @brief Parses a HGT file and store content in the lookup table
@@ -164,6 +159,14 @@ private:
      * @return  fixed array without voids
      */
     short *fixVoid(short *inAltitudes);
+
+private:
+
+    const int tileSize;
+    int    iLatitude;
+    int    iLongitude;
+    bool   failed;
+    short* lookup;
 };
 
 /** @} Functions */

@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -18,7 +18,6 @@
 #ifndef _GPXFILE_H_
 #define _GPXFILE_H_
 
-#include <string>
 #include <fstream>
 #include "gpx_model.h"
 
@@ -41,15 +40,15 @@ using namespace std;
  * @see http://www.topografix.com/gpx.asp
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.1
- * @date 30 Nov 2014
+ * @version 1.2
+ * @date 4 Jan 2015
  */
 namespace GPXFile
 {
     /**
-     * @brief Parses a GPX file and fill the GPX model
+     * @brief Parses a GPX file and fills the GPX model
      * @param fp File handler to the opened GPX file
-     * @param gpxm GPX model to fill
+     * @param gpxm GPX_model
      * @param overwriteMetadata If true the metadata of GPX_model is overwritten
      * @return Return code, GPXM_OK on success
      */

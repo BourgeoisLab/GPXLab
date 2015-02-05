@@ -23,15 +23,6 @@
 *
 */
 
-/*
- * Modifications by Frederic Bourgeois <bourgeoislab@gmail.com>
- *
- * - Added 2 new mouse modes to allow panning and dragging but without zooming on mouse click
- * - Removed signal geometryClicked() in class MapControl since it is never emited
- * - Added a function to consume the mouse event. This stops the emitting of the signal geometryClicked()
- * - Changed order of the mouse event propagation. Signal for the topmost geometry is emitted first.
- */
-
 #ifndef MAPCONTROL_H
 #define MAPCONTROL_H
 
@@ -43,6 +34,7 @@
 #include "imagemanager.h"
 
 #include <QWidget>
+#include <QDir>
 
 //! QMapControl namespace
 namespace qmapcontrol
@@ -248,10 +240,10 @@ namespace qmapcontrol
          * persistent (also over application restarts).
          * Tiles are stored in the subdirectory "QMapControl.cache" within the
          * user's home directory. This can be changed by giving a path.
-         * @param tileExpiry how long to keep in cache before requesting a new image. 0 or -1 to disable and keep forever
          * @param path the path to the cache directory
+         * @param tileExpiry how long to keep in cache before requesting a new image. 0 or -1 to disable and keep forever
          */
-        void enablePersistentCache ( int tileExpiry = -1, const QDir& path= QDir::homePath() + "/QMapControl.cache" );
+        void enablePersistentCache ( const QDir& path= QDir::homePath() + "/QMapControl.cache", const int qDiskSizeMB = 250 );
 
         //! Sets the proxy for HTTP connections
         /*!
@@ -335,6 +327,12 @@ namespace qmapcontrol
          * @return true is updates are suspended
          */
         bool isUpdateSuspended();
+
+        //! checks if the mouse button 1 is pressed
+        /*!
+         * @return true if the mouse button 1 is pressed
+         */
+        bool isMousePressed() const;
 
     private:
         void __init();

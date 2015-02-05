@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -107,7 +107,7 @@ void Dialog_modelProperties::on_Dialog_modelProperties_accepted()
         // Tab: Author
         metadata.author.name = ui->lineEditAuthorName->text().toStdString();
         string email = ui->lineEditAuthorEmail->text().toStdString();
-        int atPos = email.find_last_of("@");
+        size_t atPos = email.find_last_of("@");
         if (atPos > 0)
         {
             metadata.author.email.id = email.substr(0, atPos);

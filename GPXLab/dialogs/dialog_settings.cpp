@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -19,19 +19,19 @@
 #include "dialog_settings.h"
 #include "ui_dialog_settings.h"
 
-Dialog_settings::Dialog_settings(Settings &settings, QWidget *parent) :
+Dialog_settings::Dialog_settings(Settings *settings, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Dialog_settings),
     settings(settings)
 {
     ui->setupUi(this);
 
-    ui->checkBoxMapPersistentCache->setChecked(settings.doPersistentCaching);
-    ui->lineEditMapCachePath->setText(settings.cachePath);
-    ui->pushButtonMapClearCache->setEnabled(settings.doPersistentCaching);
-    ui->lineEditMapCachePath->setEnabled(settings.doPersistentCaching);
-    ui->pushButtonMapCacheLocationSelect->setEnabled(settings.doPersistentCaching);
-    ui->pushButtonMapCacheLocationDefault->setEnabled(settings.doPersistentCaching);
+    ui->checkBoxMapPersistentCache->setChecked(settings->doPersistentCaching);
+    ui->lineEditMapCachePath->setText(settings->cachePath);
+    ui->pushButtonMapClearCache->setEnabled(settings->doPersistentCaching);
+    ui->lineEditMapCachePath->setEnabled(settings->doPersistentCaching);
+    ui->pushButtonMapCacheLocationSelect->setEnabled(settings->doPersistentCaching);
+    ui->pushButtonMapCacheLocationDefault->setEnabled(settings->doPersistentCaching);
 }
 
 Dialog_settings::~Dialog_settings()
@@ -41,26 +41,26 @@ Dialog_settings::~Dialog_settings()
 
 void Dialog_settings::on_checkBoxMapPersistentCache_toggled(bool checked)
 {
-    settings.doPersistentCaching = checked;
-    ui->pushButtonMapClearCache->setEnabled(settings.doPersistentCaching);
-    ui->lineEditMapCachePath->setEnabled(settings.doPersistentCaching);
-    ui->pushButtonMapCacheLocationSelect->setEnabled(settings.doPersistentCaching);
-    ui->pushButtonMapCacheLocationDefault->setEnabled(settings.doPersistentCaching);
+    settings->doPersistentCaching = checked;
+    ui->pushButtonMapClearCache->setEnabled(settings->doPersistentCaching);
+    ui->lineEditMapCachePath->setEnabled(settings->doPersistentCaching);
+    ui->pushButtonMapCacheLocationSelect->setEnabled(settings->doPersistentCaching);
+    ui->pushButtonMapCacheLocationDefault->setEnabled(settings->doPersistentCaching);
 }
 
 void Dialog_settings::on_pushButtonMapClearCache_clicked()
 {
-    settings.clearCache();
+    settings->clearCache();
 }
 
 void Dialog_settings::on_lineEditMapCachePath_editingFinished()
 {
-    settings.cachePath = ui->lineEditMapCachePath->text();
+    settings->cachePath = ui->lineEditMapCachePath->text();
 }
 
 void Dialog_settings::on_pushButtonMapCacheLocationSelect_clicked()
 {
-    QString path = QFileDialog::getExistingDirectory(this, tr("Cache Location"), settings.cachePath);
+    QString path = QFileDialog::getExistingDirectory(this, tr("Cache Location"), settings->cachePath);
     if (!path.isEmpty())
     {
         ui->lineEditMapCachePath->setText(path);
@@ -70,6 +70,6 @@ void Dialog_settings::on_pushButtonMapCacheLocationSelect_clicked()
 
 void Dialog_settings::on_pushButtonMapCacheLocationDefault_clicked()
 {
-    ui->lineEditMapCachePath->setText(settings.defaultCachePath());
+    ui->lineEditMapCachePath->setText(settings->defaultCachePath());
     on_lineEditMapCachePath_editingFinished();
 }

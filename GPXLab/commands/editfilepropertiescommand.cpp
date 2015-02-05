@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -17,9 +17,9 @@
  
 #include "editfilepropertiescommand.h"
 
-EditFilePropertiesCommand::EditFilePropertiesCommand(GPXLab *gpxlab, GPX_metadataType &metadata, QUndoCommand *parent) :
+EditFilePropertiesCommand::EditFilePropertiesCommand(GPX_wrapper *gpxmw, GPX_metadataType &metadata, QUndoCommand *parent) :
     QUndoCommand(parent),
-    gpxlab(gpxlab),
+    gpxmw(gpxmw),
     metadata(metadata)
 {
 }
@@ -31,15 +31,12 @@ void EditFilePropertiesCommand::undo()
 
 void EditFilePropertiesCommand::redo()
 {
-    GPX_metadataType tmpMetadata = *gpxlab->gpxmw->getModelMetadata();
+    // temporary copy old values
+    GPX_metadataType tmpMetadata = *gpxmw->getModelMetadata();
 
-    // set new metadata
-    if (gpxlab->gpxmw->setModelMetadata(metadata) == GPX_model::GPXM_OK)
-    {
-        // update file properties
-        gpxlab->updateFile();
-    }
+    // set new values
+    gpxmw->setModelMetadata(metadata);
 
-    // store metadata
+    // store old values
     metadata = tmpMetadata;
 }

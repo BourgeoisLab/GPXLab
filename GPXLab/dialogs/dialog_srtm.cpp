@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -45,7 +45,7 @@ Dialog_srtm::Dialog_srtm(const GPX_wrapper *gpxmw, QWidget *parent) :
     ui->widgetPlot->addGraph();
     ui->widgetPlot->graph(0)->setPen(QPen(Qt::blue));
     ui->widgetPlot->graph(0)->setBrush(QBrush(QColor(0, 0, 255, 20)));
-    ui->widgetPlot->graph(0)->setData(gpxmw->getDiagramTimeValues(), gpxmw->getDiagramAltitudeValues());
+    ui->widgetPlot->graph(0)->setData(gpxmw->getTimeValues(), gpxmw->getAltitudeValues());
     ui->widgetPlot->graph(0)->rescaleAxes();
     ui->widgetPlot->updateExt();
     ui->widgetPlot->replot();
@@ -95,11 +95,11 @@ bool Dialog_srtm::generateSRTMAltitudeValues(int option)
         double altitude = 0.0;
         short altitudeSRTM = 0;
         int TrackSegmentNumber = 0;
-        while ((trkseg = gpxmw->getNextTrkseg(gpxmw->getSelectedTrackNumber())))
+        while ((trkseg = gpxmw->getNextTrkseg()))
         {
-            if (gpxmw->initWptIteration(gpxmw->getSelectedTrackNumber(), TrackSegmentNumber) > 0)
+            if (gpxmw->initTrkptIteration(gpxmw->getSelectedTrackNumber(), TrackSegmentNumber) > 0)
             {
-                while ((wpt = gpxmw->getNextWpt(gpxmw->getSelectedTrackNumber(), TrackSegmentNumber)))
+                while ((wpt = gpxmw->getNextTrkpt()))
                 {
                     switch (option)
                     {
@@ -166,7 +166,7 @@ void Dialog_srtm::on_pushButtonFetchData_clicked()
         // SRTM curve
         ui->widgetPlot->graph(1)->clearData();
         ui->widgetPlot->graph(1)->setPen(QPen(Qt::red));
-        ui->widgetPlot->graph(1)->setData(gpxmw->getDiagramTimeValues(), values);
+        ui->widgetPlot->graph(1)->setData(gpxmw->getTimeValues(), values);
         ui->widgetPlot->graph(1)->rescaleAxes();
         ui->widgetPlot->replot();
     }

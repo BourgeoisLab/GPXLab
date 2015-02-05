@@ -1,11 +1,11 @@
-QT += gui network
-
+TARGET = qmapcontrol
+TEMPLATE = lib
+QT += network
+QT += gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 greaterThan(QT_MAJOR_VERSION, 4): cache()
 
-TARGET = qmapcontrol
-TEMPLATE = lib
-VERSION = 0.9.7.6
+VERSION = 0.9.7.8
 
 DEFINES += QMAPCONTROL_LIBRARY
 

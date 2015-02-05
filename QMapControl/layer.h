@@ -185,6 +185,7 @@ namespace qmapcontrol
         QRect offscreenViewport() const;
         bool takesMouseEvents() const;
         bool mouseEvent(const QMouseEvent*, const QPoint mapmiddle_px);
+        bool mouseMoveEvent(const QMouseEvent*, const QPoint mapmiddle_px);
         void zoomIn() const;
         void zoomOut() const;
         void _draw(QPainter* painter, const QPoint mapmiddle_px) const;
@@ -211,6 +212,14 @@ namespace qmapcontrol
          * @param  point The coordinate (in widget coordinates) of the click
          */
         void geometryClicked(Geometry* geometry, QPoint point);
+        
+        //! This signal is emitted when a the mouse is moved
+        /*!
+         * Use consumeMouseEvent() to stop emitting the signal for the current mouse event.
+         * @param  geometry A geometry is over a geometry
+         * @param  point The coordinate (in widget coordinates) of the mouse
+         */       
+        void geometryOver(Geometry* geometry, QPoint point);
 
         void updateRequest(QRectF rect);
         void updateRequest();

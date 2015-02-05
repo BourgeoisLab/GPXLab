@@ -33,21 +33,14 @@
 
 namespace qmapcontrol
 {
-    const int MapNetwork::kMAX_HTTP_THREADS = 5;
-
     MapNetwork::MapNetwork(ImageManager* parent)
         :   parent(parent), 
-            loaded(0), 
+            http(new QNetworkAccessManager(this)),
+            loaded(0),
             networkActive( false ),
-            nextThreadIndex(-1)
+            cacheEnabled(false)
     {
-        for(int i =0; i <= kMAX_HTTP_THREADS; ++i )
-        {
-            QNetworkAccessManager* http(new QNetworkAccessManager(this));
-            connect(http, SIGNAL(finished(QNetworkReply *)),
-                    this, SLOT(requestFinished(QNetworkReply *)));
-            httpThreads << http;
-        }
+        connect(http, SIGNAL(finished(QNetworkReply *)), this, SLOT(requestFinished(QNetworkReply *)));
     }
 
     MapNetwork::~MapNetwork()
@@ -62,11 +55,8 @@ namespace qmapcontrol
             reply = 0;
         }
 
-        foreach(QNetworkAccessManager *http, httpThreads)
-        {
-            http->deleteLater();
-            http = 0;
-        }
+        http->deleteLater();
+        http = 0;
     }
 
     void MapNetwork::loadImage(const QString& host, const QString& url)
@@ -86,10 +76,19 @@ namespace qmapcontrol
 
         QString finalUrl = QString("http://%1:%2%3").arg(hostName).arg(portNumber).arg(url);
         QNetworkRequest request = QNetworkRequest(QUrl(finalUrl));
+
+        if( cacheEnabled )
+        {
+            // prefer our cached version (if enabled) over fresh network query
+            request.setAttribute( QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache );
+            // Data obtained should be saved to cache for future uses
+            request.setAttribute( QNetworkRequest::CacheSaveControlAttribute, true );
+        }
+
         request.setRawHeader("User-Agent", "Mozilla/5.0 (PC; U; Intel; Linux; en) AppleWebKit/420+ (KHTML, like Gecko)");
 
         QMutexLocker lock(&vectorMutex);
-        replyList.append( nextFreeHttp()->get(request) );
+        replyList.append( http->get(request) );
         loadingMap.insert( finalUrl, url );
 }
 
@@ -161,14 +160,13 @@ namespace qmapcontrol
         return loadingMap.size();
     }
 
-    QNetworkAccessManager* MapNetwork::nextFreeHttp()
+    void MapNetwork::setDiskCache(QNetworkDiskCache *qCache)
     {
-        nextThreadIndex++;
-        if ( nextThreadIndex >= httpThreads.size() )
+        cacheEnabled = (qCache != 0);
+        if (http)
         {
-            nextThreadIndex = 0;
+            http->setCache(qCache);
         }
-        return httpThreads.value( nextThreadIndex );
     }
 
     void MapNetwork::abortLoading()
@@ -204,7 +202,7 @@ namespace qmapcontrol
     {
         // do not set proxy on qt/extended
 #ifndef Q_WS_QWS
-        foreach( QNetworkAccessManager* http, httpThreads )
+        if (http)
         {
             QNetworkProxy proxy = QNetworkProxy( QNetworkProxy::HttpProxy, host, port );
             proxy.setUser( username );

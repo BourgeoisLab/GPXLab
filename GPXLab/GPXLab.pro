@@ -4,7 +4,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 greaterThan(QT_MAJOR_VERSION, 4): cache()
 
 TARGET = GPXLab
-VERSION = 0.2.0.0
+VERSION = 0.3.0.0
 TEMPLATE = app
 
 win32:RC_ICONS += gpxlab.ico
@@ -27,10 +27,12 @@ SOURCES += main.cpp\
     gpxlab_actions.cpp \
     qutils.cpp \
     gpx_wrapper.cpp \
+    settings.cpp \
     gpx_model/gpx_model.cpp \
     gpx_model/gpxfile.cpp \
     gpx_model/uxmlpars.c \
     gpx_model/nmeafile.cpp \
+    gpx_model/actfile.cpp \
     functions/srtm.cpp \
     widgets/qcustomplot.cpp \
     widgets/qcustomplotext.cpp \
@@ -38,11 +40,14 @@ SOURCES += main.cpp\
     widgets/qtablewidgetpoints.cpp \
     widgets/qtreewidgettracks.cpp \
     widgets/qmapwidget.cpp \
-    widgets/linestringext.cpp \
+    widgets/qmaptrack.cpp \
+    widgets/qcalendarwidgetext.cpp \
     dialogs/dialog_modelproperties.cpp \
     dialogs/dialog_trackproperties.cpp \
     dialogs/dialog_srtm.cpp \
     dialogs/dialog_about.cpp \
+    dialogs/dialog_settings.cpp \
+    dialogs/dialog_datetime.cpp \
     commands/selectcommand.cpp \
     commands/editfilepropertiescommand.cpp \
     commands/edittrackpropertiescommand.cpp \
@@ -53,17 +58,21 @@ SOURCES += main.cpp\
     commands/appendtrackcommand.cpp \
     commands/splittrackcommand.cpp \
     commands/combinetrackcommand.cpp \
-    dialogs/dialog_settings.cpp \
-    settings.cpp
+    commands/pointdeletecommand.cpp \
+    commands/pointinsertcommand.cpp \
+    commands/tracktimeshiftcommand.cpp \
+    commands/pointeditcommand.cpp
 
 HEADERS  += \
     gpxlab.h \
     qutils.h \
     gpx_wrapper.h \
+    settings.h \
     gpx_model/gpx_model.h \
     gpx_model/uxmlpars.h \
     gpx_model/gpxfile.h \
     gpx_model/nmeafile.h \
+    gpx_model/actfile.h \
     functions/srtm.h \
     widgets/qcustomplot.h \
     widgets/qcustomplotext.h \
@@ -71,11 +80,14 @@ HEADERS  += \
     widgets/qtablewidgetpoints.h \
     widgets/qtreewidgettracks.h \
     widgets/qmapwidget.h \
-    widgets/linestringext.h \
+    widgets/qmaptrack.h \
+    widgets/qcalendarwidgetext.h \
     dialogs/dialog_modelproperties.h \
     dialogs/dialog_trackproperties.h \
     dialogs/dialog_srtm.h \
     dialogs/dialog_about.h \
+    dialogs/dialog_settings.h \
+    dialogs/dialog_datetime.h \
     commands/selectcommand.h \
     commands/editfilepropertiescommand.h \
     commands/edittrackpropertiescommand.h \
@@ -86,8 +98,10 @@ HEADERS  += \
     commands/appendtrackcommand.h \
     commands/splittrackcommand.h \
     commands/combinetrackcommand.h \
-    dialogs/dialog_settings.h \
-    settings.h
+    commands/pointdeletecommand.h \
+    commands/pointinsertcommand.h \
+    commands/tracktimeshiftcommand.h \
+    commands/pointeditcommand.h
 
 FORMS    += \
     gpxlab.ui \
@@ -95,7 +109,8 @@ FORMS    += \
     dialogs/dialog_trackproperties.ui \
     dialogs/dialog_srtm.ui \
     dialogs/dialog_about.ui \
-    dialogs/dialog_settings.ui
+    dialogs/dialog_settings.ui \
+    dialogs/dialog_datetime.ui
 
 OTHER_FILES +=
 

@@ -74,6 +74,9 @@ namespace qmapcontrol
 
         this->setMaximumSize(size.width()+1, size.height()+1);
         mouse_wheel_events = true;
+
+        // enable mouse move events also if no mouse button is clicked
+        setMouseTracking(true);
     }
 
     void MapControl::enableMouseWheelEvents( bool enabled )
@@ -184,10 +187,13 @@ namespace qmapcontrol
     {
         Q_UNUSED(evnt);
 
-        static QPixmap *doubleBuffer = 0;
-        if (!doubleBuffer || doubleBuffer->width() != width() || doubleBuffer->height() != height())
+        static QPixmap *doubleBuffer( new QPixmap(width(), height()) );
+
+        //check for resize change
+        if ( doubleBuffer->width() != width() || doubleBuffer->height() != height() )
         {
-           doubleBuffer = new QPixmap(width(), height());
+            delete doubleBuffer;
+            doubleBuffer = new QPixmap(width(), height());
         }
 
         QPainter dbPainter;
@@ -251,33 +257,46 @@ namespace qmapcontrol
         dbPainter.end();
         QPainter painter;
         painter.begin( this );
-        painter.drawPixmap( rect(), *doubleBuffer, evnt->rect() );
+        painter.drawPixmap( rect(), *doubleBuffer, doubleBuffer->rect() );
         painter.end();
+    }
+
+    bool MapControl::isMousePressed() const
+    {
+        return mousepressed;
     }
 
     // mouse events
     void MapControl::mousePressEvent(QMouseEvent* evnt)
     {
-        layermanager->mouseEvent(evnt);
-
-        if (layermanager->layers().size()>0)
+        if (evnt->button() == 1)
         {
-            if (evnt->button() == 1)
+            mousepressed = true;
+        }
+
+        if (!(evnt->modifiers() & Qt::ShiftModifier))
+        {
+            layermanager->mouseEvent(evnt);
+
+            if (layermanager->layers().size()>0)
             {
-                mousepressed = true;
-                pre_click_px = QPoint(evnt->x(), evnt->y());
-            }
-            else if ( evnt->button() == 2  &&
-                      mouseWheelEventsEnabled() &&
-                      (mymousemode == Panning || mymousemode == Dragging)) // zoom in
-            {
-                zoomIn();
-            }
-            else if  ( evnt->button() == 4 &&
-                       mouseWheelEventsEnabled() &&
-                       (mymousemode == Panning || mymousemode == Dragging)) // zoom out
-            {
-                zoomOut();
+                if (evnt->button() == 1)
+                {
+                    mousepressed = true;
+                    pre_click_px = QPoint(evnt->x(), evnt->y());
+                }
+                else if ( evnt->button() == 2  &&
+                          mouseWheelEventsEnabled() &&
+                          (mymousemode == Panning || mymousemode == Dragging)) // zoom in
+                {
+                    zoomIn();
+                }
+                else if  ( evnt->button() == 4 &&
+                             mouseWheelEventsEnabled() &&
+                             (mymousemode == Panning || mymousemode == Dragging)) // zoom out
+                {
+                    zoomOut();
+                }
             }
         }
 
@@ -312,6 +331,10 @@ namespace qmapcontrol
         else if (mousepressed && (mymousemode == Dragging || mymousemode == DraggingNoZoom))
         {
             current_mouse_pos = QPoint(evnt->x(), evnt->y());
+        }
+        else
+        {
+            layermanager->mouseMoveEvent(evnt);
         }
 
         update();
@@ -507,9 +530,9 @@ namespace qmapcontrol
         disconnect(geom,SIGNAL(positionChanged(Geometry*)), this, SLOT(positionChanged(Geometry*)));
     }
 
-    void MapControl::enablePersistentCache( int tileExpiry, const QDir& path)
+    void MapControl::enablePersistentCache( const QDir& path, const int qDiskSizeMB )
     {
-        ImageManager::instance()->setCacheDir(tileExpiry, path);
+        ImageManager::instance()->setCacheDir( path, qDiskSizeMB );
     }
 
     void MapControl::setProxy(QString host, int port, const QString username, const QString password)

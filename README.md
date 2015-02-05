@@ -11,20 +11,21 @@ The idea is to give the user the possibility to combine several tracks into one 
 
 ![Demo](doc/demo.png?raw=true)
 
-The view is divided into 6 different parts:
+The view is divided into seven different parts:
 - Statistic information about all tracks
-- Track and track segment selection
+- Calendar for track selection
+- Track tree for track selection
 - Statistic information about the selected track or track segment
 - Map showing all tracks
-- Altitude and speed diagram of the selected track or track segment
+- Diagram of the selected track or track segment
 - List of the track points of the selected track or track segment
 
 Except the map all other parts can be hid to maximize the map view.
 
 Features & Functions
 --------------------
-- Support opening GPX (v1.0 or v1.1) and NMEA files
-- Merge several tracks into one single GPX file
+- Support opening GPX (v1.0 or v1.1), NMEA and SpoQ files
+- Combine several tracks into one single GPX file
 - Rearrange the tracks (move/add/delete)
 - Modify the meta data of the GPX file and of any tracks inside the file
 - Get altitude data from the SRTM database
@@ -35,7 +36,7 @@ Features & Functions
 
 Supported File Formats
 ----------------------
-Currently only GPX and NMEA files are supported. If you have a file in another format you may use GPSBabel (http://www.gpsbabel.org) to convert it into a GPX file.
+Currently GPX, NMEA and SpoQ files are supported. If you have a file in another format you may use GPSBabel (http://www.gpsbabel.org) to convert it into a GPX file.
 
 License
 -------
@@ -43,7 +44,7 @@ This software is free software and licensed under GPL version 3.
 
 Compiling
 ---------
-The source code was developed under Qt 5.3.2. There is no guarantee that the code will compile with previous or even later versions. 
+The source code was developed under Qt 5.3.2 / 5.3.3. There is no guarantee that the code will compile with previous or even later versions. 
 
 The project is separated in two sub-projects GPXLab and QMapControl. QMapControl is a widget to display a map. Since I had to made some modifications to the original code I added the modified version here. QMapControl is compiled as a library and linked to the main sub-project GPXLab.
 
@@ -58,6 +59,24 @@ Credits
  
 Release Notes
 -------------
+**[v0.3.0]**
+- [update] Updated QMapControl to version 0.9.7.8.
+- [update] Updated QCustomPlot to version 1.3.0.
+- [update] Updated copyright to "2014 - 2015".
+- [new] Track on the map is highlighted when the mouse cursor is moved over it.
+- [new] Show some point properties when the mouse cursor is over the point.
+- [new] Added functionality to insert/delete track points.
+- [new] Added functionality to set the start time of a track.
+- [new] Added functionality to move a single track point using SHIFT + mouse click.
+- [new] Added a calendar to select a track by date.
+- [new] Diagram curves can be changed to show other properties.
+- [new] Support SpoQ files (.act and .xml).
+- [new] Support Garmin's TrackPointExtension heart rate extension.
+- [fix] Ignore upper/lower case to detect file type.
+- [fix] Draw tracks  with 0 or only 1 point correctly.
+- [fix] Changed way of iteration in GPX_wrapper.
+- [fix] Fixed bug in NMEA sentence parser.
+ 
 **[v0.2.0 Beta]**
 - [update] Updated QMapControl to version 0.9.7.6.
 - [update] Changed some icons.

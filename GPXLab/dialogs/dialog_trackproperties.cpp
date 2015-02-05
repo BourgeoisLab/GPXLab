@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -35,7 +35,7 @@ Dialog_trackProperties::Dialog_trackProperties(GPX_trkMetadataType &metadata, co
     ui->lineEditDesc->setText(QString::fromStdString(metadata.desc));
     ui->lineEditSrc->setText(QString::fromStdString(metadata.src));
     ui->lineEditType->setText(QString::fromStdString(metadata.type));
-    ui->labelNumber->setText(QString::number(metadata.number));
+    ui->labelNumber->setText(QString::number(metadata.number + 1));
 
     // Tab: Link
     ui->tableLinks->setColumnWidth(0, 234);

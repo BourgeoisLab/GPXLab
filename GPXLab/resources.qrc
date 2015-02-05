@@ -29,5 +29,8 @@
         <file>images/link.png</file>
         <file>images/link_break.png</file>
         <file>images/cog.png</file>
+        <file>images/point_delete.png</file>
+        <file>images/point_insert.png</file>
+        <file>images/timeline.png</file>
     </qresource>
 </RCC>

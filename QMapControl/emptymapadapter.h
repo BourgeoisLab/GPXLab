@@ -62,7 +62,7 @@ namespace qmapcontrol
         qreal rad_deg(qreal) const;
         qreal deg_rad(qreal) const;
 
-        virtual bool isValid(int x, int y, int z) const;
+        virtual bool isTileValid(int x, int y, int z) const;
         virtual void zoom_in();
         virtual void zoom_out();
         virtual QString query(int x, int y, int z) const;

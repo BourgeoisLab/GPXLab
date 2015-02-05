@@ -47,7 +47,7 @@ namespace qmapcontrol
         YahooMapAdapter();
         YahooMapAdapter(QString host, QString url);
         virtual ~YahooMapAdapter();
-        bool isValid(int x, int y, int z) const;
+        bool isTileValid(int x, int y, int z) const;
 
     protected:
         virtual int tilesonzoomlevel(int zoomlevel) const;

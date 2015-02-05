@@ -35,7 +35,7 @@
 #include <QDateTime>
 #include <QBuffer>
 #include <QDir>
-#include "mapnetwork.h"
+#include <QNetworkDiskCache>
 
 namespace qmapcontrol
 {
@@ -101,11 +101,10 @@ namespace qmapcontrol
         //! sets the cache directory for persistently saving map tiles
         /*!
          *
-         * @param expiry the max age in mins of a tile before its removed and a new one is requested
          * @param path the path where map tiles should be stored
-         * @todo add maximum size
+         * @param qDiskSizeMB the about of disk space to use for caching. Default is 250MB
          */
-        void setCacheDir(int expiry, const QDir& path);
+        void setCacheDir(const QDir& path, const int qDiskSizeMB = 250);
 
         /*!
          * @return Number of images pending in the load queue
@@ -121,20 +120,11 @@ namespace qmapcontrol
         QPixmap loadingPixmap;
 
         MapNetwork* net;
+        QNetworkDiskCache* diskCache;
         QVector<QString> prefetch;
-        QDir cacheDir;
-        bool doPersistentCaching;
-        int cachedTileExpiry;
-
         static ImageManager* m_Instance;
 
-        bool saveTile(QString tileName,QPixmap tileData);
-        bool loadTile(QString tileName,QPixmap &tileData);
-        bool tileExist(QString tileName);
-        bool tileCacheExpired(QString tileName);
-        QString md5hex( QString qUrl );
-
-        QHash<QString,QDateTime> failedFetches;
+        QHash<QString,QDateTime> failedFetches;        
 
     signals:
         void imageReceived();

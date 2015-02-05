@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -14,77 +14,51 @@
  *   You should have received a copy of the GNU General Public License      *
  *   along with This program. If not, see <http://www.gnu.org/licenses/>.   *
  ****************************************************************************/
- 
+
+#include <QSettings>
 #include <QAction>
 #include <QHeaderView>
 #include <QDateTime>
 #include "qtablewidgetpoints.h"
 #include "QUtils.h"
+#include "pointeditcommand.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Build full table of only shown columns
-#define TABLE_BUILD_FULL            0
-
-// Number of columns
-#define TABLE_NUM_COLS              23
-
-// Column number (unique)
-#define TABLE_COL_DATETIME          0
-#define TABLE_COL_ELAPSED           1
-#define TABLE_COL_DISTANCE          2
-#define TABLE_COL_LEGLENGTH         3
-#define TABLE_COL_SPEED             4
-#define TABLE_COL_ELEVATION         5
-#define TABLE_COL_COORDINATES       6
-#define TABLE_COL_HEADING           7
-#define TABLE_COL_FIX               8
-#define TABLE_COL_SATELLITES        9
-#define TABLE_COL_MAGVAR            10
-#define TABLE_COL_HDOP              11
-#define TABLE_COL_VDOP              12
-#define TABLE_COL_PDOP              13
-#define TABLE_COL_AGEOFDATA         14
-#define TABLE_COL_DGPSID            15
-#define TABLE_COL_GEOIDHEIGHT       16
-#define TABLE_COL_NAME              17
-#define TABLE_COL_COMMENT           18
-#define TABLE_COL_DESCRIPTION       19
-#define TABLE_COL_SOURCE            20
-#define TABLE_COL_SYMBOL            21
-#define TABLE_COL_TYPE              22
-
-// Column heading text
-#define TABLE_COL_LABEL_DATETIME    "Date & Time"
-#define TABLE_COL_LABEL_ELAPSED     "Elapsed time\n[s]"
-#define TABLE_COL_LABEL_DISTANCE    "Distance\n[km]"
-#define TABLE_COL_LABEL_LEGLENGTH   "Leg length\n[m]"
-#define TABLE_COL_LABEL_SPEED       "Speed\n[km/h]"
-#define TABLE_COL_LABEL_ELEVATION   "Elevation\n[m]"
-#define TABLE_COL_LABEL_COORDINATES "Coodinates\n[deg]"
-#define TABLE_COL_LABEL_HEADING     "Heading"
-#define TABLE_COL_LABEL_FIX         "Fix"
-#define TABLE_COL_LABEL_SATELLITES  "Satellites"
-#define TABLE_COL_LABEL_MAGVAR      "Magnetic\nvariation"
-#define TABLE_COL_LABEL_HDOP        "HDOP"
-#define TABLE_COL_LABEL_VDOP        "VDOP"
-#define TABLE_COL_LABEL_PDOP        "PDOP"
-#define TABLE_COL_LABEL_AGEOFDATA   "Age of\nDGPS"
-#define TABLE_COL_LABEL_DGPSID      "DGPS\nID"
-#define TABLE_COL_LABEL_GEOIDHEIGHT "Geoid height\n[m]"
-#define TABLE_COL_LABEL_NAME        "Name"
-#define TABLE_COL_LABEL_COMMENT     "Comment"
-#define TABLE_COL_LABEL_DESCRIPTION "Description"
-#define TABLE_COL_LABEL_SOURCE      "Source"
-#define TABLE_COL_LABEL_SYMBOL      "Symbol"
-#define TABLE_COL_LABEL_TYPE        "Type"
-
-////////////////////////////////////////////////////////////////////////////////
+const PointTableModel::column_t PointTableModel::columns[] = {
+    {GPX_wrapper::timestamp, true, false, 130},
+    {GPX_wrapper::elapsedTime, true, false, 80},
+    {GPX_wrapper::distance, true, false, 60},
+    {GPX_wrapper::leglength, true, false, 80},
+    {GPX_wrapper::speed, true, false, 60},
+    {GPX_wrapper::altitude, true, true, 60},
+    {GPX_wrapper::latitude, true, true, 80},
+    {GPX_wrapper::longitude, true, true, 80},
+    {GPX_wrapper::heading, false, false, 60},
+    {GPX_wrapper::fix, false, true, 60},
+    {GPX_wrapper::sat, false, true, 60},
+    {GPX_wrapper::magvar, false, true, 60},
+    {GPX_wrapper::hdop, false, true, 60},
+    {GPX_wrapper::vdop, false, true, 60},
+    {GPX_wrapper::pdop, false, true, 60},
+    {GPX_wrapper::ageofdgpsdata, false, true, 60},
+    {GPX_wrapper::dgpsid, false, true, 60},
+    {GPX_wrapper::geoidheight, false, true, 80},
+    {GPX_wrapper::name, false, true, 130},
+    {GPX_wrapper::cmt, false, true, 130},
+    {GPX_wrapper::desc, false, true, 130},
+    {GPX_wrapper::src, false,  true, 130},
+    {GPX_wrapper::sym, false, true, 130},
+    {GPX_wrapper::type, false, true, 130},
+    {GPX_wrapper::heartrate, false, true, 80}
+};
 
 PointTableModel::PointTableModel(QObject *parent) :
     QAbstractTableModel(parent),
-    numberRows(0)
-{
+    numberRows(0),
+    numberColumns(0)
+{           
+    numberColumns = sizeof(columns)/sizeof(column_t);
 }
 
 int PointTableModel::rowCount(const QModelIndex &parent) const
@@ -96,138 +70,44 @@ int PointTableModel::rowCount(const QModelIndex &parent) const
 int PointTableModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return TABLE_NUM_COLS;
+    return numberColumns;
 }
 
 QVariant PointTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (role == Qt::DisplayRole)
+    switch (role)
     {
+    case Qt::DisplayRole:
+    case Qt::EditRole:
         if (orientation == Qt::Horizontal)
         {
-            switch (section)
-            {
-            case TABLE_COL_DATETIME:
-                return QString(TABLE_COL_LABEL_DATETIME);
-            case TABLE_COL_ELAPSED:
-                return QString(TABLE_COL_LABEL_ELAPSED);
-            case TABLE_COL_DISTANCE:
-                return QString(TABLE_COL_LABEL_DISTANCE);
-            case TABLE_COL_LEGLENGTH:
-                return QString(TABLE_COL_LABEL_LEGLENGTH);
-            case TABLE_COL_SPEED:
-                return QString(TABLE_COL_LABEL_SPEED);
-            case TABLE_COL_ELEVATION:
-                return QString(TABLE_COL_LABEL_ELEVATION);
-            case TABLE_COL_COORDINATES:
-                return QString(TABLE_COL_LABEL_COORDINATES);
-            case TABLE_COL_HEADING:
-                return QString(TABLE_COL_LABEL_HEADING);
-            case TABLE_COL_FIX:
-                return QString(TABLE_COL_LABEL_FIX);
-            case TABLE_COL_SATELLITES:
-                return QString(TABLE_COL_LABEL_SATELLITES);
-            case TABLE_COL_MAGVAR:
-                return QString(TABLE_COL_LABEL_MAGVAR);
-            case TABLE_COL_HDOP:
-                return QString(TABLE_COL_LABEL_HDOP);
-            case TABLE_COL_VDOP:
-                return QString(TABLE_COL_LABEL_VDOP);
-            case TABLE_COL_PDOP:
-                return QString(TABLE_COL_LABEL_PDOP);
-            case TABLE_COL_AGEOFDATA:
-                return QString(TABLE_COL_LABEL_AGEOFDATA);
-            case TABLE_COL_DGPSID:
-                return QString(TABLE_COL_LABEL_DGPSID);
-            case TABLE_COL_GEOIDHEIGHT:
-                return QString(TABLE_COL_LABEL_GEOIDHEIGHT);
-            case TABLE_COL_NAME:
-                return QString(TABLE_COL_LABEL_NAME);
-            case TABLE_COL_COMMENT:
-                return QString(TABLE_COL_LABEL_COMMENT);
-            case TABLE_COL_DESCRIPTION:
-                return QString(TABLE_COL_LABEL_DESCRIPTION);
-            case TABLE_COL_SOURCE:
-                return QString(TABLE_COL_LABEL_SOURCE);
-            case TABLE_COL_SYMBOL:
-                return QString(TABLE_COL_LABEL_SYMBOL);
-            case TABLE_COL_TYPE:
-                return QString(TABLE_COL_LABEL_TYPE);
-            }
+            return gpxmw->getTrackPointPropertyLabel(columns[section].property, true);
         }
         else if (orientation == Qt::Vertical)
         {
             return QString::number(section);
         }
+        break;
+
+    case Qt::UserRole:
+        return columns[section].showByDefault;
+
+    case Qt::UserRole+1:
+        return columns[section].size;
     }
     return QVariant();
 }
 
 QVariant PointTableModel::data(const QModelIndex &index, int role) const
 {
-    if(role == Qt::DisplayRole)
+    if(role == Qt::DisplayRole || role == Qt::EditRole)
     {
         if (gpxmw)
         {
-            const GPX_wptType *wpt = gpxmw->getPoint(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), index.row());
-            if (wpt)
+            const GPX_wptType *trkpt = gpxmw->getPoint(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), index.row());
+            if (trkpt)
             {
-                QDateTime timestamp;
-                QString sTmp;
-                switch(index.column())
-                {
-                case TABLE_COL_DATETIME:
-                    timestamp.setTime_t(wpt->timestamp);
-                    sTmp = timestamp.toString("dd.MM.yyyy H:mm:ss");
-                    if (wpt->millisecond)
-                        sTmp += "." + QString("%1").arg(wpt->millisecond, 3, 10, QChar('0'));
-                    return sTmp;
-                case TABLE_COL_ELAPSED:
-                    return QUtils::seconds_to_DHMS(wpt->elapsedTime);
-                case TABLE_COL_DISTANCE:
-                    return QString::number(wpt->distanceTot, 'f', 1);
-                case TABLE_COL_LEGLENGTH:
-                    return QString::number(wpt->distance*1000, 'f', 1);
-                case TABLE_COL_SPEED:
-                    return QString::number(wpt->speed, 'f', 1);
-                case TABLE_COL_ELEVATION:
-                    return QString::number(wpt->altitude, 'f', 0);
-                case TABLE_COL_COORDINATES:
-                    sTmp = QString::number(wpt->latitude, 'f', 6) + " / " + QString::number(wpt->longitude, 'f', 6);
-                    return sTmp;
-                case TABLE_COL_HEADING:
-                    return QString::fromStdString(wpt->cardinal());
-                case TABLE_COL_FIX:
-                    return QString::fromStdString(wpt->fix);
-                case TABLE_COL_SATELLITES:
-                    return QString::number(wpt->sat);
-                case TABLE_COL_MAGVAR:
-                    return QString::number(wpt->magvar, 'f', 1);
-                case TABLE_COL_HDOP:
-                    return QString::number(wpt->hdop, 'f', 1);
-                case TABLE_COL_VDOP:
-                    return QString::number(wpt->vdop, 'f', 1);
-                case TABLE_COL_PDOP:
-                    return QString::number(wpt->pdop, 'f', 1);
-                case TABLE_COL_AGEOFDATA:
-                    return QString::number(wpt->ageofdgpsdata, 'f', 1);
-                case TABLE_COL_DGPSID:
-                    return QString::number(wpt->dgpsid);
-                case TABLE_COL_GEOIDHEIGHT:
-                    return QString::number(wpt->geoidheight, 'f', 1);
-                case TABLE_COL_NAME:
-                    return QString::fromStdString(wpt->name);
-                case TABLE_COL_COMMENT:
-                    return QString::fromStdString(wpt->cmt);
-                case TABLE_COL_DESCRIPTION:
-                    return QString::fromStdString(wpt->desc);
-                case TABLE_COL_SOURCE:
-                    return QString::fromStdString(wpt->src);
-                case TABLE_COL_SYMBOL:
-                    return QString::fromStdString(wpt->sym);
-                case TABLE_COL_TYPE:
-                    return QString::fromStdString(wpt->type);
-                }
+                return gpxmw->getTrackPointPropertyAsString(trkpt, columns[index.column()].property);
             }
         }
     }
@@ -238,15 +118,55 @@ QVariant PointTableModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-void PointTableModel::init(const GPX_wrapper *gpxmw)
+bool PointTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if (index.isValid() && role == Qt::EditRole)
+    {
+        GPX_wrapper::TrackPointProperty properties[1] = {columns[index.column()].property};
+        QString values[1] = {value.toString()};
+        undoStack->push(new PointEditCommand(gpxmw, gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), index.row(), 1, properties, values));
+        emit dataChanged(index, index);
+        return true;
+    }
+    return false;
+}
+
+Qt::ItemFlags PointTableModel::flags (const QModelIndex &index) const
+{
+    if (columns[index.column()].editable)
+        return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+    else
+        return QAbstractItemModel::flags(index);
+}
+
+void PointTableModel::init(GPX_wrapper *gpxmw, QUndoStack *undoStack)
+{
+    this->gpxmw = gpxmw;
+    this->undoStack = undoStack;
+}
+
+void PointTableModel::build()
 {
     beginResetModel();
-    this->gpxmw = gpxmw;
-    if (gpxmw)
-        numberRows = gpxmw->getNumPoints(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber());
-    else
-        numberRows = 0;
+    numberRows = gpxmw->getNumPoints(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber());
     endResetModel();
+}
+
+void PointTableModel::clear()
+{
+    beginResetModel();
+    numberRows = 0;
+    endResetModel();
+}
+
+int PointTableModel::getNumberRows() const
+{
+    return numberRows;
+}
+
+int PointTableModel::getNumberColumns() const
+{
+    return numberColumns;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -254,148 +174,62 @@ void PointTableModel::init(const GPX_wrapper *gpxmw)
 QTableWidgetPoints::QTableWidgetPoints(QWidget *parent) :
     QTableView(parent)
 {
-    QAction *menuActions[TABLE_NUM_COLS];
-    QAction *menuActionRestore = new QAction("Restore Default", this);
-    QAction *separator = new QAction(this);
-    separator->setSeparator(true);
+}
 
-    // build label array
-    const char *pLabels[TABLE_NUM_COLS];
-    pLabels[TABLE_COL_DATETIME] = TABLE_COL_LABEL_DATETIME;
-    pLabels[TABLE_COL_ELAPSED] = TABLE_COL_LABEL_ELAPSED;
-    pLabels[TABLE_COL_DISTANCE] = TABLE_COL_LABEL_DISTANCE;
-    pLabels[TABLE_COL_LEGLENGTH] = TABLE_COL_LABEL_LEGLENGTH;
-    pLabels[TABLE_COL_SPEED] = TABLE_COL_LABEL_SPEED;
-    pLabels[TABLE_COL_ELEVATION] = TABLE_COL_LABEL_ELEVATION;
-    pLabels[TABLE_COL_COORDINATES] = TABLE_COL_LABEL_COORDINATES;
-    pLabels[TABLE_COL_HEADING] = TABLE_COL_LABEL_HEADING;
-    pLabels[TABLE_COL_FIX] = TABLE_COL_LABEL_FIX;
-    pLabels[TABLE_COL_SATELLITES] = TABLE_COL_LABEL_SATELLITES;
-    pLabels[TABLE_COL_MAGVAR] = TABLE_COL_LABEL_MAGVAR;
-    pLabels[TABLE_COL_HDOP] = TABLE_COL_LABEL_HDOP;
-    pLabels[TABLE_COL_VDOP] = TABLE_COL_LABEL_VDOP;
-    pLabels[TABLE_COL_PDOP] = TABLE_COL_LABEL_PDOP;
-    pLabels[TABLE_COL_AGEOFDATA] = TABLE_COL_LABEL_AGEOFDATA;
-    pLabels[TABLE_COL_DGPSID] = TABLE_COL_LABEL_DGPSID;
-    pLabels[TABLE_COL_GEOIDHEIGHT] = TABLE_COL_LABEL_GEOIDHEIGHT;
-    pLabels[TABLE_COL_NAME] = TABLE_COL_LABEL_NAME;
-    pLabels[TABLE_COL_COMMENT] = TABLE_COL_LABEL_COMMENT;
-    pLabels[TABLE_COL_DESCRIPTION] = TABLE_COL_LABEL_DESCRIPTION;
-    pLabels[TABLE_COL_SOURCE] = TABLE_COL_LABEL_SOURCE;
-    pLabels[TABLE_COL_SYMBOL] = TABLE_COL_LABEL_SYMBOL;
-    pLabels[TABLE_COL_TYPE] = TABLE_COL_LABEL_TYPE;
+void QTableWidgetPoints::init(GPX_wrapper *gpxmw, QUndoStack *undoStack)
+{
+    // create model
+    PointTableModel *m = new PointTableModel(this);
+    setModel(m);
+    m->init(gpxmw, undoStack);
+    m->build();
 
     // insert columns and create action for context menu
-    for (int i = 0; i < TABLE_NUM_COLS; ++i)
+    QAction *menuAction;
+    for (int i = 0; i < m->getNumberColumns(); ++i)
     {
-        menuActions[i] = new QAction(pLabels[i], this);
-        menuActions[i]->setCheckable(true);
-        horizontalHeader()->addAction(menuActions[i]);
-    }
-    horizontalHeader()->addAction(separator);
-    horizontalHeader()->addAction(menuActionRestore);
-
-    // activate context menu for heading
-    horizontalHeader()->setContextMenuPolicy(Qt::ActionsContextMenu);
-
-    // set context menu action signals
-    connect(menuActions[TABLE_COL_DATETIME], SIGNAL(toggled(bool)), this, SLOT(on_actionDateTime_toggled(bool)));
-    connect(menuActions[TABLE_COL_ELAPSED], SIGNAL(toggled(bool)), this, SLOT(on_actionTimeElapsed_toggled(bool)));
-    connect(menuActions[TABLE_COL_DISTANCE], SIGNAL(toggled(bool)), this, SLOT(on_actionDistance_toggled(bool)));
-    connect(menuActions[TABLE_COL_LEGLENGTH], SIGNAL(toggled(bool)), this, SLOT(on_actionLegLength_toggled(bool)));
-    connect(menuActions[TABLE_COL_SPEED], SIGNAL(toggled(bool)), this, SLOT(on_actionSpeed_toggled(bool)));
-    connect(menuActions[TABLE_COL_ELEVATION], SIGNAL(toggled(bool)), this, SLOT(on_actionElevation_toggled(bool)));
-    connect(menuActions[TABLE_COL_COORDINATES], SIGNAL(toggled(bool)), this, SLOT(on_actionCoordinates_toggled(bool)));
-    connect(menuActions[TABLE_COL_HEADING], SIGNAL(toggled(bool)), this, SLOT(on_actionHeading_toggled(bool)));
-    connect(menuActions[TABLE_COL_FIX], SIGNAL(toggled(bool)), this, SLOT(on_actionFix_toggled(bool)));
-    connect(menuActions[TABLE_COL_SATELLITES], SIGNAL(toggled(bool)), this, SLOT(on_actionSatellites_toggled(bool)));
-    connect(menuActions[TABLE_COL_MAGVAR], SIGNAL(toggled(bool)), this, SLOT(on_actionMagVar_toggled(bool)));
-    connect(menuActions[TABLE_COL_HDOP], SIGNAL(toggled(bool)), this, SLOT(on_actionHDOP_toggled(bool)));
-    connect(menuActions[TABLE_COL_VDOP], SIGNAL(toggled(bool)), this, SLOT(on_actionVDOP_toggled(bool)));
-    connect(menuActions[TABLE_COL_PDOP], SIGNAL(toggled(bool)), this, SLOT(on_actionPDOP_toggled(bool)));
-    connect(menuActions[TABLE_COL_AGEOFDATA], SIGNAL(toggled(bool)), this, SLOT(on_actionAgeOfData_toggled(bool)));
-    connect(menuActions[TABLE_COL_DGPSID], SIGNAL(toggled(bool)), this, SLOT(on_actionDGPSID_toggled(bool)));
-    connect(menuActions[TABLE_COL_GEOIDHEIGHT], SIGNAL(toggled(bool)), this, SLOT(on_actionGeoidHeight_toggled(bool)));
-    connect(menuActions[TABLE_COL_NAME], SIGNAL(toggled(bool)), this, SLOT(on_actionName_toggled(bool)));
-    connect(menuActions[TABLE_COL_COMMENT], SIGNAL(toggled(bool)), this, SLOT(on_actionComment_toggled(bool)));
-    connect(menuActions[TABLE_COL_DESCRIPTION], SIGNAL(toggled(bool)), this, SLOT(on_actionDescription_toggled(bool)));
-    connect(menuActions[TABLE_COL_SOURCE], SIGNAL(toggled(bool)), this, SLOT(on_actionSource_toggled(bool)));
-    connect(menuActions[TABLE_COL_SYMBOL], SIGNAL(toggled(bool)), this, SLOT(on_actionSymbol_toggled(bool)));
-    connect(menuActions[TABLE_COL_TYPE], SIGNAL(toggled(bool)), this, SLOT(on_actionType_toggled(bool)));
-    connect(menuActionRestore, SIGNAL(triggered()), this, SLOT(onRestore_triggered()));
-
-    // set default column state (show/hidden)
-    menuActions[TABLE_COL_DATETIME]->setChecked(true);
-    menuActions[TABLE_COL_ELAPSED]->setChecked(true);
-    menuActions[TABLE_COL_DISTANCE]->setChecked(true);
-    menuActions[TABLE_COL_LEGLENGTH]->setChecked(true);
-    menuActions[TABLE_COL_SPEED]->setChecked(true);
-    menuActions[TABLE_COL_ELEVATION]->setChecked(true);
-    menuActions[TABLE_COL_COORDINATES]->setChecked(true);
-    menuActions[TABLE_COL_HEADING]->setChecked(true);
-    menuActions[TABLE_COL_FIX]->setChecked(false);
-    menuActions[TABLE_COL_SATELLITES]->setChecked(false);
-    menuActions[TABLE_COL_MAGVAR]->setChecked(false);
-    menuActions[TABLE_COL_HDOP]->setChecked(false);
-    menuActions[TABLE_COL_VDOP]->setChecked(false);
-    menuActions[TABLE_COL_PDOP]->setChecked(false);
-    menuActions[TABLE_COL_AGEOFDATA]->setChecked(false);
-    menuActions[TABLE_COL_DGPSID]->setChecked(false);
-    menuActions[TABLE_COL_GEOIDHEIGHT]->setChecked(false);
-    menuActions[TABLE_COL_NAME]->setChecked(false);
-    menuActions[TABLE_COL_COMMENT]->setChecked(false);
-    menuActions[TABLE_COL_DESCRIPTION]->setChecked(false);
-    menuActions[TABLE_COL_SOURCE]->setChecked(false);
-    menuActions[TABLE_COL_SYMBOL]->setChecked(false);
-    menuActions[TABLE_COL_TYPE]->setChecked(false);
-
-    // create model
-    setModel(new PointTableModel(this));
-
-    // set column width
-    setColumnWidth(TABLE_COL_DATETIME, 130);
-    setColumnWidth(TABLE_COL_ELAPSED, 80);
-    setColumnWidth(TABLE_COL_DISTANCE, 60);
-    setColumnWidth(TABLE_COL_LEGLENGTH, 80);
-    setColumnWidth(TABLE_COL_SPEED, 60);
-    setColumnWidth(TABLE_COL_ELEVATION, 60);
-    setColumnWidth(TABLE_COL_COORDINATES, 130);
-    setColumnWidth(TABLE_COL_HEADING, 60);
-    setColumnWidth(TABLE_COL_FIX, 60);
-    setColumnWidth(TABLE_COL_SATELLITES, 60);
-    setColumnWidth(TABLE_COL_MAGVAR, 60);
-    setColumnWidth(TABLE_COL_HDOP, 60);
-    setColumnWidth(TABLE_COL_VDOP, 60);
-    setColumnWidth(TABLE_COL_PDOP, 60);
-    setColumnWidth(TABLE_COL_AGEOFDATA, 60);
-    setColumnWidth(TABLE_COL_DGPSID, 60);
-    setColumnWidth(TABLE_COL_GEOIDHEIGHT, 80);
-    setColumnWidth(TABLE_COL_NAME, 130);
-    setColumnWidth(TABLE_COL_COMMENT, 130);
-    setColumnWidth(TABLE_COL_DESCRIPTION, 130);
-    setColumnWidth(TABLE_COL_SOURCE, 130);
-    setColumnWidth(TABLE_COL_SYMBOL, 130);
-    setColumnWidth(TABLE_COL_TYPE, 130);
-
-    // hide columns
-    for (int i = 0; i < TABLE_NUM_COLS; ++i)
-    {
+        menuAction = new QAction(m->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString(), this);
+        menuAction->setCheckable(true);
+        menuAction->setChecked(m->headerData(i, Qt::Horizontal, Qt::UserRole).toBool());
+        menuAction->setData(i);
+        horizontalHeader()->addAction(menuAction);
+        connect(menuAction, SIGNAL(toggled(bool)), this, SLOT(on_actionMenu_toggled(bool)));
+        setColumnWidth(i, m->headerData(i, Qt::Horizontal, Qt::UserRole+1).toInt());
         if (horizontalHeader()->actions().at(i)->isChecked() == false)
             hideColumn(i);
     }
 
+    // add action to restore default settings
+    QAction *menuActionRestore = new QAction("Restore Default", this);
+    QAction *separator = new QAction(this);
+    separator->setSeparator(true);
+    horizontalHeader()->addAction(separator);
+    horizontalHeader()->addAction(menuActionRestore);
+    connect(menuActionRestore, SIGNAL(triggered()), this, SLOT(on_actionRestore_triggered()));
+
+    // activate context menu for header
+    horizontalHeader()->setContextMenuPolicy(Qt::ActionsContextMenu);
+
+    // connect signal for selection
     connect(selectionModel(),SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),this,SLOT(selectionChangedExt(const QItemSelection&,const QItemSelection&)));
 
     // store default state
     defaultState = saveState();
+
+    // load settings
+    settingsChanged(true);
 }
 
 bool QTableWidgetPoints::restoreState(const QByteArray & state)
 {
     if (horizontalHeader()->restoreState(state))
     {
-        for (int i = 0; i < TABLE_NUM_COLS; ++i)
-            horizontalHeader()->actions().at(i)->setChecked(!isColumnHidden(i));
+        PointTableModel *m = dynamic_cast<PointTableModel*>(model());
+        if (m)
+        {
+            for (int i = 0; i < m->getNumberColumns(); ++i)
+                horizontalHeader()->actions().at(i)->setChecked(!isColumnHidden(i));
+        }
         return true;
     }
     return false;
@@ -406,19 +240,46 @@ QByteArray QTableWidgetPoints::saveState() const
     return horizontalHeader()->saveState();
 }
 
-void QTableWidgetPoints::build(const GPX_wrapper *gpxmw)
+void QTableWidgetPoints::build(int selectedRow)
 {
     PointTableModel *m = dynamic_cast<PointTableModel*>(model());
     if (m)
-        m->init(gpxmw);
-
-    // scroll to top
-    scrollToTop();
+    {
+        m->build();
+        if (selectedRow > 0)
+            selectRow(selectedRow);
+        else
+            scrollToTop();
+    }
 }
 
 void QTableWidgetPoints::clear()
 {
-    build(NULL);
+    PointTableModel *m = dynamic_cast<PointTableModel*>(model());
+    if (m)
+    {
+        m->clear();
+        scrollToTop();
+    }
+}
+
+void QTableWidgetPoints::update()
+{
+    emit model()->dataChanged(QModelIndex(), QModelIndex());
+}
+
+int QTableWidgetPoints::getSelectedRow()
+{
+    return selectionModel()->selectedRows().at(0).row();
+}
+
+void QTableWidgetPoints::settingsChanged(bool loaded)
+{
+    QSettings qsettings;
+    if (loaded)
+        restoreState(qsettings.value("tableState").toByteArray());
+    else
+        qsettings.setValue("tableState", saveState());
 }
 
 void QTableWidgetPoints::selectionChangedExt(const QItemSelection  &selected, const QItemSelection  &deselected )
@@ -428,132 +289,16 @@ void QTableWidgetPoints::selectionChangedExt(const QItemSelection  &selected, co
     emit(selectionChanged(getSelectedRow()));
 }
 
-void QTableWidgetPoints::onRestore_triggered()
+void QTableWidgetPoints::on_actionRestore_triggered()
 {
     restoreState(defaultState);
 }
 
-void QTableWidgetPoints::selectRow(int rowNumber)
+void QTableWidgetPoints::on_actionMenu_toggled(bool show)
 {
-    QTableView::selectRow(rowNumber);
-}
-
-int QTableWidgetPoints::getSelectedRow()
-{
-    return selectionModel()->selectedRows().at(0).row();
-}
-
-void QTableWidgetPoints::on_actionDateTime_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_DATETIME) : hideColumn(TABLE_COL_DATETIME);
-}
-
-void QTableWidgetPoints::on_actionTimeElapsed_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_ELAPSED) : hideColumn(TABLE_COL_ELAPSED);
-}
-
-void QTableWidgetPoints::on_actionDistance_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_DISTANCE) : hideColumn(TABLE_COL_DISTANCE);
-}
-
-void QTableWidgetPoints::on_actionLegLength_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_LEGLENGTH) : hideColumn(TABLE_COL_LEGLENGTH);
-}
-
-void QTableWidgetPoints::on_actionSpeed_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_SPEED) : hideColumn(TABLE_COL_SPEED);
-}
-
-void QTableWidgetPoints::on_actionElevation_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_ELEVATION) : hideColumn(TABLE_COL_ELEVATION);
-}
-
-void QTableWidgetPoints::on_actionCoordinates_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_COORDINATES) : hideColumn(TABLE_COL_COORDINATES);
-}
-
-void QTableWidgetPoints::on_actionHeading_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_HEADING) : hideColumn(TABLE_COL_HEADING);
-}
-
-void QTableWidgetPoints::on_actionFix_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_FIX) : hideColumn(TABLE_COL_FIX);
-}
-
-void QTableWidgetPoints::on_actionSatellites_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_SATELLITES) : hideColumn(TABLE_COL_SATELLITES);
-}
-
-void QTableWidgetPoints::on_actionMagVar_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_MAGVAR) : hideColumn(TABLE_COL_MAGVAR);
-}
-
-void QTableWidgetPoints::on_actionHDOP_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_HDOP) : hideColumn(TABLE_COL_HDOP);
-}
-
-void QTableWidgetPoints::on_actionVDOP_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_VDOP) : hideColumn(TABLE_COL_VDOP);
-}
-
-void QTableWidgetPoints::on_actionPDOP_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_PDOP) : hideColumn(TABLE_COL_PDOP);
-}
-
-void QTableWidgetPoints::on_actionAgeOfData_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_AGEOFDATA) : hideColumn(TABLE_COL_AGEOFDATA);
-}
-
-void QTableWidgetPoints::on_actionDGPSID_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_DGPSID) : hideColumn(TABLE_COL_DGPSID);
-}
-
-void QTableWidgetPoints::on_actionGeoidHeight_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_GEOIDHEIGHT) : hideColumn(TABLE_COL_GEOIDHEIGHT);
-}
-
-void QTableWidgetPoints::on_actionName_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_NAME) : hideColumn(TABLE_COL_NAME);
-}
-
-void QTableWidgetPoints::on_actionComment_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_COMMENT) : hideColumn(TABLE_COL_COMMENT);
-}
-
-void QTableWidgetPoints::on_actionDescription_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_DESCRIPTION) : hideColumn(TABLE_COL_DESCRIPTION);
-}
-
-void QTableWidgetPoints::on_actionSource_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_SOURCE) : hideColumn(TABLE_COL_SOURCE);
-}
-
-void QTableWidgetPoints::on_actionSymbol_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_SYMBOL) : hideColumn(TABLE_COL_SYMBOL);
-}
-
-void QTableWidgetPoints::on_actionType_toggled(bool show)
-{
-    show ? showColumn(TABLE_COL_TYPE) : hideColumn(TABLE_COL_TYPE);
+    QAction *action = qobject_cast<QAction *>(sender());
+    if (action)
+    {
+        show ? showColumn(action->data().toInt()) : hideColumn(action->data().toInt());
+    }
 }

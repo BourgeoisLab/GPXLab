@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -17,9 +17,9 @@
  
 #include "setaltitudecommand.h"
 
-SetAltitudeCommand::SetAltitudeCommand(GPXLab *gpxlab, int trackNumber, const QVector<double> &values, QUndoCommand *parent) :
+SetAltitudeCommand::SetAltitudeCommand(GPX_wrapper *gpxmw, int trackNumber, const QVector<double> &values, QUndoCommand *parent) :
     QUndoCommand(parent),
-    gpxlab(gpxlab),
+    gpxmw(gpxmw),
     trackNumber(trackNumber),
     values(values)
 {
@@ -32,30 +32,15 @@ void SetAltitudeCommand::undo()
 
 void SetAltitudeCommand::redo()
 {
-    QVector<double> tmpValues;
-
     // generate values
-    gpxlab->gpxmw->generateDiagramValues(trackNumber);
+    gpxmw->generateDiagramValues(trackNumber, -1, GPX_wrapper::altitude, GPX_wrapper::none);
 
-    // store the values temporarily
-    tmpValues = gpxlab->gpxmw->getDiagramAltitudeValues();
+    // temporary copy old values
+    QVector<double> tmpValues = gpxmw->getAltitudeValues();
 
-    // set new altitude values
-    if (gpxlab->gpxmw->setAltitudeValues(values, trackNumber) == GPX_model::GPXM_OK)
-    {
-        // update file properties
-        gpxlab->updateFile();
+    // set new values
+    gpxmw->setAltitudeValues(values, trackNumber);
 
-        // begin update of track widgets
-        gpxlab->beginUpdate();
-
-        // update track properties
-        gpxlab->updateTrack();
-
-        // end update
-        gpxlab->endUpdate();
-    }
-
-    // store values
+    // store old values
     values = tmpValues;
 }

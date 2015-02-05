@@ -151,6 +151,15 @@ namespace qmapcontrol
          * @return true if the mouse event was consumed. This will stopping the forwarding.
          */
         bool mouseEvent(const QMouseEvent* evnt);
+        
+        //! forwards mousemoveevents to the layers
+        /*!
+         * This method is invoked by the MapControl which receives Mouse move Events.
+         * These events are forwarded to the layers, so they can check for clicked geometries.
+         * @param  evnt the mouse event
+         * @return true if the mouse event was consumed. This will stopping the forwarding.
+         */
+        bool mouseMoveEvent(const QMouseEvent* evnt);
 
         //! returns the middle of the map in projection coordinates
         /*!

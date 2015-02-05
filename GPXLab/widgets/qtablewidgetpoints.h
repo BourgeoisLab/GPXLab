@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -20,6 +20,7 @@
 
 #include <QTableView>
 #include <QAbstractTableModel>
+#include <QUndoStack>
 #include "gpx_wrapper.h"
 
 /**
@@ -40,12 +41,13 @@
  * @see QAbstractTableModel
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.1
- * @date 2 Dec 2014
+ * @version 1.2
+ * @date 4 Jan 2015
  */
 class PointTableModel : public QAbstractTableModel
 {
     Q_OBJECT
+
 public:
 
     /**
@@ -69,12 +71,21 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
     /**
-     * @brief Returns the data stored under the given role for the item referred to by the index.
+     * @brief Returns the data stored under the given role for the item referred to by the index
      * @param index Index
      * @param role Role
      * @return Data
      */
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+
+    /**
+     * @brief Sets the role data for the item at index to value
+     * @param index Index
+     * @param value Value
+     * @param role Role
+     * @return True if successful
+     */
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
 
     /**
      * @brief Returns the data for the given role and section in the header with the specified orientation.
@@ -86,13 +97,55 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
     /**
+     * @brief Returns the item flags for the given index
+     * @param index Index
+     * @return Flags
+     */
+    Qt::ItemFlags flags (const QModelIndex &index) const;
+
+    /**
      * @brief Initializes the model
      * @param gpxmw GPX_model wrapper
+     * @param undoStack Undo stack
      */
-    void init(const GPX_wrapper *gpxmw);
+    void init(GPX_wrapper *gpxmw, QUndoStack *undoStack);
+
+    /**
+     * @brief Builds the model
+     */
+    void build();
+
+    /**
+     * @brief Clears the model
+     */
+    void clear();
+
+    /**
+     * @brief Gets the number of rows
+     * @return Number of rows
+     */
+    int getNumberRows() const;
+
+    /**
+     * @brief Gets the number of columns
+     * @return Number of columns
+     */
+    int getNumberColumns() const;
+
 private:
-    const GPX_wrapper *gpxmw;
+
+    struct column_t {
+        GPX_wrapper::TrackPointProperty property;
+        bool showByDefault;
+        bool editable;
+        int size;
+    };
+    static const column_t columns[];
+
+    GPX_wrapper *gpxmw;
+    QUndoStack *undoStack;
     int numberRows;
+    int numberColumns; 
 };
 
 /**
@@ -105,8 +158,8 @@ private:
  * @see QTableWidget
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 14 Nov 2014
+ * @version 1.1
+ * @date 4 Jan 2015
  */
 class QTableWidgetPoints : public QTableView
 {
@@ -120,6 +173,13 @@ public:
      */
     explicit QTableWidgetPoints(QWidget *parent = 0);
 
+    /**
+     * @brief Initializes the widget
+     * @note Call this function prior to any other function
+     * @param gpxmw GPX_model wrapper
+     * @param undoStack Undo stack
+     */
+    void init(GPX_wrapper *gpxmw, QUndoStack *undoStack);
 
     /**
      * @brief Restores the state
@@ -136,9 +196,9 @@ public:
 
     /**
      * @brief Generates table
-     * @param gpxmw GPX_model wrapper
+     * @param selectedRow Row to select
      */
-    void build(const GPX_wrapper *gpxmw);
+    void build(int selectedRow = 0);
 
     /**
      * @brief Clears the table
@@ -146,10 +206,9 @@ public:
     void clear();
 
     /**
-     * @brief Selects the row
-     * @param rowNumber Row number
+     * @brief Updates the table
      */
-    void selectRow(int rowNumber);
+    void update();
 
     /**
      * @brief Gets selected row
@@ -166,31 +225,18 @@ signals:
     void selectionChanged(int rowNumber);
 
 private slots:
+
+    /**
+     * @brief Slot when settings are loaded or saved
+     */
+    void settingsChanged(bool loaded);
+
     void selectionChangedExt(const QItemSelection  &selected, const QItemSelection  &deselected);
-    void onRestore_triggered();
-    void on_actionDateTime_toggled(bool show);
-    void on_actionTimeElapsed_toggled(bool show);
-    void on_actionDistance_toggled(bool show);
-    void on_actionLegLength_toggled(bool show);
-    void on_actionSpeed_toggled(bool show);
-    void on_actionElevation_toggled(bool show);
-    void on_actionCoordinates_toggled(bool show);
-    void on_actionHeading_toggled(bool show);
-    void on_actionFix_toggled(bool show);
-    void on_actionSatellites_toggled(bool show);
-    void on_actionMagVar_toggled(bool show);
-    void on_actionHDOP_toggled(bool show);
-    void on_actionVDOP_toggled(bool show);
-    void on_actionPDOP_toggled(bool show);
-    void on_actionAgeOfData_toggled(bool show);
-    void on_actionDGPSID_toggled(bool show);
-    void on_actionGeoidHeight_toggled(bool show);
-    void on_actionName_toggled(bool show);
-    void on_actionComment_toggled(bool show);
-    void on_actionDescription_toggled(bool show);
-    void on_actionSource_toggled(bool show);
-    void on_actionSymbol_toggled(bool show);
-    void on_actionType_toggled(bool show);
+
+    void on_actionRestore_triggered();
+
+    void on_actionMenu_toggled(bool show);
+
 private:
     QByteArray defaultState;
 };

@@ -158,7 +158,7 @@ namespace qmapcontrol
         coord_per_y_tile = 180. / mNumberOfTiles;
     }
 
-    bool WMSMapAdapter::isValid(int /*x*/, int /*y*/, int /*z*/) const
+    bool WMSMapAdapter::isTileValid(int /*x*/, int /*y*/, int /*z*/) const
     {
         // if (x>0 && y>0 && z>0)
         {

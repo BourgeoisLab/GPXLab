@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -42,8 +42,8 @@ class Dialog_srtm;
  * @see GPX_model and SRTM
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.1
- * @date 3 Dec 2014
+ * @version 1.2
+ * @date 4 Jan 2015
  */
 class Dialog_srtm : public QDialog
 {
@@ -66,22 +66,25 @@ public:
     const QVector<double> &getValues() const;
 
 private slots:
+
     void on_Dialog_srtm_accepted();
     void on_pushButtonFetchData_clicked();
     void on_horizontalSliderKernelSize_valueChanged(int value);
     void on_horizontalSliderNumPasses_valueChanged(int value);
 
 private:
+
+    void setModified(bool modified);
+    bool generateSRTMAltitudeValues(int option);
+
+private:
+
     static const QString dlgName;
     Ui::Dialog_srtm *ui;
     bool modified;
     SRTM *srtm;
     const GPX_wrapper *gpxmw;
     QVector<double> values;
-
-private:
-    void setModified(bool modified);
-    bool generateSRTMAltitudeValues(int option);
 };
 
 /** @} Dialogs */

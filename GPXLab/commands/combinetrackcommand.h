@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -19,7 +19,7 @@
 #define COMBINETRACKCOMMAND_H
 
 #include <QUndoCommand>
-#include "gpxlab.h"
+#include "gpx_wrapper.h"
 
 /**
  * @addtogroup Commands Commands
@@ -33,8 +33,8 @@
  * @brief Combine track command
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 28 Nov 2014
+ * @version 1.1
+ * @date 4 Jan 2015
  */
 class CombineTrackCommand : public QUndoCommand
 {
@@ -42,13 +42,13 @@ public:
 
     /**
      * @brief Constructor
-     * @param gpxlab Pointer to application
+     * @param gpxmw GPX_model wrapper
      * @param trackNumber Track number
      * @param trackSegmentNumber Track segment number, if -1 for whole track
      * @param pointNumber Point number at which the track is combined
      * @param parent Parent
      */
-    CombineTrackCommand(GPXLab *gpxlab, int trackNumber, int trackSegmentNumber, int pointNumber, QUndoCommand *parent = 0);
+    CombineTrackCommand(GPX_wrapper *gpxmw, int trackNumber, int trackSegmentNumber, int pointNumber, QUndoCommand *parent = 0);
 
     /**
      * @brief Undo the command
@@ -61,7 +61,8 @@ public:
     void redo();
 
 private:
-    GPXLab *gpxlab;
+
+    GPX_wrapper *gpxmw;
     int trackNumber;
     int trackSegmentNumber;
     int pointNumber;

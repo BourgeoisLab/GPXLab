@@ -128,11 +128,18 @@ namespace qmapcontrol
         QRectF getBoundingbox() const { return mBoundingBox; }
         void setBoundingBox(qreal qMinX, qreal qMinY, qreal qMaxX, qreal qMaxY );
 
+        //! returns the tilesize for the mapadapter
+        /*!
+         * returns the tilesize for the mapadapter
+         * @return the tile size
+         */
+        int tileSize();
+
     protected:
         MapAdapter(const QString& qHost, const QString& qServerPath, int qTilesize, int qMinZoom = 0, int qMaxZoom = 0);
         virtual void zoom_in() = 0;
         virtual void zoom_out() = 0;
-        virtual bool isValid(int x, int y, int z) const = 0;
+        virtual bool isTileValid(int x, int y, int z) const = 0;
         virtual QString query(int x, int y, int z) const = 0;
 
         QSize       mSize;

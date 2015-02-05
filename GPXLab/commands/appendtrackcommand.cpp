@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -17,50 +17,26 @@
  
 #include "appendtrackcommand.h"
 
-AppendTrackCommand::AppendTrackCommand(GPXLab *gpxlab, const QString &fileName, QUndoCommand *parent) :
+AppendTrackCommand::AppendTrackCommand(GPX_wrapper *gpxmw, const QString &fileName, GPX_model::fileType_e fileType, QUndoCommand *parent) :
     QUndoCommand(parent),
-    gpxlab(gpxlab),
-    fileName(fileName)
+    gpxmw(gpxmw),
+    fileName(fileName),
+    fileType(fileType)
 {
 }
 
 void AppendTrackCommand::undo()
 {
     // remove tracks
-    for (int i = gpxlab->gpxmw->getNumTracks() - 1; i >= numTracksBeforeAppend; --i)
-        gpxlab->gpxmw->removeTrack(i);
-
-    // update file properties
-    gpxlab->updateFile();
-
-    // begin update of track widgets
-    gpxlab->beginUpdate();
-
-    // rebuild map and tree and select track
-    gpxlab->build(true);
-
-    // end update
-    gpxlab->endUpdate();
+    for (int i = gpxmw->getNumTracks() - 1; i >= numTracksBeforeAppend; --i)
+        gpxmw->removeTrack(i);
 }
 
 void AppendTrackCommand::redo()
 {
     // save number of tracks before appending
-    numTracksBeforeAppend = gpxlab->gpxmw->getNumTracks();
+    numTracksBeforeAppend = gpxmw->getNumTracks();
 
     // append tracks
-    if (gpxlab->gpxmw->load(fileName, false) == GPX_model::GPXM_OK)
-    {
-        // update file properties
-        gpxlab->updateFile();
-
-        // begin update of widgets
-        gpxlab->beginUpdate();
-
-        // rebuild map and tree
-        gpxlab->build();
-
-        // end update
-        gpxlab->endUpdate();
-    }
+    gpxmw->load(fileName, fileType, false);
 }

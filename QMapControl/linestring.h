@@ -114,14 +114,14 @@ namespace qmapcontrol
         virtual bool Touches ( Point* geom, const MapAdapter* mapadapter );
         virtual void draw ( QPainter* painter, const MapAdapter* mapadapter, const QRect &screensize, const QPoint offset );
 
-        QList<Point*> childPoints;
-
     private:
         //! removes cleans up memory of child points that were reparented with setPoints()
         /*!
          * @see setPoints()
          */
         void removePoints();
+
+        QList<Point*>	childPoints;
     };
 }
 #endif

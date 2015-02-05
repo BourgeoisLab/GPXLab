@@ -61,7 +61,7 @@ namespace qmapcontrol
         virtual void zoom_in();
         virtual void zoom_out();
         virtual QString query(int x, int y, int z) const;
-        virtual bool isValid(int x, int y, int z) const;
+        virtual bool isTileValid(int x, int y, int z) const;
 
     private:
         virtual QString getQ(qreal ux, qreal uy, qreal ox, qreal oy) const;

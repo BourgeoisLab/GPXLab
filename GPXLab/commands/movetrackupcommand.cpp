@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -17,9 +17,9 @@
  
 #include "movetrackupcommand.h"
 
-MoveTrackUpCommand::MoveTrackUpCommand(GPXLab *gpxlab, int trackNumber, QUndoCommand *parent) :
+MoveTrackUpCommand::MoveTrackUpCommand(GPX_wrapper *gpxmw, int trackNumber, QUndoCommand *parent) :
     QUndoCommand(parent),
-    gpxlab(gpxlab),
+    gpxmw(gpxmw),
     trackNumber(trackNumber)
 {
 }
@@ -27,35 +27,11 @@ MoveTrackUpCommand::MoveTrackUpCommand(GPXLab *gpxlab, int trackNumber, QUndoCom
 void MoveTrackUpCommand::undo()
 {
     // move track down
-    if (gpxlab->gpxmw->moveTrackDown(trackNumber) == GPX_model::GPXM_OK)
-    {
-        // begin update of track widgets
-        gpxlab->beginUpdate();
-
-        // rebuild tracks
-        gpxlab->build(true);
-
-        // end update
-        gpxlab->endUpdate();
-
-        ++trackNumber;
-    }
+    gpxmw->moveTrackDown(trackNumber);
 }
 
 void MoveTrackUpCommand::redo()
 {
     // move track up
-    if (gpxlab->gpxmw->moveTrackUp(trackNumber) == GPX_model::GPXM_OK)
-    {
-        // begin update of track widgets
-        gpxlab->beginUpdate();
-
-        // rebuild tracks
-        gpxlab->build(true);
-
-        // end update
-        gpxlab->endUpdate();
-
-        --trackNumber;
-    }
+    gpxmw->moveTrackUp(trackNumber);
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -19,6 +19,7 @@
 #define _QDIAGRAMWIDGET_H_
 
 #include "qcustomplotext.h"
+#include "gpx_wrapper.h"
 
 /**
  * @addtogroup Widgets Widgets
@@ -36,12 +37,13 @@
  * @see QCustomPlotExt
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.1
- * @date 6 Dec 2014
+ * @version 1.2
+ * @date 4 Jan 2015
  */
 class QDiagramWidget : public QCustomPlotExt
 {
     Q_OBJECT
+
 public:
 
     /**
@@ -51,17 +53,43 @@ public:
     explicit QDiagramWidget(QWidget *parent = 0);
 
     /**
-     * @brief Sets new diagram values
-     * @param time Time values
-     * @param altitude Altitude values
-     * @param speed Speed values
+     * @brief init
+     * @param gpxmw GPX_model wrapper
      */
-    void setData(const QVector<double>& time, const QVector<double>& altitude, const QVector<double>& speed);
+    void init(const GPX_wrapper *gpxmw);
+
+    /**
+     * @brief Sets new diagram values
+     */
+    void build();
 
     /**
      * @brief Clears the diagram
      */
     void clear();
+
+    /**
+     * @brief Gets the property of the main curve
+     * @return Property
+     */
+    GPX_wrapper::TrackPointProperty getCurveMain() const;
+
+    /**
+     * @brief Gets the property of the secondary curve
+     * @return Property
+     */
+    GPX_wrapper::TrackPointProperty getCurveSecondary() const;
+
+private slots:
+
+    void on_actionCurveMain_triggered();
+    void on_actionCurveSecondary_triggered();
+
+private:
+
+    const GPX_wrapper *gpxmw;
+    GPX_wrapper::TrackPointProperty curveMain;
+    GPX_wrapper::TrackPointProperty curveSecondary;
 };
 
 /** @} Widgets */

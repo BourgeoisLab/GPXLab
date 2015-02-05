@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -37,12 +37,13 @@
  * @see QTreeWidget
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.1
- * @date 28 Nov 2014
+ * @version 1.2
+ * @date 4 Jan 2015
  */
 class QTreeWidgetTracks : public QTreeWidget
 {
     Q_OBJECT
+
 public:
 
     /**
@@ -65,16 +66,12 @@ public:
     void select(int trackNumber, int trackSegmentNumber = -1);
 
     /**
-     * @brief Sets the text of a track
+     * @brief Sets the text of an item
+     * @param name New text
      * @param trackNumber Track number
-     * @param name New name
+     * @param trackSegmentNumber Track segment number, -1 for track
      */
-    void setTrackName(int trackNumber, const QString& name);
-
-signals:
-
-public slots:
-
+    void setItemName(const QString& name, int trackNumber, int trackSegmentNumber = -1);
 };
 
 /** @} Widgets */

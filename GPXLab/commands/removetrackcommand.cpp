@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -17,47 +17,25 @@
  
 #include "removetrackcommand.h"
 
-RemoveTrackCommand::RemoveTrackCommand(GPXLab *gpxlab, int trackNumber, QUndoCommand *parent) :
+RemoveTrackCommand::RemoveTrackCommand(GPX_wrapper *gpxmw, int trackNumber, QUndoCommand *parent) :
     QUndoCommand(parent),
-    gpxlab(gpxlab),
+    gpxmw(gpxmw),
     trackNumber(trackNumber),
     trk(trackNumber)
 {
-    trk = *gpxlab->gpxmw->getTrack(trackNumber);
+    const GPX_trkType *ptr = gpxmw->getTrack(trackNumber);
+    if (ptr)
+        trk = *ptr;
 }
 
 void RemoveTrackCommand::undo()
 {
-    if (gpxlab->gpxmw->insertTrack(trackNumber, trk) == GPX_model::GPXM_OK)
-    {
-        // update file properties
-        gpxlab->updateFile();
-
-        // begin update of track widgets
-        gpxlab->beginUpdate();
-
-        // rebuild tracks
-        gpxlab->build(true);
-
-        // end update
-        gpxlab->endUpdate();
-    }
+    // insert track
+    gpxmw->insertTrack(trackNumber, trk);
 }
 
 void RemoveTrackCommand::redo()
 {
-    if (gpxlab->gpxmw->removeTrack(trackNumber) == GPX_model::GPXM_OK)
-    {
-        // update file properties
-        gpxlab->updateFile();
-
-        // begin update of track widgets
-        gpxlab->beginUpdate();
-
-        // rebuild tracks
-        gpxlab->build(true);
-
-        // end update
-        gpxlab->endUpdate();
-    }
+    // remove track
+    gpxmw->removeTrack(trackNumber);
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -19,8 +19,9 @@
 #define _QMAPWIDGET_H_
 
 #include "mapcontrol.h"
-#include "linestringext.h"
 #include "gpx_wrapper.h"
+#include <QLabel>
+#include <QUndoStack>
 
 using namespace qmapcontrol;
 
@@ -40,8 +41,8 @@ using namespace qmapcontrol;
  * @see MapControl
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.1
- * @date 28 Nov 2014
+ * @version 1.2
+ * @date 4 Jan 2015
  */
 class QMapWidget : public MapControl
 {
@@ -59,17 +60,18 @@ public:
     /**
      * @brief Initializes the widget
      * @note Call this function prior to any other function call
+     * @param gpxmw GPX_model wrapper
+     * @param undoStack Undo stack
      * @param doPersistentCaching Enable / disable persistent caching
-     * @param tileExpiry Time to keep tile in cache, 0 or -1 to disable and keep forever
      * @param cachePath Path to the cache directory
      */
-    void init(bool doPersistentCaching, int tileExpiry, QString &cachePath);
+    void init(GPX_wrapper *gpxmw, QUndoStack *undoStack, bool doPersistentCaching, QString &cachePath);
 
     /**
      * @brief Generates the map according to the GPX_Model
-     * @param gpxmw GPX_model wrapper
+     * @param zoomIn If true zooms in
      */
-    void build(const GPX_wrapper *gpxmw);
+    void build(bool zoomIn);
 
     /**
      * @brief Clears the map
@@ -79,22 +81,16 @@ public:
     /**
      * @brief Selects a track
      * @param trackNumber Track number
-     * @param trackSegmentNumber Track number segment, if -1 select all segments
      */
-    void selectTrack(int trackNumber, int trackSegmentNumber);
-
-    /**
-     * @brief Selects a point given latitude/longitude coordinates
-     * @param lat Latitude
-     * @param lon Longitude
-     */
-    void selectPoint(double lat, double lon);
+    void selectTrack(int trackNumber);
 
     /**
      * @brief Sets the visibility of the selected point
      * @param visible If true shows the selected point
+     * @param lat Latitude
+     * @param lon Longitude
      */
-    void selectedPointSetVisible(bool visible);
+    void selectedPointSetVisible(bool visible, double lat = 0.0, double lon = 0.0);
 
     /**
      * @brief Sets the view and zoom in
@@ -119,6 +115,38 @@ public:
      */
     void setShowOnlySelectedTrack(bool only);
 
+    /**
+     * @brief Inserts a track
+     * @param trackNumber Track Number
+     * @param track Track
+     */
+    void insertTrack(int trackNumber, const GPX_trkType &track);
+
+    /**
+     * @brief Deletes a track
+     * @param trackNumber Track number
+     */
+    void deleteTrack(int trackNumber);
+
+    /**
+     * @brief Moves a track up
+     * @param trackNumber Track number
+     */
+    void moveTrackUp(int trackNumber);
+
+    /**
+     * @brief Moves a track down
+     * @param trackNumber Track number
+     */
+    void moveTrackDown(int trackNumber);
+
+    /**
+     * @brief Edits a point
+     * @param trackNumber Track number
+     * @param pointNumber Point number
+     */
+    void editPoint(int trackNumber, int pointNumber);
+
 signals:
 
     /**
@@ -130,6 +158,12 @@ signals:
      */
     void selectionChanged(int trackNumber, int trackSegmentNumber, double lat, double lon);
 
+    /**
+     * @brief Signal when the point selection changed
+     * @param pointNumber New point number
+     */
+    void selectionChanged(int pointNumber);
+
 private slots:
 
     /**
@@ -139,15 +173,44 @@ private slots:
      */
     void geometryClicked(Geometry* geometry, QPoint point);
 
+    /**
+     * @brief Called on mouse move events
+     * @param geometry Geometry on the mouse coordinates, NULL if none
+     * @param point Mouse coordinates
+     */
+    void geometryOver(Geometry* geometry, QPoint point);
+
+    /**
+     * @brief Called on a mouse button event
+     * @param evnt Mouse event
+     * @param coordinate World coordinates
+     */
+    void mouseEventCoordinate(const QMouseEvent* evnt, const QPointF coordinate);
+
 private:
-    QPen* linePen;
-    QPen* linePenSelected;
-    QPen* linePenSameTrack;
+
+    /**
+     * @brief Sets the visibility of the over point
+     * @param visible If true shows the over point
+     * @param trackNumber Track number
+     * @param trackSegmentNumber Track segment number
+     * @param pointNumber Point number
+     */
+    void overPointSetVisible(bool visible, const GPX_wptType *trkpt = NULL);
+
+    void keyPressEvent(QKeyEvent *event);
+
+    void leaveEvent(QEvent *event);
+
+private:
+    GPX_wrapper *gpxmw;
+    QUndoStack *undoStack;
     QPen* pointPenSelected;
-    QPen* pointsMiddle;
     Layer* trackLayer;
     Point* selectedPoint;
-    LineStringExt* selectedTrack;
+    Point* overPoint;
+    QLabel* overPointWidget;
+    int selectedTrack;
     bool followSelection;
     bool showOnlySelectedTrack;
 };

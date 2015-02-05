@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -54,6 +54,7 @@
 class QCustomPlotExt : public QCustomPlot
 {
     Q_OBJECT
+
 public:
 
     /**
@@ -106,12 +107,14 @@ public:
     void updateExt();
 
 private slots:
+
     void yAxisRangeChanged(const QCPRange& range);
     void xAxisRangeChanged(const QCPRange& range);
     void mouseWheel(QWheelEvent *event);
     void mousePress(QMouseEvent* event);
 
 private:
+
     QCPCurve *marker;
     QCPRange xAxisRangeOrg;
     double plotYOffset;

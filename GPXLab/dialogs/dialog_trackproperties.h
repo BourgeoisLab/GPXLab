@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -42,8 +42,8 @@ class Dialog_trackProperties;
  * @see GPX_model
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.1
- * @date 6 Dec 2014
+ * @version 1.2
+ * @date 4 Jan 2015
  */
 class Dialog_trackProperties : public QDialog
 {
@@ -61,6 +61,7 @@ public:
     ~Dialog_trackProperties();
 
 private slots:
+
     void on_Dialog_trackProperties_accepted();
     void on_pushButtonTableAdd_clicked();
     void on_pushButtonTableDelete_clicked();
@@ -76,13 +77,15 @@ private slots:
     void on_lineEditType_editingFinished();
 
 private:
+
+    void setModified(bool modified);
+
+private:
+
     static const QString dlgName;
     Ui::Dialog_trackProperties *ui;
     bool modified;
     GPX_trkMetadataType &metadata;
-
-private:
-    void setModified(bool modified);
 };
 
 /** @} Dialogs */

@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>900</width>
-    <height>600</height>
+    <width>1000</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -63,6 +63,9 @@
         <height>100</height>
        </size>
       </property>
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
+      </property>
       <property name="contextMenuPolicy">
        <enum>Qt::ActionsContextMenu</enum>
       </property>
@@ -75,7 +78,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>900</width>
+     <width>1000</width>
      <height>21</height>
     </rect>
    </property>
@@ -99,6 +102,7 @@
     </property>
     <addaction name="actionEdit_Track_Properties"/>
     <addaction name="actionGetAltitudeFromSRTM"/>
+    <addaction name="actionSetStartTime"/>
     <addaction name="actionSplit_Track"/>
     <addaction name="actionCombine_Track"/>
    </widget>
@@ -135,10 +139,18 @@
     </property>
     <addaction name="actionSettings"/>
    </widget>
+   <widget class="QMenu" name="menuPoint">
+    <property name="title">
+     <string>Point</string>
+    </property>
+    <addaction name="actionInsert_Point"/>
+    <addaction name="actionDelete_Point"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuTrack"/>
+   <addaction name="menuPoint"/>
    <addaction name="menuMap"/>
    <addaction name="menuSettings"/>
    <addaction name="menuHelp"/>
@@ -198,7 +210,7 @@
    </property>
    <property name="maximumSize">
     <size>
-     <width>200</width>
+     <width>524287</width>
      <height>160</height>
     </size>
    </property>
@@ -219,6 +231,9 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetFileContents">
     <layout class="QFormLayout" name="formLayout_2">
+     <property name="fieldGrowthPolicy">
+      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+     </property>
      <property name="leftMargin">
       <number>6</number>
      </property>
@@ -256,7 +271,70 @@
        </property>
       </widget>
      </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="labelFileName">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
      <item row="1" column="0">
+      <widget class="QLabel" name="label_18">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Tracks</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLabel" name="labelFileTracks">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
       <widget class="QLabel" name="label_13">
        <property name="minimumSize">
         <size>
@@ -281,7 +359,7 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
+     <item row="2" column="1">
       <widget class="QLabel" name="labelFileDuration">
        <property name="minimumSize">
         <size>
@@ -300,7 +378,7 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
+     <item row="3" column="0">
       <widget class="QLabel" name="label_12">
        <property name="minimumSize">
         <size>
@@ -325,7 +403,7 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="3" column="1">
       <widget class="QLabel" name="labelFileDistance">
        <property name="minimumSize">
         <size>
@@ -344,7 +422,7 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="4" column="0">
       <widget class="QLabel" name="label_14">
        <property name="minimumSize">
         <size>
@@ -369,7 +447,7 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="4" column="1">
       <widget class="QLabel" name="labelFileSpeed">
        <property name="minimumSize">
         <size>
@@ -385,7 +463,7 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="label_15">
        <property name="minimumSize">
         <size>
@@ -410,23 +488,7 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
-      <widget class="QLabel" name="labelFileHeightIntUp">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>16</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>16</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
+     <item row="6" column="0">
       <widget class="QLabel" name="label_16">
        <property name="minimumSize">
         <size>
@@ -451,7 +513,7 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="6" column="1">
       <widget class="QLabel" name="labelFileHeightIntDown">
        <property name="minimumSize">
         <size>
@@ -467,8 +529,8 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QLabel" name="labelFileName">
+     <item row="5" column="1">
+      <widget class="QLabel" name="labelFileHeightIntUp">
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -481,9 +543,6 @@
          <height>16</height>
         </size>
        </property>
-       <property name="text">
-        <string/>
-       </property>
       </widget>
      </item>
     </layout>
@@ -492,13 +551,13 @@
   <widget class="QDockWidget" name="dockWidgetTracks">
    <property name="minimumSize">
     <size>
-     <width>200</width>
-     <height>337</height>
+     <width>285</width>
+     <height>443</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>200</width>
+     <width>524287</width>
      <height>524287</height>
     </size>
    </property>
@@ -532,6 +591,29 @@
       <number>6</number>
      </property>
      <item>
+      <widget class="QCalendarWidgetExt" name="calendarWidget">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>160</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>160</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">selection-color: rgb(0, 0, 0);
+selection-background-color: rgb(100, 200, 127);</string>
+       </property>
+       <property name="verticalHeaderFormat">
+        <enum>QCalendarWidget::NoVerticalHeader</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <property name="spacing">
         <number>2</number>
@@ -541,15 +623,59 @@
          <property name="contextMenuPolicy">
           <enum>Qt::NoContextMenu</enum>
          </property>
+         <property name="styleSheet">
+          <string notr="true">QTreeWidget::item:selected {
+	selection-color: rgb(0, 0, 0);
+	background-color: rgb(100, 200, 127);
+}
+</string>
+         </property>
+         <property name="uniformRowHeights">
+          <bool>true</bool>
+         </property>
+         <property name="sortingEnabled">
+          <bool>true</bool>
+         </property>
          <property name="expandsOnDoubleClick">
           <bool>false</bool>
          </property>
-         <attribute name="headerVisible">
+         <property name="columnCount">
+          <number>4</number>
+         </property>
+         <attribute name="headerCascadingSectionResizes">
           <bool>false</bool>
+         </attribute>
+         <attribute name="headerDefaultSectionSize">
+          <number>50</number>
+         </attribute>
+         <attribute name="headerShowSortIndicator" stdset="0">
+          <bool>true</bool>
          </attribute>
          <column>
           <property name="text">
-           <string>Track</string>
+           <string>#</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Name</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Date</string>
+          </property>
+          <property name="textAlignment">
+           <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Distance
+[km]</string>
+          </property>
+          <property name="textAlignment">
+           <set>AlignHCenter|AlignVCenter|AlignCenter</set>
           </property>
          </column>
         </widget>
@@ -708,7 +834,7 @@
        <property name="verticalSpacing">
         <number>6</number>
        </property>
-       <item row="1" column="0">
+       <item row="2" column="0">
         <widget class="QLabel" name="label_3">
          <property name="minimumSize">
           <size>
@@ -733,7 +859,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
+       <item row="3" column="0">
         <widget class="QLabel" name="label_5">
          <property name="minimumSize">
           <size>
@@ -758,7 +884,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
+       <item row="3" column="1">
         <widget class="QLabel" name="labelTrackEndTime">
          <property name="minimumSize">
           <size>
@@ -774,7 +900,7 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
+       <item row="4" column="0">
         <widget class="QLabel" name="label_6">
          <property name="minimumSize">
           <size>
@@ -799,7 +925,7 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
+       <item row="4" column="1">
         <widget class="QLabel" name="labelTrackDuration">
          <property name="minimumSize">
           <size>
@@ -815,7 +941,7 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
+       <item row="5" column="0">
         <widget class="QLabel" name="label_4">
          <property name="minimumSize">
           <size>
@@ -840,7 +966,7 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
+       <item row="5" column="1">
         <widget class="QLabel" name="labelTrackDistance">
          <property name="minimumSize">
           <size>
@@ -856,7 +982,7 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="0">
+       <item row="6" column="0">
         <widget class="QLabel" name="label_8">
          <property name="minimumSize">
           <size>
@@ -881,7 +1007,7 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="1">
+       <item row="6" column="1">
         <widget class="QLabel" name="labelTrackSpeed">
          <property name="minimumSize">
           <size>
@@ -897,7 +1023,7 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
+       <item row="2" column="1">
         <widget class="QLabel" name="labelTrackStartTime">
          <property name="minimumSize">
           <size>
@@ -1247,8 +1373,9 @@
        <property name="contextMenuPolicy">
         <enum>Qt::ActionsContextMenu</enum>
        </property>
-       <property name="editTriggers">
-        <set>QAbstractItemView::NoEditTriggers</set>
+       <property name="styleSheet">
+        <string notr="true">selection-color: rgb(0, 0, 0);
+selection-background-color: rgb(100, 200, 127);</string>
        </property>
        <property name="selectionMode">
         <enum>QAbstractItemView::SingleSelection</enum>
@@ -1263,6 +1390,9 @@
         <number>26</number>
        </attribute>
        <attribute name="verticalHeaderHighlightSections">
+        <bool>false</bool>
+       </attribute>
+       <attribute name="verticalHeaderStretchLastSection">
         <bool>false</bool>
        </attribute>
       </widget>
@@ -1549,6 +1679,51 @@
     <string>Settings</string>
    </property>
   </action>
+  <action name="actionDelete_Point">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/point_delete.png</normaloff>:/images/point_delete.png</iconset>
+   </property>
+   <property name="text">
+    <string>Delete Point</string>
+   </property>
+   <property name="toolTip">
+    <string>Delete point</string>
+   </property>
+  </action>
+  <action name="actionSetStartTime">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/timeline.png</normaloff>:/images/timeline.png</iconset>
+   </property>
+   <property name="text">
+    <string>Set Start Time</string>
+   </property>
+   <property name="toolTip">
+    <string>Set start time</string>
+   </property>
+  </action>
+  <action name="actionInsert_Point">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/point_insert.png</normaloff>:/images/point_insert.png</iconset>
+   </property>
+   <property name="text">
+    <string>Insert Point</string>
+   </property>
+   <property name="toolTip">
+    <string>Insert point</string>
+   </property>
+  </action>
   <zorder>dockWidgetFile</zorder>
   <zorder>dockWidgetTracks</zorder>
   <zorder>dockWidgetDiagrams</zorder>
@@ -1577,6 +1752,11 @@
    <class>QTableWidgetPoints</class>
    <extends>QTableView</extends>
    <header>qtablewidgetpoints.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QCalendarWidgetExt</class>
+   <extends>QCalendarWidget</extends>
+   <header>qcalendarwidgetext.h</header>
   </customwidget>
  </customwidgets>
  <resources>

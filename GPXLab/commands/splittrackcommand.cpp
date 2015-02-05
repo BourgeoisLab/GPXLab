@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -17,9 +17,9 @@
  
 #include "splittrackcommand.h"
 
-SplitTrackCommand::SplitTrackCommand(GPXLab *gpxlab, int trackNumber, int trackSegmentNumber, int pointNumber, QUndoCommand *parent) :
+SplitTrackCommand::SplitTrackCommand(GPX_wrapper *gpxmw, int trackNumber, int trackSegmentNumber, int pointNumber, QUndoCommand *parent) :
     QUndoCommand(parent),
-    gpxlab(gpxlab),
+    gpxmw(gpxmw),
     trackNumber(trackNumber),
     trackSegmentNumber(trackSegmentNumber),
     pointNumber(pointNumber)
@@ -29,43 +29,11 @@ SplitTrackCommand::SplitTrackCommand(GPXLab *gpxlab, int trackNumber, int trackS
 void SplitTrackCommand::undo()
 {
     // combine track segments
-    if (gpxlab->gpxmw->combineTrack(trackNumber, trackSegmentNumber, pointNumber) == GPX_model::GPXM_OK)
-    {
-        // begin update of track widgets
-        gpxlab->beginUpdate();
-
-        // rebuild tracks
-        gpxlab->build(true);
-
-        // update track properties
-        gpxlab->updateTrack();
-        
-        // update track point properties
-        gpxlab->updatePoint();
-        
-        // end update
-        gpxlab->endUpdate();
-    }
+    gpxmw->combineTrack(trackNumber, trackSegmentNumber, pointNumber);
 }
 
 void SplitTrackCommand::redo()
 {
     // split track segments
-    if (gpxlab->gpxmw->splitTrack(trackNumber, trackSegmentNumber, pointNumber) == GPX_model::GPXM_OK)
-    {
-        // begin update of track widgets
-        gpxlab->beginUpdate();
-
-        // rebuild tracks
-        gpxlab->build(true);
-
-        // update track properties
-        gpxlab->updateTrack();
-        
-        // update track point properties
-        gpxlab->updatePoint();
-        
-        // end update
-        gpxlab->endUpdate();
-    }
+    gpxmw->splitTrack(trackNumber, trackSegmentNumber, pointNumber);
 }

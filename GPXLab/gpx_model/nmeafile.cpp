@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -23,8 +23,8 @@
 // Maximal length of a NMEA sentence
 #define NMEA_MAXLENGTH                  82
 
-static bool correctDate = false;
-static int tm_mday = -1, tm_mon = -1, tm_year = -1;
+static bool hasDate = false;
+static int tm_mday = 0, tm_mon = 0, tm_year = 0;
 
 static int parse_hex(char c)
 {
@@ -69,14 +69,14 @@ static int parseNMEA(GPX_wptType *pWp, const char *pNmea)
     static char buffer[12];
 
     const char *p = pNmea;
-    int len = strlen(pNmea);
+    size_t len = strlen(pNmea);
 
     int numCommas = 0;
 
     // do checksum check
     if (pNmea[len - 3] == '*')
     {
-        int i;
+        size_t i;
         int sum = parse_hex(pNmea[len - 2]) * 16 + parse_hex(pNmea[len - 1]);
         for (i = 1; i < (len - 3); i++)
             sum ^= pNmea[i];
@@ -111,21 +111,18 @@ static int parseNMEA(GPX_wptType *pWp, const char *pNmea)
         // time
         p = strchr(p, ',') + 1;
         itime = atoi(p);
-        if (tm_mday != -1)
+        timeinfo.tm_hour = itime / 10000;
+        timeinfo.tm_min = (itime % 10000) / 100;
+        timeinfo.tm_sec = (itime % 100);
+        if (!hasDate)
         {
-            timeinfo.tm_hour = itime / 10000;
-            timeinfo.tm_min = (itime % 10000) / 100;
-            timeinfo.tm_sec = (itime % 100);
-            timeinfo.tm_mday = tm_mday;
-            timeinfo.tm_mon = tm_mon;
-            timeinfo.tm_year = tm_year;
-            timeinfo.tm_isdst = 0;
-            pWp->timestamp = mktime(&timeinfo) - timezone;
+            // TODO: check if it's a new day and increase tm_mday
         }
-        else
-        {
-            pWp->timestamp = itime;
-        }
+        timeinfo.tm_mday = tm_mday;
+        timeinfo.tm_mon = tm_mon;
+        timeinfo.tm_year = tm_year;
+        timeinfo.tm_isdst = 0;
+        pWp->timestamp = mktime(&timeinfo) - timezone;
         p = strchr(p, '.') + 1;
         pWp->millisecond = atoi(p);
 
@@ -209,17 +206,10 @@ static int parseNMEA(GPX_wptType *pWp, const char *pNmea)
         p = strchr(p, ',') + 1;
         if (*p != 'A')
         {
-            if (tm_mday != -1)
-            {
-                timeinfo.tm_mday = tm_mday;
-                timeinfo.tm_mon = tm_mon;
-                timeinfo.tm_year = tm_year;
-                pWp->timestamp = mktime(&timeinfo) - timezone;
-            }
-            else
-            {
-                pWp->timestamp = itime;
-            }
+            timeinfo.tm_mday = tm_mday;
+            timeinfo.tm_mon = tm_mon;
+            timeinfo.tm_year = tm_year;
+            pWp->timestamp = mktime(&timeinfo) - timezone;
             return 0;
         }
 
@@ -248,14 +238,13 @@ static int parseNMEA(GPX_wptType *pWp, const char *pNmea)
         pWp->heading = (float)atof(p);
 
         // date
+        hasDate = true;
         p = strchr(p, ',') + 1;
         itime = atol(p);
         timeinfo.tm_mday = itime / 10000;
         timeinfo.tm_mon = (itime % 10000) / 100 - 1;
         timeinfo.tm_year = 100 + (itime % 100);
         pWp->timestamp = mktime(&timeinfo) - timezone;
-        if (tm_mday == -1)
-            correctDate = true;
         tm_mday = timeinfo.tm_mday;
         tm_mon = timeinfo.tm_mon;
         tm_year = timeinfo.tm_year;
@@ -267,60 +256,121 @@ static int parseNMEA(GPX_wptType *pWp, const char *pNmea)
     return 0;
 }
 
+static void copyValues(GPX_wptType &pDst, const GPX_wptType &pSrc)
+{
+    if (!pSrc.fix.empty())
+        pDst.fix = pSrc.fix;
+    if (pSrc.sat != 0)
+        pDst.sat = pSrc.sat;
+    if (pSrc.timestamp != 0)
+        pDst.timestamp = pSrc.timestamp;
+    if (pSrc.millisecond != 0)
+        pDst.millisecond = pSrc.millisecond;
+    if (pSrc.magvar != 0.0f)
+        pDst.magvar = pSrc.magvar;
+    if (pSrc.altitude != 0.0)
+        pDst.altitude = pSrc.altitude;
+    if (pSrc.hdop != 0.0f)
+        pDst.hdop = pSrc.hdop;
+    if (pSrc.vdop != 0.0f)
+        pDst.vdop = pSrc.vdop;
+    if (pSrc.pdop != 0.0f)
+        pDst.pdop = pSrc.pdop;
+    if (pSrc.ageofdgpsdata != 0.0f)
+        pDst.ageofdgpsdata = pSrc.ageofdgpsdata;
+    if (pSrc.dgpsid != 0)
+        pDst.dgpsid = pSrc.dgpsid;
+    if (pSrc.geoidheight != 0.0f)
+        pDst.geoidheight = pSrc.geoidheight;
+    if (pSrc.latitude != 0.0)
+        pDst.latitude = pSrc.latitude;
+    if (pSrc.longitude != 0.0)
+        pDst.longitude = pSrc.longitude;
+    if (!pSrc.name.empty())
+        pDst.name = pSrc.name;
+    if (!pSrc.cmt.empty())
+        pDst.cmt = pSrc.cmt;
+    if (!pSrc.desc.empty())
+        pDst.desc = pSrc.desc;
+    if (!pSrc.src.empty())
+        pDst.src = pSrc.src;
+    if (!pSrc.links.empty())
+        pDst.links = pSrc.links;
+    if (!pSrc.sym.empty())
+        pDst.sym = pSrc.sym;
+    if (!pSrc.type.empty())
+        pDst.type = pSrc.type;
+    if (!pSrc.extensions.extension.empty())
+        pDst.extensions.extension = pSrc.extensions.extension;
+    if (pSrc.speed != 0.0f)
+        pDst.speed = pSrc.speed;
+    if (pSrc.heading != 0.0f)
+        pDst.heading = pSrc.heading;
+    if (pSrc.leglength != 0.0)
+        pDst.leglength = pSrc.leglength;
+    if (pSrc.distanceTot != 0.0)
+        pDst.distanceTot = pSrc.distanceTot;
+    if (pSrc.elapsedTime != 0)
+        pDst.elapsedTime = pSrc.elapsedTime;
+}
+
 GPX_model::retCode_e NMEAFile::load(ifstream* fp, GPX_model* gpxm, const string& name)
 {
     GPX_trkType trk(gpxm->trk.size());
     GPX_trksegType trkseg;
     GPX_wptType trkpt, trkpt_last;
-    vector<GPX_wptType>::iterator itrkpt;
     char buffer[NMEA_MAXLENGTH];
+    bool hasComputedMissingDate = false;
 
-    correctDate = false;
-    tm_mday = -1;
-    tm_mon = -1;
-    tm_year = -1;
+    hasDate = false;
+    tm_mday = 1;
+    tm_mon = 0;
+    tm_year = 100;
 
     while (fp->getline(buffer, NMEA_MAXLENGTH))
     {
         if (parseNMEA(&trkpt, buffer))
         {
-            if (correctDate)
+            if (hasDate && !hasComputedMissingDate)
             {
+                struct tm *timeinfo;
+
                 // add date to all previous points
-                struct tm timeinfo;
-                timeinfo.tm_hour = 0;
-                timeinfo.tm_min = 0;
-                timeinfo.tm_sec = 0;
-                timeinfo.tm_mday = tm_mday;
-                timeinfo.tm_mon = tm_mon;
-                timeinfo.tm_year = tm_year;
+                vector<GPX_wptType>::iterator itrkpt;
                 for (itrkpt = trkseg.trkpt.begin(); itrkpt != trkseg.trkpt.end(); itrkpt++)
                 {
-                    timeinfo.tm_hour = (int)(itrkpt->timestamp / 10000);
-                    timeinfo.tm_min = (itrkpt->timestamp % 10000) / 100;
-                    timeinfo.tm_sec = (itrkpt->timestamp % 100);
-                    timeinfo.tm_isdst = 0;
-                    itrkpt->timestamp = mktime(&timeinfo) - timezone;
-
+                    timeinfo = gmtime(&itrkpt->timestamp);
+                    timeinfo->tm_mday = tm_mday;
+                    timeinfo->tm_mon = tm_mon;
+                    timeinfo->tm_year = tm_year;
+                    timeinfo->tm_isdst = 0;
+                    itrkpt->timestamp = mktime(timeinfo) - timezone;
                 }
-                timeinfo.tm_hour = (int)(trkpt_last.timestamp / 10000);
-                timeinfo.tm_min = (trkpt_last.timestamp % 10000) / 100;
-                timeinfo.tm_sec = (trkpt_last.timestamp % 100);
-                timeinfo.tm_isdst = 0;
-                trkpt_last.timestamp = mktime(&timeinfo) - timezone;
-                correctDate = false;
-            }
-            if (!trkpt.isSameTime(trkpt_last))
-            {
+
+                // add date to last point
                 if (trkpt_last.timestamp != 0)
                 {
-                    // add track point to the track segment
-                    trkseg.trkpt.push_back(trkpt_last);
+                    timeinfo = gmtime(&trkpt_last.timestamp);
+                    timeinfo->tm_mday = tm_mday;
+                    timeinfo->tm_mon = tm_mon;
+                    timeinfo->tm_year = tm_year;
+                    timeinfo->tm_isdst = 0;
+                    trkpt_last.timestamp = mktime(timeinfo) - timezone;
                 }
-                trkpt_last = trkpt;
-                trkpt.timestamp = 0;
-                trkpt.millisecond = 0;
+
+                hasComputedMissingDate = true;
             }
+
+            if (!trkpt.isSameTime(trkpt_last) && trkpt_last.timestamp != 0)
+            {
+                // add track point to the track segment
+                trkseg.trkpt.push_back(trkpt_last);
+                trkpt_last.clear();
+            }
+
+            // copy parsed values
+            copyValues(trkpt_last, trkpt);
+            trkpt.clear();
         }
     }
 

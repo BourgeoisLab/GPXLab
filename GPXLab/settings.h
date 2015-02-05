@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -23,23 +23,29 @@
  * @{
  */
 
+#include <QObject>
+#include <QMainWindow>
+#include <QString>
+
 /**
  * @class Settings
  *
  * @brief Manage the settings
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 4 Dec 2014
+ * @version 1.1
+ * @date 4 Jan 2015
  */
-class Settings
+class Settings : public QObject
 {
+    Q_OBJECT
+
 public:
 
     /**
      * @brief Constructor
      */
-    Settings();
+    Settings(QMainWindow *parent);
 
     /**
      * @brief Saves the settings
@@ -50,6 +56,23 @@ public:
      * @brief Saves the settings
      */
     void load();
+
+    /**
+     * @brief Restores the window layout
+     */
+    void restoreLayout();
+
+    /**
+     * @brief Adds a file to the recent file list
+     * @param fileName File name
+     */
+    void addToRecentFile(const QString &fileName);
+
+    /**
+     * @brief Removes a file from the recent file list
+     * @param fileName File name
+     */
+    void removeFromRecentFile(const QString &fileName);
 
     /**
      * @brief Clears the cache
@@ -63,6 +86,21 @@ public:
     QString defaultCachePath();
 
     /**
+     * @brief Maximal number of undo commands stored
+     */
+    const int undoLimit;
+
+    /**
+     * @brief Maximal number of recent files shown in the file menu
+     */
+    const int maxRecentFiles;
+
+    /**
+     * @brief List of the recent files shown in the file menu
+     */
+    QStringList recentFiles;
+
+    /**
      * @brief Do persistent caching of map tiles
      */
     bool doPersistentCaching;
@@ -71,6 +109,19 @@ public:
      * @brief Path to the tiles cache directory
      */
     QString cachePath;
+
+signals:
+
+    /**
+     * @brief Signal when settings are loaded or saved
+     */
+    void settingsChanged(bool loaded);
+
+private:
+
+    QMainWindow *parent;
+    QByteArray  defaultState;
+    QByteArray  defaultGeometry;
 };
 
 /** @} GPXLab */

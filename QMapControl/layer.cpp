@@ -197,6 +197,43 @@ namespace qmapcontrol
         return eventconsumned;
     }
 
+    bool Layer::mouseMoveEvent(const QMouseEvent* evnt, const QPoint mapmiddle_px)
+    {
+        eventconsumned = false;
+        if (takesMouseEvents())
+        {
+            if ( geometries.size() > 0)
+            {
+                // check for collision
+                QPointF c = mapAdapter->displayToCoordinate(QPoint(evnt->x()-screenmiddle.x()+mapmiddle_px.x(),
+                                                                   evnt->y()-screenmiddle.y()+mapmiddle_px.y()));
+                Point* tmppoint = new Point(c.x(), c.y());
+                //for(QList<Geometry*>::const_iterator iter = geometries.begin(); iter != geometries.end(); ++iter)
+                QListIterator<Geometry*> iter(geometries);
+                bool touched = false;
+                iter.toBack();
+                while (iter.hasPrevious())
+                {
+                    //Geometry *geo = *iter;
+                    Geometry *geo = iter.previous();
+                    if (geo && geo->isVisible() && geo->Touches(tmppoint, mapAdapter))
+                    {
+                        touched = true;
+                        emit(geometryOver(geo, QPoint(evnt->x(), evnt->y())));
+                    }
+
+                    // if user set evenconsumed in signal geometryClicked() stop emitting
+                    if(eventconsumned)
+                        break;
+                }
+                if (!touched)
+                    emit(geometryOver(NULL, QPoint(evnt->x(), evnt->y())));
+                delete tmppoint;
+            }
+        }
+        return eventconsumned;
+    }
+
     void Layer::consumeMouseEvent()
     {
         eventconsumned = true;
@@ -238,13 +275,13 @@ namespace qmapcontrol
         painter->translate(mapmiddle_px-screenmiddle);
 
     }
+
     void Layer::_draw(QPainter* painter, const QPoint mapmiddle_px) const
     {
         // screen middle...
         int tilesize = mapAdapter->tilesize();
         int cross_x = int(mapmiddle_px.x())%tilesize; // position on middle tile
         int cross_y = int(mapmiddle_px.y())%tilesize;
-        //qDebug() << screenmiddle << " - " << cross_x << ", " << cross_y;
 
         // calculate how many surrounding tiles have to be drawn to fill the display
         int space_left = screenmiddle.x() - cross_x;
@@ -277,20 +314,17 @@ namespace qmapcontrol
         myoffscreenViewport = QRect(from, to);
 
         // for the EmptyMapAdapter no tiles should be loaded and painted.
-        if (mapAdapter->host() == "")
+        if (mapAdapter->host().isEmpty())
         {
             return;
         }
 
-        if (mapAdapter->isValid(mapmiddle_tile_x, mapmiddle_tile_y, mapAdapter->currentZoom()))
+        //grab the middle tile (under the pointer) first
+        if (mapAdapter->isTileValid(mapmiddle_tile_x, mapmiddle_tile_y, mapAdapter->currentZoom()))
         {
-            QPixmap tile = ImageManager::instance()->getImage(mapAdapter->host(), mapAdapter->query(mapmiddle_tile_x, mapmiddle_tile_y, mapAdapter->currentZoom()));
-            if ( !tile.isNull() )
-            {
                 painter->drawPixmap(-cross_x+size.width(),
                                     -cross_y+size.height(),
-                                    tile );
-            }
+                                    ImageManager::instance()->getImage(mapAdapter->host(), mapAdapter->query(mapmiddle_tile_x, mapmiddle_tile_y, mapAdapter->currentZoom())) );
         }
 
         for (int i=-tiles_left+mapmiddle_tile_x; i<=tiles_right+mapmiddle_tile_x; ++i)
@@ -300,50 +334,49 @@ namespace qmapcontrol
                 // check if image is valid
                 if (!(i==mapmiddle_tile_x && j==mapmiddle_tile_y))
                 {
-                    if (mapAdapter->isValid(i, j, mapAdapter->currentZoom()))
+                    if (mapAdapter->isTileValid(i, j, mapAdapter->currentZoom()))
                     {
-                        QPixmap tile = ImageManager::instance()->getImage(mapAdapter->host(), mapAdapter->query(i, j, mapAdapter->currentZoom()));
-                        if ( !tile.isNull() )
-                        {
-                            painter->drawPixmap(((i-mapmiddle_tile_x)*tilesize)-cross_x+size.width(),
+                        painter->drawPixmap(((i-mapmiddle_tile_x)*tilesize)-cross_x+size.width(),
                                                 ((j-mapmiddle_tile_y)*tilesize)-cross_y+size.height(),
-                                                tile);
-                        }
+                                                ImageManager::instance()->getImage(mapAdapter->host(), mapAdapter->query(i, j, mapAdapter->currentZoom())));
                     }
                 }
             }
         }
 
+        bool enabledPrefetch = false;
+        if ( enabledPrefetch )
+        {
+            // Prefetch the next set of rows/column tiles (ready for when the user starts panning).
+            const int prefetch_tile_left = tiles_left - 1;
+            const int prefetch_tile_top = tiles_above - 1;
+            const int prefetch_tile_right = tiles_right + 1;
+            const int prefetch_tile_bottom = tiles_bottom + 1;
 
-        // PREFETCHING
-        int upper = mapmiddle_tile_y-tiles_above-1;
-        int right = mapmiddle_tile_x+tiles_right+1;
-        int left = mapmiddle_tile_x-tiles_right-1;
-        int lower = mapmiddle_tile_y+tiles_bottom+1;
+            // Fetch the top/bottom rows
+            for (int i=prefetch_tile_left; i<=prefetch_tile_right; ++i)
+            {
+                //if (mapAdapter->isTileValid(i, prefetch_tile_top, mapAdapter->currentZoom()))
+                {
+                    ImageManager::instance()->prefetchImage(mapAdapter->host(), mapAdapter->query(i, prefetch_tile_top, mapAdapter->currentZoom()));
+                }
+                //if (mapAdapter->isTileValid(i, prefetch_tile_bottom, mapAdapter->currentZoom()))
+                {
+                    ImageManager::instance()->prefetchImage(mapAdapter->host(), mapAdapter->query(i, prefetch_tile_bottom, mapAdapter->currentZoom()));
+                }
+            }
 
-        int j = upper;
-        for (int i=left; i<=right; ++i)
-        {
-            if (mapAdapter->isValid(i, j, mapAdapter->currentZoom()))
-                ImageManager::instance()->prefetchImage(mapAdapter->host(), mapAdapter->query(i, j, mapAdapter->currentZoom()));
-        }
-        j = lower;
-        for (int i=left; i<=right; ++i)
-        {
-            if (mapAdapter->isValid(i, j, mapAdapter->currentZoom()))
-                ImageManager::instance()->prefetchImage(mapAdapter->host(), mapAdapter->query(i, j, mapAdapter->currentZoom()));
-        }
-        int i = left;
-        for (int j=upper+1; j<=lower-1; ++j)
-        {
-            if (mapAdapter->isValid(i, j, mapAdapter->currentZoom()))
-                ImageManager::instance()->prefetchImage(mapAdapter->host(), mapAdapter->query(i, j, mapAdapter->currentZoom()));
-        }
-        i = right;
-        for (int j=upper+1; j<=lower-1; ++j)
-        {
-            if (mapAdapter->isValid(i, j, mapAdapter->currentZoom()))
-                ImageManager::instance()->prefetchImage(mapAdapter->host(), mapAdapter->query(i, j, mapAdapter->currentZoom()));
+            for (int i=prefetch_tile_top; i<=prefetch_tile_bottom; ++i)
+            {
+                //if (mapAdapter->isTileValid(prefetch_tile_left, i, mapAdapter->currentZoom()))
+                {
+                    ImageManager::instance()->prefetchImage(mapAdapter->host(), mapAdapter->query(prefetch_tile_left, i, mapAdapter->currentZoom()));
+                }
+                //if (mapAdapter->isTileValid(prefetch_tile_right, i, mapAdapter->currentZoom()))
+                {
+                    ImageManager::instance()->prefetchImage(mapAdapter->host(), mapAdapter->query(prefetch_tile_right, i, mapAdapter->currentZoom()));
+                }
+            }
         }
     }
 
@@ -367,6 +400,7 @@ namespace qmapcontrol
             }
         }
     }
+
     Layer::LayerType Layer::layertype() const
     {
         return mylayertype;

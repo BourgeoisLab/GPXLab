@@ -42,7 +42,7 @@ namespace qmapcontrol
     {
     }
 
-    bool YahooMapAdapter::isValid(int /*x*/, int /*y*/, int /*z*/) const
+    bool YahooMapAdapter::isTileValid(int /*x*/, int /*y*/, int /*z*/) const
     {
         return true;
     }

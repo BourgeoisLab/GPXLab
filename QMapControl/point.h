@@ -69,7 +69,7 @@ namespace qmapcontrol
 
     public:
         friend class Layer;
-        //friend class LineString;
+        friend class LineString;
 
         //! sets where the point should be aligned
         enum Alignment
@@ -192,8 +192,6 @@ namespace qmapcontrol
 
         virtual void setPixmap( QPixmap qPixmap );
 
-        virtual void draw(QPainter* painter, const MapAdapter* mapadapter, const QRect &viewport, const QPoint offset);
-
     protected:
         qreal X;
         qreal Y;
@@ -209,6 +207,8 @@ namespace qmapcontrol
 
 
         void drawWidget(const MapAdapter* mapadapter, const QPoint offset);
+        // void drawPixmap(QPainter* painter, const MapAdapter* mapadapter, const QRect &viewport, const QPoint versch);
+        virtual void draw(QPainter* painter, const MapAdapter* mapadapter, const QRect &viewport, const QPoint offset);
         QPoint alignedPoint(const QPoint point) const;
 
         //! returns true if the given Point touches this Point

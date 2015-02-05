@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -22,6 +22,7 @@
 #include "dialog_modelproperties.h"
 #include "dialog_trackproperties.h"
 #include "dialog_srtm.h"
+#include "dialog_datetime.h"
 #include <QMessageBox>
 
 #include "selectcommand.h"
@@ -33,6 +34,9 @@
 #include "movetrackupcommand.h"
 #include "splittrackcommand.h"
 #include "combinetrackcommand.h"
+#include "pointinsertcommand.h"
+#include "pointdeletecommand.h"
+#include "tracktimeshiftcommand.h"
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -53,29 +57,23 @@ void GPXLab::on_actionSettings_triggered()
 
 void GPXLab::on_actionEdit_File_Properties_triggered()
 {
-    if (gpxmw)
-    {
-        GPX_metadataType metadata = *gpxmw->getModelMetadata();
-        Dialog_modelProperties *dlg = new Dialog_modelProperties(metadata, *gpxmw->getModelStats(), this);
-        if(dlg->exec() == QDialog::Accepted)
-            undoStack->push(new EditFilePropertiesCommand(this, metadata));
-        delete dlg;
-    }
+    GPX_metadataType metadata = *gpxmw->getModelMetadata();
+    Dialog_modelProperties *dlg = new Dialog_modelProperties(metadata, *gpxmw->getModelStats(), this);
+    if(dlg->exec() == QDialog::Accepted)
+        undoStack->push(new EditFilePropertiesCommand(gpxmw, metadata));
+    delete dlg;
 }
 
 void GPXLab::on_actionEdit_Track_Properties_triggered()
 {
-    if (gpxmw)
+    const GPX_statsType *stats = gpxmw->getTrackStats(gpxmw->getSelectedTrackNumber());
+    if (stats)
     {
-        const GPX_statsType *stats = gpxmw->getTrackStats(gpxmw->getSelectedTrackNumber());
-        if (stats)
-        {
-            GPX_trkMetadataType metadata = *gpxmw->getTrackMetadata(gpxmw->getSelectedTrackNumber());
-            Dialog_trackProperties *dlg = new Dialog_trackProperties(metadata, *stats, this);
-            if(dlg->exec() == QDialog::Accepted)
-                undoStack->push(new EditTrackPropertiesCommand(this, gpxmw->getSelectedTrackNumber(), metadata));
-            delete dlg;
-        }
+        GPX_trkMetadataType metadata = *gpxmw->getTrackMetadata(gpxmw->getSelectedTrackNumber());
+        Dialog_trackProperties *dlg = new Dialog_trackProperties(metadata, *stats, this);
+        if(dlg->exec() == QDialog::Accepted)
+            undoStack->push(new EditTrackPropertiesCommand(gpxmw, gpxmw->getSelectedTrackNumber(), metadata));
+        delete dlg;
     }
 }
 
@@ -88,29 +86,36 @@ void GPXLab::tree_doubleClicked(QTreeWidgetItem* item, int column)
 
 void GPXLab::on_actionGetAltitudeFromSRTM_triggered()
 {
-    if (gpxmw)
+    SelectCommand selectCommand(gpxmw, gpxmw->getSelectedTrackNumber());
+    int selectedTrackSegmentNumber = gpxmw->getSelectedTrackSegmentNumber();
+    if (selectedTrackSegmentNumber != -1)
     {
-        SelectCommand selectCommand(this, gpxmw->getSelectedTrackNumber());
-        int selectedTrackSegmentNumber = gpxmw->getSelectedTrackSegmentNumber();
-        if (selectedTrackSegmentNumber != -1)
-        {
-            // select whole track
-            selectCommand.redoWithoutUpdate();
+        // select whole track
+        selectCommand.redo();
+    }
 
-            // generate values for whole track
-            gpxmw->generateDiagramValues(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber());
-        }
+    // open SRTM dialog
+    Dialog_srtm *dlg = new Dialog_srtm(gpxmw, this);
+    if(dlg->exec() == QDialog::Accepted)
+        undoStack->push(new SetAltitudeCommand(gpxmw, gpxmw->getSelectedTrackNumber(), dlg->getValues()));
 
-        // open SRTM dialog
-        Dialog_srtm *dlg = new Dialog_srtm(gpxmw, this);
+    if (selectedTrackSegmentNumber != -1)
+    {
+        // re-select track segment
+        selectCommand.undo();
+    }
+
+    delete dlg;
+}
+
+void GPXLab::on_actionSetStartTime_triggered()
+{
+    const GPX_statsType *stats = gpxmw->getTrackStats(gpxmw->getSelectedTrackNumber());
+    if (stats)
+    {
+        Dialog_DateTime *dlg = new Dialog_DateTime("Set Start Time", stats->startTime, this);
         if(dlg->exec() == QDialog::Accepted)
-            undoStack->push(new SetAltitudeCommand(this, gpxmw->getSelectedTrackNumber(), dlg->getValues()));
-
-        if (selectedTrackSegmentNumber != -1)
-        {
-            selectCommand.undo();
-        }
-
+            undoStack->push(new TrackTimeShiftCommand(gpxmw, gpxmw->getSelectedTrackNumber(), dlg->getTimestamp() - stats->startTime));
         delete dlg;
     }
 }
@@ -129,7 +134,14 @@ void GPXLab::openRecentFile()
     {
         QAction *action = qobject_cast<QAction *>(sender());
         if (action)
-            openFile(action->data().toString());
+        {
+            if (!openFile(action->data().toString()))
+            {
+                // remove file from recent file list
+                settings->removeFromRecentFile(action->data().toString());
+                updateRecentFiles();
+            }
+        }
     }
 }
 
@@ -146,7 +158,7 @@ void GPXLab::on_pushButtonTrackAppend_clicked()
 
 void GPXLab::on_actionSave_File_triggered()
 {
-    if (gpxmw)
+    if (!gpxmw->getFileName().isEmpty())
         saveFile(gpxmw->getFileName());
     else
         saveFile();
@@ -172,51 +184,68 @@ void GPXLab::on_actionExit_triggered()
 
 void GPXLab::on_pushButtonTrackRemove_clicked()
 {
-    if (gpxmw)
+    if (gpxmw->getSelectedTrackNumber() >= 0)
     {
-        undoStack->push(new RemoveTrackCommand(this, gpxmw->getSelectedTrackNumber()));
+       undoStack->push(new RemoveTrackCommand(gpxmw, gpxmw->getSelectedTrackNumber()));
     }
 }
 
 void GPXLab::on_pushButtonTrackMoveDown_clicked()
 {
-    if (gpxmw)
+    if (gpxmw->getSelectedTrackNumber() < gpxmw->getNumTracks() - 1)
     {
-        if (gpxmw->getSelectedTrackNumber() < gpxmw->getNumTracks() - 1)
-        {
-            undoStack->push(new MoveTrackDownCommand(this, gpxmw->getSelectedTrackNumber()));
-            SelectCommand selectCommand(this, gpxmw->getSelectedTrackNumber() + 1);
-            selectCommand.redo();
-        }
+        undoStack->push(new MoveTrackDownCommand(gpxmw, gpxmw->getSelectedTrackNumber()));
     }
 }
 
 void GPXLab::on_pushButtonTrackMoveUp_clicked()
 {
-    if (gpxmw)
+    if (gpxmw->getSelectedTrackNumber() > 0)
     {
-        if (gpxmw->getSelectedTrackNumber() > 0)
-        {
-            undoStack->push(new MoveTrackUpCommand(this, gpxmw->getSelectedTrackNumber()));
-            SelectCommand selectCommand(this, gpxmw->getSelectedTrackNumber() - 1);
-            selectCommand.redo();
-        }
+        undoStack->push(new MoveTrackUpCommand(gpxmw, gpxmw->getSelectedTrackNumber()));
     }
 }
 
 void GPXLab::on_actionSplit_Track_triggered()
 {
-    if (gpxmw)
+    if (gpxmw->getSelectedTrackNumber() >= 0)
     {
-        undoStack->push(new SplitTrackCommand(this, gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), gpxmw->getSelectedPointNumber()));
+        undoStack->push(new SplitTrackCommand(gpxmw, gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), gpxmw->getSelectedPointNumber()));
     }
 }
 
 void GPXLab::on_actionCombine_Track_triggered()
 {
-    if (gpxmw)
+    if (gpxmw->getSelectedTrackNumber() >= 0)
     {
-        undoStack->push(new CombineTrackCommand(this, gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), gpxmw->getSelectedPointNumber()));
+        undoStack->push(new CombineTrackCommand(gpxmw, gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), gpxmw->getSelectedPointNumber()));
+    }
+}
+
+void GPXLab::on_actionInsert_Point_triggered()
+{
+    if (gpxmw->getSelectedTrackNumber() >= 0)
+    {
+        int pointNumber = gpxmw->getSelectedPointNumber();
+        if (pointNumber < gpxmw->getNumPoints(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber()) - 1)
+        {
+            GPX_wptType wpt;
+            const GPX_wptType *wptA = gpxmw->getPoint(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), pointNumber);
+            const GPX_wptType *wptB = gpxmw->getPoint(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), pointNumber + 1);
+            wpt.altitude = wptA->altitude + (wptB->altitude - wptA->altitude)/2;
+            wpt.latitude = wptA->latitude + (wptB->latitude - wptA->latitude)/2;
+            wpt.longitude = wptA->longitude + (wptB->longitude - wptA->longitude)/2;
+            wpt.timestamp = wptA->timestamp + (wptB->timestamp - wptA->timestamp)/2;
+            undoStack->push(new PointInsertCommand(gpxmw, gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), pointNumber + 1, wpt));
+        }
+    }
+}
+
+void GPXLab::on_actionDelete_Point_triggered()
+{
+    if (gpxmw->getSelectedTrackNumber() >= 0)
+    {
+        undoStack->push(new PointDeleteCommand(gpxmw, gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), gpxmw->getSelectedPointNumber()));
     }
 }
 
@@ -224,52 +253,36 @@ void GPXLab::on_actionCombine_Track_triggered()
 
 void GPXLab::on_actionFit_View_triggered()
 {
-    if (gpxmw)
-    {
-        const GPX_metadataType *metadata = gpxmw->getModelMetadata();
-        ui->mapWidget->setViewAndZoomIn(metadata->bounds);
-    }
+    const GPX_metadataType *metadata = gpxmw->getModelMetadata();
+    ui->mapWidget->setViewAndZoomIn(metadata->bounds);
 }
 
 void GPXLab::on_actionFit_Track_triggered()
 {
-    if (gpxmw)
-    {
-        const GPX_statsType *stats = gpxmw->getTrackStats(gpxmw->getSelectedTrackNumber());
-        if (stats)
-            ui->mapWidget->setViewAndZoomIn(stats->bounds);
-    }
+    const GPX_statsType *stats = gpxmw->getTrackStats(gpxmw->getSelectedTrackNumber());
+    if (stats)
+        ui->mapWidget->setViewAndZoomIn(stats->bounds);
 }
 
 void GPXLab::on_actionFit_Point_triggered()
 {
-    if (gpxmw)
-    {
-        ui->mapWidget->setViewAndZoomInSelectedPoint();
-    }
+    ui->mapWidget->setViewAndZoomInSelectedPoint();
 }
 
 void GPXLab::on_actionFollow_Item_toggled(bool follow)
 {
-    if (gpxmw)
-    {
-        ui->mapWidget->setFollowSelection(follow);
-    }
+    ui->mapWidget->setFollowSelection(follow);
 }
 
 void GPXLab::on_actionShow_Only_Selected_Track_toggled(bool checked)
 {
-    if (gpxmw)
-    {
-        ui->mapWidget->setShowOnlySelectedTrack(checked);
-        ui->mapWidget->selectTrack(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber());
-    }
+    ui->mapWidget->setShowOnlySelectedTrack(checked);
+    ui->mapWidget->selectTrack(gpxmw->getSelectedTrackNumber());
 }
 
 void GPXLab::on_actionRestore_Default_View_triggered()
 {
-    restoreGeometry(defaultGeometry);
-    restoreState(defaultState);
+    settings->restoreLayout();
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -277,10 +290,9 @@ void GPXLab::on_actionRestore_Default_View_triggered()
 void GPXLab::getOffsets(int &left, int &right, int &top, int &bottom)
 {
     QDockWidget *docks[4] = {ui->dockWidgetFile,
-                                   ui->dockWidgetTracks,
-                                   ui->dockWidgetDiagrams,
-                                   ui->dockWidgetPoints};
-
+                             ui->dockWidgetTracks,
+                             ui->dockWidgetDiagrams,
+                             ui->dockWidgetPoints};
     left = 0;
     right = 0;
     top = 0;

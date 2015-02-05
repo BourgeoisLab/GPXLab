@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -40,15 +40,15 @@ using namespace std;
  * @see http://www.gpsinformation.org/dale/nmea.htm
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 25 Oct 2014
+ * @version 1.1
+ * @date 4 Jan 2015
  */
 namespace NMEAFile
 {
     /**
-     * @brief Parses a NMEA file and fill the GPX model structure
-     * @param fp File handler to the opened GPX file
-     * @param gpxm GPX model to fill
+     * @brief Parses a NMEA file and fills the GPX model structure
+     * @param fp File handler to the opened ACT file
+     * @param gpxm GPX_model
      * @param name Name of the NMEA file without extension
      * @return Return code, GPXM_OK on success
      */

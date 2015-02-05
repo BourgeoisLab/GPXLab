@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -25,43 +25,46 @@ extern "C" {
 #include "uxmlpars.h"
 }
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE                     1024
+#define DEPTH_INDENT                    2
 
 static char gBuffer[BUFFER_SIZE];
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define PARSING_NONE                    0
-#define PARSING_GPX                     1
-#define PARSING_EXTENSIONS              2
-#define PARSING_METADATA                3
-#define PARSING_METADATA_LINK           4
-#define PARSING_METADATA_AUTHOR         5
-#define PARSING_METADATA_EXTENSIONS     6
-#define PARSING_TRK                     7
-#define PARSING_TRK_LINK                8
-#define PARSING_TRK_EXTENSIONS          9
-#define PARSING_TRKSEG                  10
-#define PARSING_TRKSEG_EXTENSIONS       11
-#define PARSING_TRKPT                   12
-#define PARSING_TRKPT_LINK              13
-#define PARSING_TRKPT_EXTENSIONS        14
+#define PARSING_NONE                        0
+#define PARSING_GPX                         1
+#define PARSING_FILE_EXTENSIONS             2
+#define PARSING_METADATA                    3
+#define PARSING_METADATA_LINK               4
+#define PARSING_METADATA_AUTHOR             5
+#define PARSING_METADATA_EXTENSIONS         6
+#define PARSING_TRK                         7
+#define PARSING_TRK_LINK                    8
+#define PARSING_TRK_EXTENSIONS              9
+#define PARSING_TRKSEG                      10
+#define PARSING_TRKSEG_EXTENSIONS           11
+#define PARSING_TRKPT                       12
+#define PARSING_TRKPT_LINK                  13
+#define PARSING_TRKPT_EXTENSIONS            14
+#define PARSING_TRKPT_EXTENSIONS_GPXTPX     15  // Garmin TrackPointExtension extension
 
 static bool gOverwriteMetadata = false;
 static int gVersion = 0;
 
-static GPX_extensionsType *gExtension = NULL;
+static vector <string> *gExtensionVector = NULL;
 static string gExtensionStr = "";
 static bool gExtensionHasContent = false;
 static int gExtensionPrevState = PARSING_NONE;
 static int gExtensionLevelDepth = 0;
+static bool gExtensionDoubleOpen = false;
 
 static int getChar(void* ptr)
 {
     return ((ifstream*)((T_uXml*)ptr)->fp)->get();
 }
 
-static time_t strToTime(string str)
+static time_t strToTime(const string str)
 {
     struct tm timeinfo;
     timeinfo.tm_year = atoi(str.substr(0, 4).c_str()) - 1900;
@@ -74,9 +77,9 @@ static time_t strToTime(string str)
     return mktime(&timeinfo) - timezone;
 }
 
-static int strToMilliseconds(string str)
+static int strToMilliseconds(const string str)
 {
-    int len = str.length();
+    size_t len = str.length();
     if (len > 20)
     {
         int iVal = atoi(str.substr(20).c_str());
@@ -87,6 +90,14 @@ static int strToMilliseconds(string str)
         return iVal;
     }
     return 0;
+}
+
+static void strInitExtensionStr(int depth)
+{
+    gExtensionStr = "";
+    depth *= DEPTH_INDENT;
+    while (depth--)
+        gExtensionStr += " ";
 }
 
 static void openTag(void* pXml, char* pTag)
@@ -118,10 +129,11 @@ static void openTag(void* pXml, char* pTag)
         else if (stricmp(pTag, "extensions") == 0)
         {
             gExtensionPrevState = PARSING_GPX;
-            gExtension = &gpxm->extensions;
+            gExtensionVector = &gpxm->extensions.extension;
             gExtensionStr = "";
-            gExtensionLevelDepth = xml->recursionDepth;
-            xml->state = PARSING_EXTENSIONS;
+            gExtensionLevelDepth = xml->recursionDepth + 1;
+            gExtensionDoubleOpen = false;
+            xml->state = PARSING_FILE_EXTENSIONS;
         }
         break;
 
@@ -147,9 +159,10 @@ static void openTag(void* pXml, char* pTag)
         else if (stricmp(pTag, "extensions") == 0)
         {
             gExtensionPrevState = PARSING_METADATA;
-            gExtension = &gpxm->metadata.extensions;
+            gExtensionVector = &gpxm->metadata.extensions.extension;
             gExtensionStr = "";
-            gExtensionLevelDepth = xml->recursionDepth;
+            gExtensionLevelDepth = xml->recursionDepth + 1;
+            gExtensionDoubleOpen = false;
             xml->state = PARSING_METADATA_EXTENSIONS;
         }
 
@@ -188,9 +201,10 @@ static void openTag(void* pXml, char* pTag)
         else if (stricmp(pTag, "extensions") == 0)
         {
             gExtensionPrevState = PARSING_TRK;
-            gExtension = &gpxm->trk.back().extensions;
+            gExtensionVector = &gpxm->trk.back().extensions.extension;
             gExtensionStr = "";
-            gExtensionLevelDepth = xml->recursionDepth;
+            gExtensionLevelDepth = xml->recursionDepth + 1;
+            gExtensionDoubleOpen = false;
             xml->state = PARSING_TRK_EXTENSIONS;
         }
 
@@ -219,9 +233,10 @@ static void openTag(void* pXml, char* pTag)
         else if (stricmp(pTag, "extensions") == 0)
         {
             gExtensionPrevState = PARSING_TRKSEG;
-            gExtension = &gpxm->trk.back().trkseg.back().extensions;
+            gExtensionVector = &gpxm->trk.back().trkseg.back().extensions.extension;
             gExtensionStr = "";
-            gExtensionLevelDepth = xml->recursionDepth;
+            gExtensionLevelDepth = xml->recursionDepth + 1;
+            gExtensionDoubleOpen = false;
             xml->state = PARSING_TRKSEG_EXTENSIONS;
         }
         break;
@@ -237,9 +252,10 @@ static void openTag(void* pXml, char* pTag)
         else if (stricmp(pTag, "extensions") == 0)
         {
             gExtensionPrevState = PARSING_TRKPT;
-            gExtension = &gpxm->trk.back().trkseg.back().trkpt.back().extensions;
+            gExtensionVector = &gpxm->trk.back().trkseg.back().trkpt.back().extensions.extension;
             gExtensionStr = "";
-            gExtensionLevelDepth = xml->recursionDepth;
+            gExtensionLevelDepth = xml->recursionDepth + 1;
+            gExtensionDoubleOpen = false;
             xml->state = PARSING_TRKPT_EXTENSIONS;
         }
 
@@ -257,11 +273,36 @@ static void openTag(void* pXml, char* pTag)
     case PARSING_TRKPT_LINK:
         break;
 
-    case PARSING_EXTENSIONS:
+    case PARSING_TRKPT_EXTENSIONS:
+        if (stricmp(pTag, "gpxtpx:TrackPointExtension") == 0)
+        {
+            gExtensionVector = &gpxm->trk.back().trkseg.back().trkpt.back().extensionsGarmin.other;
+            gExtensionStr = "";
+            gExtensionLevelDepth++;
+            gExtensionDoubleOpen = false;
+            xml->state = PARSING_TRKPT_EXTENSIONS_GPXTPX;
+            break;
+        }
+    case PARSING_TRKPT_EXTENSIONS_GPXTPX:
+        if (stricmp(pTag, "gpxtpx:hr") == 0)
+        {
+            break;
+        }
+    case PARSING_FILE_EXTENSIONS:
     case PARSING_METADATA_EXTENSIONS:
     case PARSING_TRK_EXTENSIONS:
     case PARSING_TRKSEG_EXTENSIONS:
-    case PARSING_TRKPT_EXTENSIONS:
+        if (gExtensionDoubleOpen)
+        {
+            if (gExtensionVector)
+                gExtensionVector->push_back(gExtensionStr);
+            strInitExtensionStr(xml->recursionDepth - gExtensionLevelDepth);
+        }
+        gExtensionDoubleOpen = true;
+
+        if (gExtensionStr == "")
+            strInitExtensionStr(xml->recursionDepth - gExtensionLevelDepth);
+
         gExtensionStr += "<";
         gExtensionStr += pTag;
         gExtensionStr += ">";
@@ -306,7 +347,7 @@ static void tagContent(void* pXml, char* pTag, char* pContent)
                         gpxm->metadata.author.name = sContent;
                     else if (stricmp(pTag, "email") == 0)
                     {
-                        int atPos = sContent.find_last_of("@");
+                        size_t atPos = sContent.find_last_of("@");
                         if (atPos > 0)
                         {
                             gpxm->metadata.author.email.id = sContent.substr(0, atPos);
@@ -352,8 +393,8 @@ static void tagContent(void* pXml, char* pTag, char* pContent)
                 gpxm->trk.back().metadata.desc = sContent;
             else if (stricmp(pTag, "src") == 0)
                 gpxm->trk.back().metadata.src = sContent;
-            else if (stricmp(pTag, "number") == 0)
-                gpxm->trk.back().metadata.number = atoi(pContent);
+            //else if (stricmp(pTag, "number") == 0)
+            //    gpxm->trk.back().metadata.number = atoi(pContent);
             else if (stricmp(pTag, "type") == 0)
                 gpxm->trk.back().metadata.type = sContent;
 
@@ -431,7 +472,13 @@ static void tagContent(void* pXml, char* pTag, char* pContent)
                 gpxm->trk.back().trkseg.back().trkpt.back().links.back().type = sContent;
             break;
 
-        case PARSING_EXTENSIONS:
+        case PARSING_TRKPT_EXTENSIONS_GPXTPX:
+            if (stricmp(pTag, "gpxtpx:hr") == 0)
+            {
+                gpxm->trk.back().trkseg.back().trkpt.back().extensionsGarmin.heartrate = atoi(pContent);
+                break;
+            }
+        case PARSING_FILE_EXTENSIONS:
         case PARSING_METADATA_EXTENSIONS:
         case PARSING_TRK_EXTENSIONS:
         case PARSING_TRKSEG_EXTENSIONS:
@@ -545,11 +592,12 @@ static void tagAttribute(void* pXml, char* pTag, char *pAttribute, char* pConten
             }
             break;
 
-        case PARSING_EXTENSIONS:
+        case PARSING_FILE_EXTENSIONS:
         case PARSING_METADATA_EXTENSIONS:
         case PARSING_TRK_EXTENSIONS:
         case PARSING_TRKSEG_EXTENSIONS:
         case PARSING_TRKPT_EXTENSIONS:
+        case PARSING_TRKPT_EXTENSIONS_GPXTPX:
             gExtensionStr.resize(gExtensionStr.size() - 1); // remove '>'
             gExtensionStr += " ";
             gExtensionStr += pAttribute;
@@ -563,74 +611,92 @@ static void tagAttribute(void* pXml, char* pTag, char *pAttribute, char* pConten
 static void closeTag(void* pXml, char* pTag)
 {
     T_uXml* xml = (T_uXml*)pXml;
+    GPX_model *gpxm = (GPX_model*)xml->pObject;
 
     switch (xml->state)
     {
-        case PARSING_NONE:
-            break;
+    case PARSING_NONE:
+        break;
 
-        case PARSING_GPX:
-            if (stricmp(pTag, "gpx") == 0)
-                xml->state = PARSING_NONE;
-            break;
+    case PARSING_GPX:
+        if (stricmp(pTag, "gpx") == 0)
+            xml->state = PARSING_NONE;
+        break;
 
-        case PARSING_METADATA:
-            if (stricmp(pTag, "metadata") == 0)
-                xml->state = PARSING_GPX;
-            break;
+    case PARSING_METADATA:
+        if (stricmp(pTag, "metadata") == 0)
+            xml->state = PARSING_GPX;
+        break;
 
-        case PARSING_METADATA_LINK:
-            if (stricmp(pTag, "link") == 0)
-                xml->state = PARSING_METADATA;
-            break;
+    case PARSING_METADATA_LINK:
+        if (stricmp(pTag, "link") == 0)
+            xml->state = PARSING_METADATA;
+        break;
 
-        case PARSING_METADATA_AUTHOR:
-            if (stricmp(pTag, "author") == 0)
-                xml->state = PARSING_METADATA;
-            break;
+    case PARSING_METADATA_AUTHOR:
+        if (stricmp(pTag, "author") == 0)
+            xml->state = PARSING_METADATA;
+        break;
 
-        case PARSING_TRK:
-            if (stricmp(pTag, "trk") == 0)
-            {
-                // update track
-                GPX_model *gpxm = (GPX_model*)xml->pObject;
-                gpxm->updateTrack(gpxm->trk.back());
-                xml->state = PARSING_GPX;
-            }
-            break;
+    case PARSING_TRK:
+        if (stricmp(pTag, "trk") == 0)
+        {
+            // update track
+            GPX_model *gpxm = (GPX_model*)xml->pObject;
+            gpxm->updateTrack(gpxm->trk.back());
+            xml->state = PARSING_GPX;
+        }
+        break;
 
-        case PARSING_TRK_LINK:
-            if (stricmp(pTag, "link") == 0)
-                xml->state = PARSING_TRK;
-            break;
+    case PARSING_TRK_LINK:
+        if (stricmp(pTag, "link") == 0)
+            xml->state = PARSING_TRK;
+        break;
 
-        case PARSING_TRKSEG:
-            if (stricmp(pTag, "trkseg") == 0)
-                xml->state = PARSING_TRK;
-            break;
+    case PARSING_TRKSEG:
+        if (stricmp(pTag, "trkseg") == 0)
+            xml->state = PARSING_TRK;
+        break;
 
-        case PARSING_TRKPT:
-            if (stricmp(pTag, "trkpt") == 0)
-                xml->state = PARSING_TRKSEG;
-            break;
+    case PARSING_TRKPT:
+        if (stricmp(pTag, "trkpt") == 0)
+            xml->state = PARSING_TRKSEG;
+        break;
 
-        case PARSING_TRKPT_LINK:
-            if (stricmp(pTag, "link") == 0)
-                xml->state = PARSING_TRKPT;
-            break;
+    case PARSING_TRKPT_LINK:
+        if (stricmp(pTag, "link") == 0)
+            xml->state = PARSING_TRKPT;
+        break;
 
-        case PARSING_EXTENSIONS:
+    case PARSING_TRKPT_EXTENSIONS_GPXTPX:
+        if (stricmp(pTag, "gpxtpx:TrackPointExtension") == 0)
+        {
+            gExtensionVector = &gpxm->trk.back().trkseg.back().trkpt.back().extensions.extension;
+            gExtensionStr = "";
+            gExtensionLevelDepth--;
+            gExtensionDoubleOpen = false;
+            xml->state = PARSING_TRKPT_EXTENSIONS;
+            break;
+        }
+        else if (stricmp(pTag, "gpxtpx:hr") == 0)
+        {
+            break;
+        }
+        case PARSING_FILE_EXTENSIONS:
         case PARSING_METADATA_EXTENSIONS:
         case PARSING_TRK_EXTENSIONS:
         case PARSING_TRKSEG_EXTENSIONS:
         case PARSING_TRKPT_EXTENSIONS:
             if (stricmp(pTag, "extensions") == 0)
             {
-                gExtension = NULL;
+                gExtensionVector = NULL;
                 xml->state = gExtensionPrevState;
             }
             else
             {
+                if (gExtensionStr == "")
+                    strInitExtensionStr(xml->recursionDepth - gExtensionLevelDepth);
+
                 if (gExtensionHasContent)
                 {
                     gExtensionStr += "</";
@@ -641,16 +707,13 @@ static void closeTag(void* pXml, char* pTag)
                 {
                     gExtensionStr.resize(gExtensionStr.size() - 1); // remove '>'
                     gExtensionStr += "/>";
+                    gExtensionHasContent = true; // for closing nested tags <bla1><bla2/><bla1>
                 }
 
-                gExtensionHasContent = true; // for nested tags
-
-                if (xml->recursionDepth == gExtensionLevelDepth + 1)
-                {
-                    if (gExtension)
-                        gExtension->extension.push_back(gExtensionStr);
-                    gExtensionStr = "";
-                }
+                if (gExtensionVector)
+                    gExtensionVector->push_back(gExtensionStr);
+                gExtensionStr = "";
+                gExtensionDoubleOpen = false;
             }
             break;
     }
@@ -674,7 +737,7 @@ GPX_model::retCode_e GPXFile::load(ifstream* fp, GPX_model* gpxm, bool overwrite
 
     gVersion = 0;
     gOverwriteMetadata = overwriteMetadata;
-    gExtension = NULL;
+    gExtensionVector = NULL;
 
     if (UXML_parseFile(&uXML) != 0)
         return GPX_model::GPXM_ERR_FAILED;
@@ -686,7 +749,7 @@ GPX_model::retCode_e GPXFile::load(ifstream* fp, GPX_model* gpxm, bool overwrite
 
 static void writeLineIndent(ofstream *fp, int depth)
 {
-    depth *= 2;
+    depth *= DEPTH_INDENT;
     while (depth--)
         fp->put(' ');
 }
@@ -792,7 +855,7 @@ static void writeBounds(ofstream *fp, int depth, const GPX_boundsType *b)
     writeStr(fp, "\"/>");
 }
 
-static void writeExtensions(ofstream *fp, int depth, const GPX_extensionsType *e)
+static void writeExtensions(ofstream *fp, int depth, const GPX_extType *e)
 {
     if (!e->extension.empty())
     {
@@ -808,6 +871,52 @@ static void writeExtensions(ofstream *fp, int depth, const GPX_extensionsType *e
     }
 }
 
+static void writePointExtensions(ofstream *fp, int depth, const GPX_wptType *p)
+{
+    if (!p->extensions.extension.empty() || !p->extensionsGarmin.other.empty() || p->extensionsGarmin.heartrate > 0)
+    {
+        vector<string>::const_iterator itExt;
+
+        writeLineIndent(fp, depth);
+        writeStr(fp, "<extensions>");
+
+        // Garmin extensions
+        if (!p->extensionsGarmin.other.empty() || p->extensionsGarmin.heartrate > 0)
+        {
+            writeLineIndent(fp, depth + 1);
+            writeStr(fp, "<gpxtpx:TrackPointExtension>");
+            if (p->extensionsGarmin.heartrate > 0)
+            {
+                writeLineIndent(fp, depth + 2);
+                writeStr(fp, "<gpxtpx:hr>", false);
+                sprintf(gBuffer, "%d", p->extensionsGarmin.heartrate);
+                writeStr(fp, gBuffer, false);
+                writeStr(fp, "</gpxtpx:hr>");
+            }
+            if (!p->extensionsGarmin.other.empty())
+            {
+                for (itExt = p->extensionsGarmin.other.begin(); itExt != p->extensionsGarmin.other.end(); ++itExt)
+                {
+                    writeLineIndent(fp, depth + 2);
+                    writeStr(fp, itExt->c_str());
+                }
+            }
+            writeLineIndent(fp, depth + 1);
+            writeStr(fp, "</gpxtpx:TrackPointExtension>");
+        }
+
+        // other (unknown) extensions
+        for (itExt = p->extensions.extension.begin(); itExt != p->extensions.extension.end(); ++itExt)
+        {
+            writeLineIndent(fp, depth + 1);
+            writeStr(fp, itExt->c_str());
+        }
+
+        writeLineIndent(fp, depth);
+        writeStr(fp, "</extensions>");
+    }
+}
+
 static void writeTime(ofstream *fp, int depth, time_t t, int milli, bool local = false)
 {
     if (milli > 999)
@@ -816,12 +925,12 @@ static void writeTime(ofstream *fp, int depth, time_t t, int milli, bool local =
     writeStr(fp, "<time>", false);
     if (milli == 0)
     {
-        strftime(gBuffer, 1024, "%Y-%m-%dT%H:%M:%SZ", local ? localtime(&t) : gmtime(&t));
+        strftime(gBuffer, BUFFER_SIZE, "%Y-%m-%dT%H:%M:%SZ", local ? localtime(&t) : gmtime(&t));
     }
     else
     {
         char sMilli[4];
-        int milliPos = strftime(gBuffer, 1024, "%Y-%m-%dT%H:%M:%S.000Z", local ? localtime(&t) : gmtime(&t)) - 4;
+        size_t milliPos = strftime(gBuffer, BUFFER_SIZE, "%Y-%m-%dT%H:%M:%S.000Z", local ? localtime(&t) : gmtime(&t)) - 4;
         sprintf(sMilli, "%d", milli);
         if (milli < 10)
         {
@@ -872,6 +981,7 @@ GPX_model::retCode_e GPXFile::save(ofstream* fp, const GPX_model* gpxm)
     writeStr(fp, "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"", false);
     writeStr(fp, gpxm->creator.c_str(), false);
     writeStr(fp, "\"");
+    writeStr(fp, "     xmlns:gpxtpx=\"http://www.garmin.com/xmlschemas/TrackPointExtension/v1\"");
     writeStr(fp, "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
     writeStr(fp, "     xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\">");
     writeMetadata(fp, 1, &gpxm->metadata);
@@ -920,7 +1030,8 @@ GPX_model::retCode_e GPXFile::save(ofstream* fp, const GPX_model* gpxm)
                             writeStr(fp, "\">");
                             sprintf(gBuffer, "%.6f", trkpt->altitude);
                             writeSimpleTag(fp, 4, "ele", gBuffer);
-                            writeTime(fp, 4, trkpt->timestamp, trkpt->millisecond);
+                            if (trkpt->timestamp > 0)
+                                writeTime(fp, 4, trkpt->timestamp, trkpt->millisecond);
                             if (trkpt->magvar != 0.0f)
                             {
                                 sprintf(gBuffer, "%.6f", trkpt->magvar);
@@ -978,7 +1089,7 @@ GPX_model::retCode_e GPXFile::save(ofstream* fp, const GPX_model* gpxm)
                                 sprintf(gBuffer, "%d", trkpt->dgpsid);
                                 writeSimpleTag(fp, 4, "dgpsid", gBuffer);
                             }
-                            writeExtensions(fp, 4, &trkpt->extensions);
+                            writePointExtensions(fp, 4, &*trkpt);
                             writeLineIndent(fp, 3);
                             writeStr(fp, "</trkpt>");
                         }
@@ -992,6 +1103,7 @@ GPX_model::retCode_e GPXFile::save(ofstream* fp, const GPX_model* gpxm)
             writeStr(fp, "</trk>");
         }
     }
+    writeExtensions(fp, 1, &gpxm->extensions);
     writeStr(fp, "</gpx>");
     return GPX_model::GPXM_OK;
 }

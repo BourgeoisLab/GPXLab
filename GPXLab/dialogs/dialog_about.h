@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -36,8 +36,8 @@ class Dialog_about;
  * @brief About dialogue
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.1
- * @date 6 Dec 2014
+ * @version 1.2
+ * @date 4 Feb 2015
  */
 class Dialog_about : public QDialog
 {
@@ -53,6 +53,7 @@ public:
     ~Dialog_about();
 
 private:
+
     Ui::Dialog_about *ui;
 };
 

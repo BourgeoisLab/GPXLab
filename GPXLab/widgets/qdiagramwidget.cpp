@@ -1,5 +1,5 @@
 /****************************************************************************
- *   Copyright (c) 2014 Frederic Bourgeois <bourgeoislab@gmail.com>         *
+ *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
  *                                                                          *
  *   This program is free software: you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -14,53 +14,110 @@
  *   You should have received a copy of the GNU General Public License      *
  *   along with This program. If not, see <http://www.gnu.org/licenses/>.   *
  ****************************************************************************/
- 
+
+#include "gpxlab.h"
 #include "qdiagramwidget.h"
 
 QDiagramWidget::QDiagramWidget(QWidget *parent) :
     QCustomPlotExt(parent)
 {
     xAxis->setTickLabelType(QCPAxis::ltDateTime);
-    xAxis->setDateTimeFormat("d.M.yyyy\nH:mm:ss");
+    xAxis->setDateTimeFormat("H:mm:ss");
     xAxis->setRange(0.0, 1.0);
-
-    yAxis->setLabel(tr("Altitude [m]"));
     yAxis->setRange(0.0, 1.0);
-
-    yAxis2->setLabel(tr("Speed [km/h]"));
     yAxis2->setRange(0.0, 1.0);
     yAxis2->setVisible(true);
 
     addGraph(xAxis, yAxis2);
     graph(0)->setPen(QPen(Qt::lightGray));
-    graph(0)->setName(tr("Speed"));
 
     addGraph(xAxis, yAxis);
     graph(1)->setPen(QPen(Qt::blue));
     graph(1)->setBrush(QBrush(QColor(0, 0, 255, 20)));
-    graph(1)->setName(tr("Altitude"));
 
-    addMarker();
+    QPen pen;
+    pen.setColor(GPXLab::appColor);
+    pen.setStyle(Qt::DashLine);
+    addMarker(pen);
 }
 
-void QDiagramWidget::setData(const QVector<double>& time, const QVector<double>& altitude, const QVector<double>& speed)
+void QDiagramWidget::init(const GPX_wrapper *gpxmw)
 {
-    double timeMin, timeMax, altitudeMin, altitudeMax, speedMin, speedMax;
+    const GPX_wrapper::TrackPointProperty choices[] = {
+        GPX_wrapper::none,
+        GPX_wrapper::distance,
+        GPX_wrapper::leglength,
+        GPX_wrapper::speed,
+        GPX_wrapper::altitude,
+        GPX_wrapper::latitude,
+        GPX_wrapper::longitude,
+        GPX_wrapper::heading,
+        GPX_wrapper::sat,
+        GPX_wrapper::magvar,
+        GPX_wrapper::hdop,
+        GPX_wrapper::vdop,
+        GPX_wrapper::pdop,
+        GPX_wrapper::ageofdgpsdata,
+        GPX_wrapper::dgpsid,
+        GPX_wrapper::geoidheight,
+        GPX_wrapper::heartrate
+    };
+
+    this->gpxmw = gpxmw;
+
+    curveMain = GPX_wrapper::altitude;
+    curveSecondary = GPX_wrapper::distance;
+
+    QAction *actCurveMain = new QAction("Main curve", this);
+    QAction *actCurveSecondary = new QAction("Secondary curve", this);
+    QMenu *submenuCurveMain = new QMenu;
+    QMenu *submenuCurveSecondary = new QMenu;
+    actCurveMain->setMenu(submenuCurveMain);
+    actCurveSecondary->setMenu(submenuCurveSecondary);
+    addAction(actCurveMain);
+    addAction(actCurveSecondary);
+    for (size_t i = 0; i < sizeof(choices)/sizeof(GPX_wrapper::TrackPointProperty); ++i)
+    {
+        QAction *actCurveMain = new QAction(gpxmw->getTrackPointPropertyLabel(choices[i]), this);
+        actCurveMain->setData(choices[i]);
+        connect(actCurveMain, SIGNAL(triggered()), this, SLOT(on_actionCurveMain_triggered()));
+        submenuCurveMain->addAction(actCurveMain);
+
+        QAction *actCurveSecondary = new QAction(gpxmw->getTrackPointPropertyLabel(choices[i]), this);
+        actCurveSecondary->setData(choices[i]);
+        connect(actCurveSecondary, SIGNAL(triggered()), this, SLOT(on_actionCurveSecondary_triggered()));
+        submenuCurveSecondary->addAction(actCurveSecondary);
+    }
+
+    build();
+}
+
+void QDiagramWidget::build()
+{
+    double xMin, xMax, CurveMainMin, CurveMainMax, CurveSecondaryMin, CurveSecondaryMax;
 
     // clear old values
     clear();
 
+    // generate new values
+    gpxmw->generateDiagramValues(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), curveMain, curveSecondary);
+
     // get range
-    getMinMax(time, timeMin, timeMax);
-    getMinMax(altitude, altitudeMin, altitudeMax);
-    getMinMax(speed, speedMin, speedMax);
+    getMinMax(gpxmw->getTimeValues(), xMin, xMax);
+    getMinMax(gpxmw->getCurveMainValues(), CurveMainMin, CurveMainMax);
+    getMinMax(gpxmw->getCurveSecondaryValues(), CurveSecondaryMin, CurveSecondaryMax);
 
     // set new values
-    xAxis->setRange(timeMin, timeMax);
-    yAxis->setRange(altitudeMin, altitudeMax);
-    yAxis2->setRange(speedMin, speedMax);
-    graph(1)->setData(time, altitude);
-    graph(0)->setData(time, speed);
+    xAxis->setRange(xMin, xMax);
+    yAxis->setLabel(gpxmw->getTrackPointPropertyLabel(curveMain));
+    yAxis->setRange(CurveMainMin, CurveMainMax);
+    yAxis2->setLabel(gpxmw->getTrackPointPropertyLabel(curveSecondary));
+    yAxis2->setRange(CurveSecondaryMin, CurveSecondaryMax);
+    graph(1)->setData(gpxmw->getTimeValues(), gpxmw->getCurveMainValues());
+    graph(0)->setData(gpxmw->getTimeValues(), gpxmw->getCurveSecondaryValues());
+
+    yAxis->setVisible((curveMain == GPX_wrapper::none) ? false : true);
+    yAxis2->setVisible((curveSecondary == GPX_wrapper::none) ? false : true);
 
     // update extensions
     updateExt();
@@ -80,4 +137,33 @@ void QDiagramWidget::clear()
 
     // replot
     replot();
+}
+
+void QDiagramWidget::on_actionCurveMain_triggered()
+{
+    QAction *action = qobject_cast<QAction *>(sender());
+    if (action)
+    {
+        curveMain = (GPX_wrapper::TrackPointProperty)action->data().toInt();
+        build();
+    }
+}
+
+void QDiagramWidget::on_actionCurveSecondary_triggered()
+{
+    QAction *action = qobject_cast<QAction *>(sender());
+    if (action)
+    {
+        curveSecondary = (GPX_wrapper::TrackPointProperty)action->data().toInt();
+        build();
+    }
+}
+GPX_wrapper::TrackPointProperty QDiagramWidget::getCurveMain() const
+{
+    return curveMain;
+}
+
+GPX_wrapper::TrackPointProperty QDiagramWidget::getCurveSecondary() const
+{
+    return curveSecondary;
 }

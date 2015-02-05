@@ -82,4 +82,9 @@ namespace qmapcontrol
     {
         mBoundingBox = QRectF( QPointF( qMinX, qMinY ), QPointF(qMaxX, qMaxY ) ); 
     }
+
+    int MapAdapter::tileSize()
+    {
+        return mTileSize;
+    }
 }

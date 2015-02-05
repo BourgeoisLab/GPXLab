@@ -80,19 +80,23 @@ namespace qmapcontrol
         */
         QNetworkAccessManager* nextFreeHttp();
 
+        /*!
+         * sets the disk cache for each network manager
+         * @param qCache the disk cache object to set
+         */
+        void setDiskCache( QNetworkDiskCache* qCache );
+
     private:
         Q_DISABLE_COPY (MapNetwork)
 
         ImageManager* parent;
-        QList<QNetworkAccessManager*> httpThreads;
+        QNetworkAccessManager* http;
         QList<QNetworkReply*> replyList;
         QMap<QString, QString> loadingMap;
         qreal loaded;
         mutable QMutex vectorMutex;
         bool    networkActive;
-        int     nextThreadIndex;
-
-        static const int kMAX_HTTP_THREADS;
+        bool    cacheEnabled;
 
     private slots:
         void requestFinished(QNetworkReply *reply);
