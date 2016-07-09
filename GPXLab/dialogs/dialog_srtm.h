@@ -42,8 +42,8 @@ class Dialog_srtm;
  * @see GPX_model and SRTM
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.2
- * @date 4 Jan 2015
+ * @version 1.3
+ * @date 15 Feb 2015
  */
 class Dialog_srtm : public QDialog
 {

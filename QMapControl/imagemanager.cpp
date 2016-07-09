@@ -34,7 +34,6 @@ static const int kDefaultPixmapCacheSizeKB = 20000;
 
 namespace qmapcontrol
 {
-    ImageManager* ImageManager::m_Instance = 0;
     ImageManager::ImageManager(QObject* parent)
             : QObject(parent),
               emptyPixmap(QPixmap(1,1)),
@@ -59,11 +58,8 @@ namespace qmapcontrol
 
     ImageManager::~ImageManager()
     {
-        if (ImageManager::m_Instance != 0)
-        {
-            delete ImageManager::m_Instance;
-        }
         delete net;
+        net = 0;
     }
 
     QPixmap ImageManager::getImage(const QString& host, const QString& url)

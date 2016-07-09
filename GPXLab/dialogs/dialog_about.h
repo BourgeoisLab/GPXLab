@@ -36,8 +36,8 @@ class Dialog_about;
  * @brief About dialogue
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.2
- * @date 4 Feb 2015
+ * @version 1.3
+ * @date 9 Jul 2016
  */
 class Dialog_about : public QDialog
 {

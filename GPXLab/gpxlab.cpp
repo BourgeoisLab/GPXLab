@@ -22,11 +22,11 @@
 
 //////////////////////////////////////////////////////////////////////////////
 
-const QString GPXLab::organisationName = "BourgeoisLab";
+const QString GPXLab::organisationName = QString(ORGANISATION);
 
-const QString GPXLab::appName = "GPXLab";
+const QString GPXLab::appName = QString(TARGET);
 
-const QString GPXLab::appVersion = "0.3.0";
+const QString GPXLab::appVersion = QString(VERSION);
 
 const QColor GPXLab::appColor = QColor(0, 200, 50);
 
@@ -161,7 +161,7 @@ GPXLab::GPXLab(const QString &fileName, QWidget *parent) :
     addActions(ui->menuView->actions());
 
     // connect signals for track and point selection
-    connect(ui->diagramWidget, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(diagram_selectionChanged(QMouseEvent*)));
+    connect(ui->diagramWidget, SIGNAL(selectionChanged(time_t)), this, SLOT(diagram_selectionChanged(time_t)));
     connect(ui->mapWidget, SIGNAL(selectionChanged(int, int, double, double)), this, SLOT(map_selectionChanged(int, int, double, double)));
     connect(ui->mapWidget, SIGNAL(selectionChanged(int)), this, SLOT(map_selectionChanged(int)));
     connect(ui->tableWidgetPoints, SIGNAL(selectionChanged(int)), this, SLOT(table_selectionChanged(int)));
@@ -312,18 +312,18 @@ void GPXLab::setMainWindowTitle()
 {
     if (gpxmw->getFileName().isEmpty())
     {
-        setWindowTitle(appName);
+        setWindowTitle(appName + " v" + appVersion);
     }
     else
     {
         if (undoStack->isClean())
         {
-            setWindowTitle(gpxmw->getFileName() + " - " + appName);
+            setWindowTitle(gpxmw->getFileName() + " - " + appName + " v" + appVersion);
             ui->actionSave_File->setEnabled(false);
         }
         else
         {
-            setWindowTitle("*" + gpxmw->getFileName() + " - " + appName);
+            setWindowTitle("*" + gpxmw->getFileName() + " - " + appName + " v" + appVersion);
             ui->actionSave_File->setEnabled(true);
         }
     }
@@ -646,7 +646,7 @@ void GPXLab::trackSelectionChanged(int trackNumber, int trackSegmentNumber, int 
     // diagram
     ui->diagramWidget->build();
     if (trkpt)
-        ui->diagramWidget->setMarkerValue(trkpt->timestamp);
+        ui->diagramWidget->select(trkpt->timestamp);
 
     // point list
     ui->tableWidgetPoints->build(pointNumber);
@@ -679,7 +679,7 @@ void GPXLab::pointEdited(int trackNumber, int trackSegmentNumber, int pointNumbe
     {
         ui->diagramWidget->build();
         if (trkpt)
-            ui->diagramWidget->setMarkerValue(trkpt->timestamp);
+            ui->diagramWidget->select(trkpt->timestamp);
     }
 
     // point list
@@ -718,7 +718,7 @@ void GPXLab::pointSelectionChanged(int pointNumber, const GPX_wptType *trkpt)
     if (trkpt)
     {
         ui->mapWidget->selectedPointSetVisible(true, trkpt->latitude, trkpt->longitude);
-        ui->diagramWidget->setMarkerValue(trkpt->timestamp);
+        ui->diagramWidget->select(trkpt->timestamp);
         ui->tableWidgetPoints->selectRow(pointNumber);
     }
 }
@@ -774,14 +774,12 @@ void GPXLab::table_selectionChanged(int pointNumber)
     gpxmw->select(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), pointNumber);
 }
 
-void GPXLab::diagram_selectionChanged(QMouseEvent* event)
+void GPXLab::diagram_selectionChanged(time_t timestamp)
 {
-    Q_UNUSED(event);
-
     if (closing)
         return;
 
-    gpxmw->select(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), (time_t)ui->diagramWidget->getMarkerValue());
+    gpxmw->select(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), timestamp);
 }
 
 void GPXLab::cal_selectionChanged(int trackNumber)

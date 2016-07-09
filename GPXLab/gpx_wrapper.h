@@ -41,8 +41,8 @@
  * @see GPX_Model
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.2
- * @date 5 Feb 2015
+ * @version 1.4
+ * @date 9 Jul 2016
  */
 class GPX_wrapper : public QObject
 {

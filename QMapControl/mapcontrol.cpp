@@ -28,48 +28,69 @@
 
 namespace qmapcontrol
 {
-
     MapControl::MapControl (QWidget * parent, Qt::WindowFlags windowFlags)
-        :   QWidget( parent, windowFlags ),
+        :   QFrame( parent, windowFlags ),
+            m_layermanager(0),
+            m_imagemanager(0),
             size(100,100),
+            mouse_wheel_events(true),
+            mousepressed(false),
             mymousemode(Panning),
             scaleVisible(false),
             crosshairsVisible(true),
-            updateSuspendedCounter(0)
+            m_loadingFlag(false),
+            steps(0),
+            m_doubleBuffer(0),
+			updateSuspendedCounter(0)
     {
         __init();
     }
 
     MapControl::MapControl(QSize size, MouseMode mousemode, bool showScale, bool showCrosshairs, QWidget * parent, Qt::WindowFlags windowFlags)
-        :   QWidget( parent, windowFlags ),
+        :   QFrame( parent, windowFlags ),
+            m_layermanager(0),
+            m_imagemanager(0),
             size(size),
+            mouse_wheel_events(true),
+            mousepressed(false),
             mymousemode(mousemode),
             scaleVisible(showScale),
             crosshairsVisible(showCrosshairs),
-            updateSuspendedCounter(0)
+            m_loadingFlag(false),
+            steps(0),
+            m_doubleBuffer(0),
+			updateSuspendedCounter(0)
     {
         __init();
     }
 
     MapControl::~MapControl()
     {
-        if ( layermanager )
+        if ( m_layermanager )
         {
-            delete layermanager;
+            m_layermanager->deleteLater();
+            m_layermanager = 0;
+        }
+
+        if ( m_imagemanager )
+        {
+            m_imagemanager->deleteLater();
+            m_imagemanager = 0;
         }
     }
 
     void MapControl::__init()
     {
-        layermanager = new LayerManager(this, size);
+        m_layermanager = new LayerManager(this, size);
+        m_imagemanager = new ImageManager(this);
         screen_middle = QPoint(size.width()/2, size.height()/2);
 
         mousepressed = false;
 
-        connect(ImageManager::instance(), SIGNAL(imageReceived()),
+        connect(m_imagemanager, SIGNAL(imageReceived()),
                 this, SLOT(updateRequestNew()));
 
-        connect(ImageManager::instance(), SIGNAL(loadingFinished()),
+        connect(m_imagemanager, SIGNAL(loadingFinished()),
                 this, SLOT(loadingFinished()));
 
         this->setMaximumSize(size.width()+1, size.height()+1);
@@ -91,22 +112,22 @@ namespace qmapcontrol
 
     QPointF MapControl::currentCoordinate() const
     {
-        return layermanager->currentCoordinate();
+        return m_layermanager->currentCoordinate();
     }
 
     Layer* MapControl::layer(const QString& layername) const
     {
-        return layermanager->layer(layername);
+        return m_layermanager->layer(layername);
     }
 
     QList<QString> MapControl::layers() const
     {
-        return layermanager->layers();
+        return m_layermanager->layers();
     }
 
     int MapControl::numberOfLayers() const
     {
-        return layermanager->layers().size();
+        return m_layermanager->layers().size();
     }
 
     void MapControl::followGeometry(const Geometry* geom) const
@@ -125,7 +146,7 @@ namespace qmapcontrol
 
     void MapControl::positionChanged(Geometry* geom)
     {
-        if ( !layermanager->layer() || !layermanager->layer()->mapadapter() )
+        if ( !m_layermanager->layer() || !m_layermanager->layer()->mapadapter() )
         {
             qDebug() << "MapControl::positionChanged() - no layers configured";
             return;
@@ -134,10 +155,10 @@ namespace qmapcontrol
         Point* point = dynamic_cast<Point*>(geom);
         if (point!=0)
         {
-            QPoint start = layermanager->layer()->mapadapter()->coordinateToDisplay(currentCoordinate());
-            QPoint dest = layermanager->layer()->mapadapter()->coordinateToDisplay(point->coordinate());
+            QPoint start = m_layermanager->layer()->mapadapter()->coordinateToDisplay(currentCoordinate());
+            QPoint dest = m_layermanager->layer()->mapadapter()->coordinateToDisplay(point->coordinate());
             QPoint step = (dest-start);
-            layermanager->scrollView(step);
+            m_layermanager->scrollView(step);
             updateRequestNew();
         }
     }
@@ -158,20 +179,20 @@ namespace qmapcontrol
     }
     void MapControl::tick()
     {
-        if ( !layermanager->layer() || !layermanager->layer()->mapadapter() )
+        if ( !m_layermanager->layer() || !m_layermanager->layer()->mapadapter() )
         {
             qDebug() << "MapControl::tick() - no layers configured";
             return;
         }
 
-        QPoint start = layermanager->layer()->mapadapter()->coordinateToDisplay(currentCoordinate());
-        QPoint dest = layermanager->layer()->mapadapter()->coordinateToDisplay(target);
+        QPoint start = m_layermanager->layer()->mapadapter()->coordinateToDisplay(currentCoordinate());
+        QPoint dest = m_layermanager->layer()->mapadapter()->coordinateToDisplay(target);
 
         QPoint step = (dest-start)/steps;
-        layermanager->scrollView(step);
+        m_layermanager->scrollView(step);
 
         update();
-        layermanager->updateRequest();
+        m_layermanager->updateRequest();
         steps--;
         if (steps>0)
         {
@@ -187,20 +208,22 @@ namespace qmapcontrol
     {
         Q_UNUSED(evnt);
 
-        static QPixmap *doubleBuffer( new QPixmap(width(), height()) );
-
-        //check for resize change
-        if ( doubleBuffer->width() != width() || doubleBuffer->height() != height() )
+        if ( m_doubleBuffer == 0 )
         {
-            delete doubleBuffer;
-            doubleBuffer = new QPixmap(width(), height());
+            m_doubleBuffer =  new QPixmap(width(), height());
+        }
+        //check for resize change
+        else if ( m_doubleBuffer->width() != width() || m_doubleBuffer->height() != height() )
+        {
+            delete m_doubleBuffer;
+            m_doubleBuffer = new QPixmap(width(), height());
         }
 
         QPainter dbPainter;
-        dbPainter.begin(doubleBuffer);
+        dbPainter.begin(m_doubleBuffer);
 
-        layermanager->drawImage(&dbPainter);
-        layermanager->drawGeoms(&dbPainter);
+        m_layermanager->drawImage(&dbPainter);
+        m_layermanager->drawGeoms(&dbPainter);
 
         // draw scale
         if (scaleVisible)
@@ -211,7 +234,7 @@ namespace qmapcontrol
                 distanceList<<5000000<<2000000<<1000000<<1000000<<1000000<<100000<<100000<<50000<<50000<<10000<<10000<<10000<<1000<<1000<<500<<200<<100<<50<<25;
             }
 
-            if (currentZoom() >= layermanager->minZoom() && distanceList.size() > currentZoom())
+            if (currentZoom() >= m_layermanager->minZoom() && distanceList.size() > currentZoom())
             {
                 double line;
                 line = distanceList.at( currentZoom() ) / pow(2.0, 18-currentZoom() ) / 0.597164;
@@ -257,7 +280,7 @@ namespace qmapcontrol
         dbPainter.end();
         QPainter painter;
         painter.begin( this );
-        painter.drawPixmap( rect(), *doubleBuffer, doubleBuffer->rect() );
+        painter.drawPixmap( rect(), *m_doubleBuffer, m_doubleBuffer->rect() );
         painter.end();
     }
 
@@ -276,9 +299,9 @@ namespace qmapcontrol
 
         if (!(evnt->modifiers() & Qt::ShiftModifier))
         {
-            layermanager->mouseEvent(evnt);
+            m_layermanager->mouseEvent(evnt);
 
-            if (layermanager->layers().size()>0)
+            if (m_layermanager->layers().size()>0)
             {
                 if (evnt->button() == 1)
                 {
@@ -325,7 +348,7 @@ namespace qmapcontrol
         if (mousepressed && (mymousemode == Panning || mymousemode == PanningNoZoom))
         {
             QPoint offset = pre_click_px - QPoint(evnt->x(), evnt->y());
-            layermanager->scrollView(offset);
+            m_layermanager->scrollView(offset);
             pre_click_px = QPoint(evnt->x(), evnt->y());
         }
         else if (mousepressed && (mymousemode == Dragging || mymousemode == DraggingNoZoom))
@@ -334,7 +357,7 @@ namespace qmapcontrol
         }
         else
         {
-            layermanager->mouseMoveEvent(evnt);
+            m_layermanager->mouseMoveEvent(evnt);
         }
 
         update();
@@ -347,7 +370,7 @@ namespace qmapcontrol
         {
             if(evnt->delta() > 0)
             {
-                if( currentZoom() == layermanager->maxZoom() )
+                if( currentZoom() == m_layermanager->maxZoom() )
                 {
                     return;
                 }
@@ -355,18 +378,18 @@ namespace qmapcontrol
                 setView(clickToWorldCoordinate(evnt->pos())); //zoom in under mouse cursor
                 zoomIn();
                 suspendUpdate(false);
-                layermanager->forceRedraw();
+                m_layermanager->forceRedraw();
             }
             else
             {
-                if( currentZoom() == layermanager->minZoom() )
+                if( currentZoom() == m_layermanager->minZoom() )
                 {
                     return;
                 }
                 suspendUpdate(true);
                 zoomOut();
                 suspendUpdate(false);
-                layermanager->forceRedraw();
+                m_layermanager->forceRedraw();
             }
             evnt->accept();
         }
@@ -376,19 +399,24 @@ namespace qmapcontrol
         }
     }
 
+    ImageManager* MapControl::getImageManager()
+    {
+        return m_imagemanager;
+    }
+
     QPointF MapControl::clickToWorldCoordinate(QPoint click)
     {
-        if ( !layermanager->layer() || !layermanager->layer()->mapadapter() )
+        if ( !m_layermanager->layer() || !m_layermanager->layer()->mapadapter() )
         {
             qDebug() << "MapControl::clickToWorldCoordinate() - no layers configured";
             return QPointF();
         }
         // click coordinate to image coordinate
-        QPoint displayToImage= QPoint(click.x()-screen_middle.x()+layermanager->getMapmiddle_px().x(),
-                                      click.y()-screen_middle.y()+layermanager->getMapmiddle_px().y());
+        QPoint displayToImage= QPoint(click.x()-screen_middle.x()+m_layermanager->getMapmiddle_px().x(),
+                                      click.y()-screen_middle.y()+m_layermanager->getMapmiddle_px().y());
 
         // image coordinate to world coordinate
-        return layermanager->layer()->mapadapter()->displayToCoordinate(displayToImage);
+        return m_layermanager->layer()->mapadapter()->displayToCoordinate(displayToImage);
     }
 
     void MapControl::updateRequest(QRect rect)
@@ -398,120 +426,121 @@ namespace qmapcontrol
 
     void MapControl::updateRequestNew()
     {
-        layermanager->forceRedraw();
+        m_layermanager->forceRedraw();
     }
 
     // slots
     void MapControl::zoomIn()
     {
-        layermanager->zoomIn();
+        m_layermanager->zoomIn();
         updateView();
         emit viewChanged(currentCoordinate(), currentZoom());
     }
 
     void MapControl::zoomOut()
     {
-        layermanager->zoomOut();
+        m_layermanager->zoomOut();
         updateView();
         emit viewChanged(currentCoordinate(), currentZoom());
     }
 
     void MapControl::setZoom(int zoomlevel)
     {
-        layermanager->setZoom(zoomlevel);
+        m_layermanager->setZoom(zoomlevel);
         updateView();
         emit viewChanged(currentCoordinate(), currentZoom());
     }
 
     int MapControl::currentZoom() const
     {
-        return layermanager->currentZoom();
+        return m_layermanager->currentZoom();
     }
 
     int MapControl::minZoom() const
     {
-        return layermanager->minZoom();
+        return m_layermanager->minZoom();
     }
 
     int MapControl::maxZoom() const
     {
-        return layermanager->maxZoom();
+        return m_layermanager->maxZoom();
     }
 
     void MapControl::scrollLeft(int pixel)
     {
-        layermanager->scrollView(QPoint(-pixel,0));
+        m_layermanager->scrollView(QPoint(-pixel,0));
         updateView();
     }
 
     void MapControl::scrollRight(int pixel)
     {
-        layermanager->scrollView(QPoint(pixel,0));
+        m_layermanager->scrollView(QPoint(pixel,0));
         updateView();
     }
 
     void MapControl::scrollUp(int pixel)
     {
-        layermanager->scrollView(QPoint(0,-pixel));
+        m_layermanager->scrollView(QPoint(0,-pixel));
         updateView();
     }
 
     void MapControl::scrollDown(int pixel)
     {
-        layermanager->scrollView(QPoint(0,pixel));
+        m_layermanager->scrollView(QPoint(0,pixel));
         updateView();
     }
 
     void MapControl::scroll(const QPoint scroll)
     {
-        layermanager->scrollView(scroll);
+        m_layermanager->scrollView(scroll);
         updateView();
     }
 
     void MapControl::updateView() const
     {
-        layermanager->setView( currentCoordinate() );
+        m_layermanager->setView( currentCoordinate() );
         emit viewChanged(currentCoordinate(), currentZoom());
     }
 
     void MapControl::setView(const QPointF& coordinate) const
     {
-        layermanager->setView(coordinate);
+        m_layermanager->setView(coordinate);
         emit viewChanged(currentCoordinate(), currentZoom());
     }
 
     void MapControl::setView(const QList<QPointF> coordinates) const
     {
-        layermanager->setView(coordinates);
+        m_layermanager->setView(coordinates);
         emit viewChanged(currentCoordinate(), currentZoom());
     }
 
     void MapControl::setViewAndZoomIn(const QList<QPointF> coordinates) const
     {
-        layermanager->setViewAndZoomIn(coordinates);
+        m_layermanager->setViewAndZoomIn(coordinates);
         emit viewChanged(currentCoordinate(), currentZoom());
     }
 
     void MapControl::setView(const Point* point) const
     {
-        layermanager->setView(point->coordinate());
+        m_layermanager->setView(point->coordinate());
     }
 
     void MapControl::loadingFinished()
     {
-        layermanager->removeZoomImage();
+        m_layermanager->removeZoomImage();
     }
 
     void MapControl::addLayer(Layer* layer)
     {
-        layermanager->addLayer(layer);
+        layer->setImageManager(m_imagemanager);
+        m_layermanager->addLayer(layer);
         update();
     }
 
     void MapControl::removeLayer( Layer* layer )
     {
         disconnect(layer, 0, 0, 0);
-        layermanager->removeLayer( layer );
+        m_layermanager->removeLayer( layer );
         update();
     }
 
@@ -532,12 +561,12 @@ namespace qmapcontrol
 
     void MapControl::enablePersistentCache( const QDir& path, const int qDiskSizeMB )
     {
-        ImageManager::instance()->setCacheDir( path, qDiskSizeMB );
+        m_imagemanager->setCacheDir( path, qDiskSizeMB );
     }
 
     void MapControl::setProxy(QString host, int port, const QString username, const QString password)
     {
-        ImageManager::instance()->setProxy(host, port, username, password);
+        m_imagemanager->setProxy(host, port, username, password);
     }
 
     void MapControl::showScale(bool visible)
@@ -558,46 +587,48 @@ namespace qmapcontrol
             screen_middle = QPoint(newSize.width()/2, newSize.height()/2);
 
             this->setMaximumSize(newSize.width()+1, newSize.height()+1);
-            layermanager->resize(newSize);
+            m_layermanager->resize(newSize);
 
+        	QFrame::resize(newSize);
+			
             emit viewChanged(currentCoordinate(), currentZoom());
         }
     }
 
    void MapControl::setUseBoundingBox( bool usebounds )
    {
-        if( layermanager )
-            layermanager->setUseBoundingBox( usebounds );
+        if( m_layermanager )
+            m_layermanager->setUseBoundingBox( usebounds );
    }
 
    bool MapControl::isBoundingBoxEnabled()
    {
-        if( layermanager )
-            return layermanager->isBoundingBoxEnabled();
+        if( m_layermanager )
+            return m_layermanager->isBoundingBoxEnabled();
         return false;
    }
 
    void MapControl::setBoundingBox( QRectF &rect )
    {
-        if( layermanager )
-            layermanager->setBoundingBox( rect );
+        if( m_layermanager )
+            m_layermanager->setBoundingBox( rect );
    }
 
    QRectF MapControl::getBoundingBox()
    {
-        if( layermanager )
-            return layermanager->getBoundingBox();
+        if( m_layermanager )
+            return m_layermanager->getBoundingBox();
 
-        // Return an empty QRectF if there is no layermanager
+        // Return an empty QRectF if there is no m_layermanager
         return QRectF();
    }
 
    QRectF MapControl::getViewport()
    {
-       if( layermanager )
-           return layermanager->getViewport();
+       if( m_layermanager )
+           return m_layermanager->getViewport();
 
-       // Return an empty QRectF if there is no layermanager
+       // Return an empty QRectF if there is no m_layermanager
        return QRectF();
    }
 
@@ -611,7 +642,7 @@ namespace qmapcontrol
 
    int MapControl::loadingQueueSize()
    {
-       return ImageManager::instance()->loadQueueSize();
+       return m_imagemanager->loadQueueSize();
    }
 
    void MapControl::suspendUpdate(bool suspend)

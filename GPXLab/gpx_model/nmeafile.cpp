@@ -26,6 +26,28 @@
 static bool hasDate = false;
 static int tm_mday = 0, tm_mon = 0, tm_year = 0;
 
+static void SYS_setenv(const char *name, const char *value)
+{
+  #ifdef WIN32
+    char str[128];
+    sprintf(str, "%s=%s", name, value);
+    putenv(str);
+  #else
+    setenv(name, value, 1);
+  #endif
+}
+
+static void SYS_unsetenv(const char *name)
+{
+  #ifdef WIN32
+    char str[128];
+    sprintf(str, "%s=", name);
+    putenv(str);
+  #else
+    unsetenv(name);
+  #endif
+}
+
 static int parse_hex(char c)
 {
     if (c < '0')
@@ -122,7 +144,7 @@ static int parseNMEA(GPX_wptType *pWp, const char *pNmea)
         timeinfo.tm_mon = tm_mon;
         timeinfo.tm_year = tm_year;
         timeinfo.tm_isdst = 0;
-        pWp->timestamp = mktime(&timeinfo) - timezone;
+        pWp->timestamp = mktime(&timeinfo);
         p = strchr(p, '.') + 1;
         pWp->millisecond = atoi(p);
 
@@ -209,7 +231,7 @@ static int parseNMEA(GPX_wptType *pWp, const char *pNmea)
             timeinfo.tm_mday = tm_mday;
             timeinfo.tm_mon = tm_mon;
             timeinfo.tm_year = tm_year;
-            pWp->timestamp = mktime(&timeinfo) - timezone;
+            pWp->timestamp = mktime(&timeinfo);
             return 0;
         }
 
@@ -244,7 +266,7 @@ static int parseNMEA(GPX_wptType *pWp, const char *pNmea)
         timeinfo.tm_mday = itime / 10000;
         timeinfo.tm_mon = (itime % 10000) / 100 - 1;
         timeinfo.tm_year = 100 + (itime % 100);
-        pWp->timestamp = mktime(&timeinfo) - timezone;
+        pWp->timestamp = mktime(&timeinfo);
         tm_mday = timeinfo.tm_mday;
         tm_mon = timeinfo.tm_mon;
         tm_year = timeinfo.tm_year;
@@ -322,6 +344,11 @@ GPX_model::retCode_e NMEAFile::load(ifstream* fp, GPX_model* gpxm, const string&
     char buffer[NMEA_MAXLENGTH];
     bool hasComputedMissingDate = false;
 
+    // set timezone temporary to UTC
+    char *tz = getenv("TZ");
+    SYS_setenv("TZ", "UTC");
+    tzset();
+
     hasDate = false;
     tm_mday = 1;
     tm_mon = 0;
@@ -344,7 +371,7 @@ GPX_model::retCode_e NMEAFile::load(ifstream* fp, GPX_model* gpxm, const string&
                     timeinfo->tm_mon = tm_mon;
                     timeinfo->tm_year = tm_year;
                     timeinfo->tm_isdst = 0;
-                    itrkpt->timestamp = mktime(timeinfo) - timezone;
+                    itrkpt->timestamp = mktime(timeinfo);
                 }
 
                 // add date to last point
@@ -355,7 +382,7 @@ GPX_model::retCode_e NMEAFile::load(ifstream* fp, GPX_model* gpxm, const string&
                     timeinfo->tm_mon = tm_mon;
                     timeinfo->tm_year = tm_year;
                     timeinfo->tm_isdst = 0;
-                    trkpt_last.timestamp = mktime(timeinfo) - timezone;
+                    trkpt_last.timestamp = mktime(timeinfo);
                 }
 
                 hasComputedMissingDate = true;
@@ -373,6 +400,13 @@ GPX_model::retCode_e NMEAFile::load(ifstream* fp, GPX_model* gpxm, const string&
             trkpt.clear();
         }
     }
+
+    // change back timezone
+    if (tz)
+        SYS_setenv("TZ", tz);
+    else
+        SYS_unsetenv("TZ");
+    tzset();
 
     // add last track point
     trkseg.trkpt.push_back(trkpt_last);

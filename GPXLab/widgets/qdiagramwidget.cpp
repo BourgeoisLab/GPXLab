@@ -22,7 +22,8 @@ QDiagramWidget::QDiagramWidget(QWidget *parent) :
     QCustomPlotExt(parent)
 {
     xAxis->setTickLabelType(QCPAxis::ltDateTime);
-    xAxis->setDateTimeFormat("H:mm:ss");
+    xAxis->setDateTimeFormat("H:mm");
+    xAxis->setDateTimeSpec(Qt::UTC);
     xAxis->setRange(0.0, 1.0);
     yAxis->setRange(0.0, 1.0);
     yAxis2->setRange(0.0, 1.0);
@@ -39,6 +40,7 @@ QDiagramWidget::QDiagramWidget(QWidget *parent) :
     pen.setColor(GPXLab::appColor);
     pen.setStyle(Qt::DashLine);
     addMarker(pen);
+    connect(this, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(newSelection(QMouseEvent*)));
 }
 
 void QDiagramWidget::init(const GPX_wrapper *gpxmw)
@@ -99,6 +101,13 @@ void QDiagramWidget::build()
     // clear old values
     clear();
 
+    // get start time of track
+    const GPX_wptType *trkpt = gpxmw->getPoint(gpxmw->getSelectedTrackNumber(), 0, 0);
+    if (trkpt)
+        startTimestamp = gpxmw->getTrackPointPropertyAsDouble(trkpt, GPX_wrapper::timestamp);
+    else
+        startTimestamp = 0;
+
     // generate new values
     gpxmw->generateDiagramValues(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), curveMain, curveSecondary);
 
@@ -137,6 +146,17 @@ void QDiagramWidget::clear()
 
     // replot
     replot();
+}
+
+void QDiagramWidget::select(time_t timestamp)
+{
+    setMarkerValue((double)(timestamp - startTimestamp));
+}
+
+void QDiagramWidget::newSelection(QMouseEvent* event)
+{
+    Q_UNUSED(event);
+    emit selectionChanged((time_t)getMarkerValue() + startTimestamp);
 }
 
 void QDiagramWidget::on_actionCurveMain_triggered()

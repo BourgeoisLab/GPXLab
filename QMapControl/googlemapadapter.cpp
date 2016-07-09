@@ -44,8 +44,7 @@ namespace qmapcontrol
             case satellite: return "s";
             case terrain: return "t";
             case hybrid: return "h";
-            case raster: return "r";
-            case maps:
+            case roadmap:
             default: 
                 return "m";
         }

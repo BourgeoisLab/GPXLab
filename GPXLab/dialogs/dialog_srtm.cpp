@@ -39,7 +39,8 @@ Dialog_srtm::Dialog_srtm(const GPX_wrapper *gpxmw, QWidget *parent) :
 
     // add original curve
     ui->widgetPlot->xAxis->setTickLabelType(QCPAxis::ltDateTime);
-    ui->widgetPlot->xAxis->setDateTimeFormat("d.M.yyyy\nH:mm:ss");
+    ui->widgetPlot->xAxis->setDateTimeFormat("H:mm");
+    ui->widgetPlot->xAxis->setDateTimeSpec(Qt::UTC);
     ui->widgetPlot->yAxis->setLabel("Altitude [m]");
     ui->widgetPlot->addGraph();
     ui->widgetPlot->addGraph();

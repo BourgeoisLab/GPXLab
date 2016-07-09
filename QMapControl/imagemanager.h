@@ -48,16 +48,8 @@ namespace qmapcontrol
         Q_OBJECT
 
     public:
-        static ImageManager* instance()
-        {
-            if(!m_Instance)
-            {
-                m_Instance = new ImageManager;
-            }
-            return m_Instance;
-        }
-
-        ~ImageManager();
+        ImageManager(QObject* parent = 0);
+        virtual ~ImageManager();
 
         //! returns a QPixmap of the asked image
         /*!
@@ -111,10 +103,8 @@ namespace qmapcontrol
          */
         int loadQueueSize() const;
 
-    private:
-        ImageManager(QObject* parent = 0);
-        ImageManager(const ImageManager&);
-        ImageManager& operator=(const ImageManager&);
+    private:        
+        Q_DISABLE_COPY( ImageManager )
 
         QPixmap emptyPixmap;
         QPixmap loadingPixmap;
@@ -122,7 +112,6 @@ namespace qmapcontrol
         MapNetwork* net;
         QNetworkDiskCache* diskCache;
         QVector<QString> prefetch;
-        static ImageManager* m_Instance;
 
         QHash<QString,QDateTime> failedFetches;        
 

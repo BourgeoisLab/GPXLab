@@ -291,13 +291,13 @@ namespace qmapcontrol
         // 	qDebug() << "LayerManager::newOffscreenImage()";
         whilenewscroll = mapmiddle_px;
 
-        if (clearImage || ImageManager::instance()->loadQueueSize() == 0)
+        if (clearImage || mapcontrol->getImageManager()->loadQueueSize() == 0)
         {
             composedOffscreenImage.fill(Qt::white);
         }
 
         QPainter painter(&composedOffscreenImage);
-        if (showZoomImage|| ImageManager::instance()->loadQueueSize() != 0)
+        if (showZoomImage|| mapcontrol->getImageManager()->loadQueueSize() != 0)
         {
             painter.drawPixmap(screenmiddle.x()-zoomImageScroll.x(), screenmiddle.y()-zoomImageScroll.y(),zoomImage);
         }
@@ -332,7 +332,7 @@ namespace qmapcontrol
             return;
         }
 
-        ImageManager::instance()->abortLoading();
+        mapcontrol->getImageManager()->abortLoading();
         //QCoreApplication::processEvents();
 
         // layer rendern abbrechen?
@@ -397,7 +397,7 @@ namespace qmapcontrol
         }
 
         //QCoreApplication::processEvents();
-        ImageManager::instance()->abortLoading();
+        mapcontrol->getImageManager()->abortLoading();
         zoomImageScroll = QPoint(0,0);
         zoomImage.fill(Qt::white);
         QPixmap tmpImg = composedOffscreenImage.copy(screenmiddle.x()+scroll.x(),screenmiddle.y()+scroll.y(), size.width(), size.height());

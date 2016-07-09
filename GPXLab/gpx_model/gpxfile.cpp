@@ -59,6 +59,28 @@ static int gExtensionPrevState = PARSING_NONE;
 static int gExtensionLevelDepth = 0;
 static bool gExtensionDoubleOpen = false;
 
+static void SYS_setenv(const char *name, const char *value)
+{
+  #ifdef WIN32
+    char str[128];
+    sprintf(str, "%s=%s", name, value);
+    putenv(str);
+  #else
+    setenv(name, value, 1);
+  #endif
+}
+
+static void SYS_unsetenv(const char *name)
+{
+  #ifdef WIN32
+    char str[128];
+    sprintf(str, "%s=", name);
+    putenv(str);
+  #else
+    unsetenv(name);
+  #endif
+}
+
 static int getChar(void* ptr)
 {
     return ((ifstream*)((T_uXml*)ptr)->fp)->get();
@@ -74,7 +96,7 @@ static time_t strToTime(const string str)
     timeinfo.tm_min = atoi(str.substr(14, 2).c_str());
     timeinfo.tm_sec = atoi(str.substr(17, 2).c_str());
     timeinfo.tm_isdst = 0;
-    return mktime(&timeinfo) - timezone;
+    return mktime(&timeinfo);
 }
 
 static int strToMilliseconds(const string str)
@@ -721,6 +743,8 @@ static void closeTag(void* pXml, char* pTag)
 
 GPX_model::retCode_e GPXFile::load(ifstream* fp, GPX_model* gpxm, bool overwriteMetadata)
 {
+    int ret;
+    char *tz;
     T_uXml uXML;
 
     UXML_init(&uXML);
@@ -739,9 +763,23 @@ GPX_model::retCode_e GPXFile::load(ifstream* fp, GPX_model* gpxm, bool overwrite
     gOverwriteMetadata = overwriteMetadata;
     gExtensionVector = NULL;
 
-    if (UXML_parseFile(&uXML) != 0)
-        return GPX_model::GPXM_ERR_FAILED;
+    // set timezone temporary to UTC
+    tz = getenv("TZ");
+    SYS_setenv("TZ", "UTC");
+    tzset();
 
+    // parse file
+    ret = UXML_parseFile(&uXML);
+
+    // change back timezone
+    if (tz)
+        SYS_setenv("TZ", tz);
+    else
+        SYS_unsetenv("TZ");
+    tzset();
+
+    if (ret != 0)
+        return GPX_model::GPXM_ERR_FAILED;
     return GPX_model::GPXM_OK;
 }
 
@@ -1004,7 +1042,7 @@ GPX_model::retCode_e GPXFile::save(ofstream* fp, const GPX_model* gpxm)
                     writeLink(fp, 2, &*link);
             writeLineIndent(fp, 2);
             writeStr(fp, "<number>", false);
-            sprintf(gBuffer, "%d", trk->metadata.number);
+            sprintf(gBuffer, "%zu", trk->metadata.number);
             writeStr(fp, gBuffer, false);
             writeStr(fp, "</number>");
             if (!trk->metadata.type.empty())

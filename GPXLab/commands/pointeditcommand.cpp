@@ -79,7 +79,7 @@ void PointEditCommand::redo()
         if (dValue)
         {
             // temporary copy old values
-            double tmpValue[numProperties];
+            double *tmpValue = new double[numProperties];
             for (i = 0; i < numProperties; ++i)
                 tmpValue[i] = gpxmw->getTrackPointPropertyAsDouble(trkpt, property[i]);
 
@@ -89,11 +89,13 @@ void PointEditCommand::redo()
             // store old values
             for (i = 0; i < numProperties; ++i)
                 dValue[i] = tmpValue[i];
+
+            delete[] tmpValue;
         }
         else
         {
             // temporary copy old values
-            QString tmpValue[numProperties];
+            QString *tmpValue = new QString[numProperties];
             for (i = 0; i < numProperties; ++i)
                 tmpValue[i] = gpxmw->getTrackPointPropertyAsString(trkpt, property[i]);
 
@@ -103,6 +105,8 @@ void PointEditCommand::redo()
             // store old values
             for (i = 0; i < numProperties; ++i)
                 sValue[i] = tmpValue[i];
+
+            delete[] tmpValue;
         }
     }
 }

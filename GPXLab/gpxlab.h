@@ -85,6 +85,11 @@
  * 
  * @section ReleaseNotes Release Notes
  *
+ * <b>[v0.4.0]</b>
+ * - [update] Updated QMapControl to version 0.9.7.9.
+ * - [new] The diagram's x axis now show elapsed time instead of absoulte time.
+ * - [fix] Corrected timezone problem in NMEA parser.
+ *
  * <b>[v0.3.0]</b>
  * - [update] Updated QMapControl to version 0.9.7.8.
  * - [update] Updated QCustomPlot to version 1.3.0.
@@ -153,8 +158,8 @@ class GPXLab;
  * @brief Main application class
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.2
- * @date 5 Feb 2015
+ * @version 1.3
+ * @date 9 Jul 2016
  */
 class GPXLab : public QMainWindow
 {
@@ -360,7 +365,7 @@ private slots:
 
     void on_mainToolBar_visibilityChanged(bool visible);
 
-    void diagram_selectionChanged(QMouseEvent* event);
+    void diagram_selectionChanged(time_t timestamp);
 
     void table_selectionChanged(int pointNumber);
 

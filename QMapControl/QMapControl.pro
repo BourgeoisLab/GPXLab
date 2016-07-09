@@ -5,7 +5,7 @@ QT += gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 greaterThan(QT_MAJOR_VERSION, 4): cache()
 
-VERSION = 0.9.7.8
+VERSION = 0.9.7.9
 
 DEFINES += QMAPCONTROL_LIBRARY
 
@@ -31,14 +31,15 @@ HEADERS += curve.h \
            osmmapadapter.h \
            maplayer.h \
            geometrylayer.h \
-           yahoomapadapter.h \
            googlemapadapter.h \
            openaerialmapadapter.h \
            fixedimageoverlay.h \
            emptymapadapter.h \
            arrowpoint.h \
            invisiblepoint.h \
-           qmapcontrol_global.h
+           qmapcontrol_global.h \
+           bingapimapadapter.h \
+           googleapimapadapter.h
 
 SOURCES += curve.cpp \
            geometry.cpp \
@@ -58,10 +59,11 @@ SOURCES += curve.cpp \
            osmmapadapter.cpp \
            maplayer.cpp \
            geometrylayer.cpp \
-           yahoomapadapter.cpp \
            googlemapadapter.cpp \
            openaerialmapadapter.cpp \
            fixedimageoverlay.cpp \
            arrowpoint.cpp \
            invisiblepoint.cpp \
-           emptymapadapter.cpp
+           emptymapadapter.cpp \
+           bingapimapadapter.cpp \
+           googleapimapadapter.cpp

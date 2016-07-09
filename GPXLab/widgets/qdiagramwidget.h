@@ -37,8 +37,8 @@
  * @see QCustomPlotExt
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.2
- * @date 4 Jan 2015
+ * @version 1.3
+ * @date 15 Feb 2015
  */
 class QDiagramWidget : public QCustomPlotExt
 {
@@ -69,6 +69,12 @@ public:
     void clear();
 
     /**
+     * @brief Selects a new value
+     * @param timestamp New timestamp
+     */
+    void select(time_t timestamp);
+
+    /**
      * @brief Gets the property of the main curve
      * @return Property
      */
@@ -80,14 +86,24 @@ public:
      */
     GPX_wrapper::TrackPointProperty getCurveSecondary() const;
 
+signals:
+
+    /**
+     * @brief Signal when the selection changed
+     * @param timestamp New timestamp
+     */
+    void selectionChanged(time_t timestamp);
+
 private slots:
 
+    void newSelection(QMouseEvent* event);
     void on_actionCurveMain_triggered();
     void on_actionCurveSecondary_triggered();
 
 private:
 
     const GPX_wrapper *gpxmw;
+    time_t startTimestamp;
     GPX_wrapper::TrackPointProperty curveMain;
     GPX_wrapper::TrackPointProperty curveSecondary;
 };

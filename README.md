@@ -44,7 +44,7 @@ This software is free software and licensed under GPL version 3.
 
 Compiling
 ---------
-The source code was developed under Qt 5.3.2 / 5.3.3. There is no guarantee that the code will compile with previous or even later versions. 
+The source code was developed under Qt 5.7.0. There is no guarantee that the code will compile with previous or later versions. 
 
 The project is separated in two sub-projects GPXLab and QMapControl. QMapControl is a widget to display a map. Since I had to made some modifications to the original code I added the modified version here. QMapControl is compiled as a library and linked to the main sub-project GPXLab.
 
@@ -59,6 +59,13 @@ Credits
  
 Release Notes
 -------------
+**[v0.4.0]**
+- [update] Updated to Qt 5.7.
+- [update] Updated QMapControl to version 0.9.7.9.
+- [update] Updated QCustomPlot to version 1.3.2.
+- [new] The diagram's x axis now show elapsed time instead of absoulte time.
+- [fix] Corrected timezone problem in NMEA and GPX parser.
+
 **[v0.3.0]**
 - [update] Updated QMapControl to version 0.9.7.8.
 - [update] Updated QCustomPlot to version 1.3.0.

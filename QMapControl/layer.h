@@ -34,6 +34,7 @@
 
 #include "mapadapter.h"
 #include "layermanager.h"
+#include "imagemanager.h"
 #include "geometry.h"
 #include "point.h"
 
@@ -176,6 +177,7 @@ namespace qmapcontrol
         Layer::LayerType layertype() const;
 
         void setMapAdapter(MapAdapter* mapadapter);
+        void setImageManager(ImageManager* qImageManager);
 
     private:
         void moveWidgets(const QPoint mapmiddle_px) const;
@@ -201,6 +203,8 @@ namespace qmapcontrol
         bool takeevents;
         bool eventconsumned;
         mutable QRect myoffscreenViewport;
+
+        ImageManager* m_ImageManager;
 
     signals:
         //! This signal is emitted when a Geometry is clicked
@@ -230,7 +234,6 @@ namespace qmapcontrol
          * @param  visible if the layer should be visible
          */
         void setVisible(bool visible);
-
     };
 }
 #endif

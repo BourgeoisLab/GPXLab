@@ -3,9 +3,12 @@ QT += core gui network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 greaterThan(QT_MAJOR_VERSION, 4): cache()
 
+ORGANISATION = BourgeoisLab
 TARGET = GPXLab
-VERSION = 0.3.0.0
+VERSION = 0.4.0.0
 TEMPLATE = app
+
+DEFINES += ORGANISATION=\\\"$$ORGANISATION\\\" TARGET=\\\"$$TARGET\\\" VERSION=\\\"$$VERSION\\\"
 
 win32:RC_ICONS += gpxlab.ico
 

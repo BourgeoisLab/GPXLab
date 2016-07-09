@@ -561,7 +561,7 @@ GPX_model::retCode_e GPX_wrapper::setTrackPointProperty(int trackNumber, int tra
                 trkpt->fix = 0.0;
                 break;
             case sat:
-                trkpt->sat = (int)value;
+                trkpt->sat = (int)value[i];
                 break;
             case timestamp:
                 trkpt->timestamp = (time_t)value[i];
@@ -1146,7 +1146,7 @@ GPX_model::retCode_e GPX_wrapper::generateDiagramValues(int trackNumber, int tra
             {
                 for (trkpt = trkseg->trkpt.begin(); trkpt != trkseg->trkpt.end(); trkpt++)
                 {
-                    timeValues.append(trkpt->timestamp);
+                    timeValues.append(trkpt->elapsedTime);
                     altitudeValues.append(trkpt->altitude);
                     curveMainValues.append(getTrackPointPropertyAsDouble(&*trkpt, curveMain));
                     curveSecondaryValues.append(getTrackPointPropertyAsDouble(&*trkpt, curveSecondary));
@@ -1161,7 +1161,7 @@ GPX_model::retCode_e GPX_wrapper::generateDiagramValues(int trackNumber, int tra
                 // track segment
                 for (trkpt = gpxm->trk[trackNumber].trkseg[trackSegmentNumber].trkpt.begin(); trkpt != gpxm->trk[trackNumber].trkseg[trackSegmentNumber].trkpt.end(); trkpt++)
                 {
-                    timeValues.append(trkpt->timestamp);
+                    timeValues.append(trkpt->elapsedTime);
                     altitudeValues.append(trkpt->altitude);
                     curveMainValues.append(getTrackPointPropertyAsDouble(&*trkpt, curveMain));
                     curveSecondaryValues.append(getTrackPointPropertyAsDouble(&*trkpt, curveSecondary));

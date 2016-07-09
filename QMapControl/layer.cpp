@@ -27,18 +27,32 @@
 namespace qmapcontrol
 {
     Layer::Layer()
-        :visible(true), mylayertype(MapLayer), mapAdapter(0), takeevents(true), myoffscreenViewport(QRect(0,0,0,0))
+        :   visible(true),
+            mylayertype(MapLayer),
+            mapAdapter(0),
+            takeevents(true),
+            myoffscreenViewport(QRect(0,0,0,0)),
+            m_ImageManager(0)
     {
     }
     Layer::Layer(QString layername, MapAdapter* mapadapter, enum LayerType layertype, bool takeevents)
-            :visible(true), mylayername(layername), mylayertype(layertype), mapAdapter(mapadapter), takeevents(takeevents), myoffscreenViewport(QRect(0,0,0,0))
+        :   visible(true),
+            mylayername(layername),
+            mylayertype(layertype),
+            mapAdapter(mapadapter),
+            takeevents(takeevents),
+            myoffscreenViewport(QRect(0,0,0,0)),
+            m_ImageManager(0)
     {
     }
 
     Layer::~Layer()
     {
         if( mapAdapter )
-            delete mapAdapter;
+        {
+            mapAdapter->deleteLater();
+            mapAdapter = 0;
+        }
     }
 
     void Layer::setSize(QSize size)
@@ -162,6 +176,7 @@ namespace qmapcontrol
         mapAdapter->zoom_out();
     }
 
+	// FBO Begin
     bool Layer::mouseEvent(const QMouseEvent* evnt, const QPoint mapmiddle_px)
     {
         eventconsumned = false;
@@ -238,7 +253,8 @@ namespace qmapcontrol
     {
         eventconsumned = true;
     }
-
+	// FBO End
+	
     bool Layer::takesMouseEvents() const
     {
         return takeevents;
@@ -278,6 +294,11 @@ namespace qmapcontrol
 
     void Layer::_draw(QPainter* painter, const QPoint mapmiddle_px) const
     {
+        if ( m_ImageManager == 0 )
+        {
+            return;
+        }
+
         // screen middle...
         int tilesize = mapAdapter->tilesize();
         int cross_x = int(mapmiddle_px.x())%tilesize; // position on middle tile
@@ -324,7 +345,7 @@ namespace qmapcontrol
         {
                 painter->drawPixmap(-cross_x+size.width(),
                                     -cross_y+size.height(),
-                                    ImageManager::instance()->getImage(mapAdapter->host(), mapAdapter->query(mapmiddle_tile_x, mapmiddle_tile_y, mapAdapter->currentZoom())) );
+                                    m_ImageManager->getImage(mapAdapter->host(), mapAdapter->query(mapmiddle_tile_x, mapmiddle_tile_y, mapAdapter->currentZoom())) );
         }
 
         for (int i=-tiles_left+mapmiddle_tile_x; i<=tiles_right+mapmiddle_tile_x; ++i)
@@ -338,7 +359,7 @@ namespace qmapcontrol
                     {
                         painter->drawPixmap(((i-mapmiddle_tile_x)*tilesize)-cross_x+size.width(),
                                                 ((j-mapmiddle_tile_y)*tilesize)-cross_y+size.height(),
-                                                ImageManager::instance()->getImage(mapAdapter->host(), mapAdapter->query(i, j, mapAdapter->currentZoom())));
+                                                m_ImageManager->getImage(mapAdapter->host(), mapAdapter->query(i, j, mapAdapter->currentZoom())));
                     }
                 }
             }
@@ -356,25 +377,25 @@ namespace qmapcontrol
             // Fetch the top/bottom rows
             for (int i=prefetch_tile_left; i<=prefetch_tile_right; ++i)
             {
-                //if (mapAdapter->isTileValid(i, prefetch_tile_top, mapAdapter->currentZoom()))
+                //if (mapAdapter->isTileValid(i, prefetch_tile_top, mapAdapter->currentZoom())) // FBO, to check
                 {
-                    ImageManager::instance()->prefetchImage(mapAdapter->host(), mapAdapter->query(i, prefetch_tile_top, mapAdapter->currentZoom()));
+                    m_ImageManager->prefetchImage(mapAdapter->host(), mapAdapter->query(i, prefetch_tile_top, mapAdapter->currentZoom()));
                 }
-                //if (mapAdapter->isTileValid(i, prefetch_tile_bottom, mapAdapter->currentZoom()))
+                //if (mapAdapter->isTileValid(i, prefetch_tile_bottom, mapAdapter->currentZoom())) // FBO, to check
                 {
-                    ImageManager::instance()->prefetchImage(mapAdapter->host(), mapAdapter->query(i, prefetch_tile_bottom, mapAdapter->currentZoom()));
+                    m_ImageManager->prefetchImage(mapAdapter->host(), mapAdapter->query(i, prefetch_tile_bottom, mapAdapter->currentZoom()));
                 }
             }
 
             for (int i=prefetch_tile_top; i<=prefetch_tile_bottom; ++i)
             {
-                //if (mapAdapter->isTileValid(prefetch_tile_left, i, mapAdapter->currentZoom()))
+                //if (mapAdapter->isTileValid(prefetch_tile_left, i, mapAdapter->currentZoom())) // FBO, to check
                 {
-                    ImageManager::instance()->prefetchImage(mapAdapter->host(), mapAdapter->query(prefetch_tile_left, i, mapAdapter->currentZoom()));
+                    m_ImageManager->prefetchImage(mapAdapter->host(), mapAdapter->query(prefetch_tile_left, i, mapAdapter->currentZoom()));
                 }
-                //if (mapAdapter->isTileValid(prefetch_tile_right, i, mapAdapter->currentZoom()))
+                //if (mapAdapter->isTileValid(prefetch_tile_right, i, mapAdapter->currentZoom())) // FBO, to check
                 {
-                    ImageManager::instance()->prefetchImage(mapAdapter->host(), mapAdapter->query(prefetch_tile_right, i, mapAdapter->currentZoom()));
+                    m_ImageManager->prefetchImage(mapAdapter->host(), mapAdapter->query(prefetch_tile_right, i, mapAdapter->currentZoom()));
                 }
             }
         }
@@ -410,5 +431,10 @@ namespace qmapcontrol
     {
         mapAdapter = mapadapter;
         emit(updateRequest());
+    }
+
+    void Layer::setImageManager(ImageManager *qImageManager)
+    {
+        m_ImageManager = qImageManager;
     }
 }

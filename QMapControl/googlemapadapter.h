@@ -43,17 +43,16 @@ namespace qmapcontrol
     public:
         enum googleLayerType
         {
-            maps = 0,
+            roadmap = 0,
             satellite,
             terrain,
-            hybrid,
-            raster,
+            hybrid
         };
         //! constructor
         /*!
          * This construct a Google Adapter
          */
-        GoogleMapAdapter( googleLayerType qLayerType = maps );
+        GoogleMapAdapter( googleLayerType qLayerType = roadmap );
         virtual ~GoogleMapAdapter();
     private:
             QString typeToString( googleLayerType qLayerType );

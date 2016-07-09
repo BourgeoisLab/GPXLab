@@ -40,8 +40,8 @@ using namespace std;
  * @see http://www.gpsinformation.org/dale/nmea.htm
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.1
- * @date 4 Jan 2015
+ * @version 1.2
+ * @date 15 Feb 2015
  */
 namespace NMEAFile
 {

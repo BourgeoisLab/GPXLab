@@ -33,8 +33,8 @@
  * @brief Edit point property command
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.1
- * @date 4 Jan 2015
+ * @version 1.2
+ * @date 9 Jul 2016
  */
 class PointEditCommand : public QUndoCommand
 {
