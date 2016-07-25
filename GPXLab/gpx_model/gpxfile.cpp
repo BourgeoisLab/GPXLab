@@ -15,11 +15,19 @@
  *   along with This program. If not, see <http://www.gnu.org/licenses/>.   *
  ****************************************************************************/
 
+
 #include <stdlib.h>
 #include <string.h>
 #include <string>
 #include <time.h>
 #include "gpxfile.h"
+
+#if !defined(_WIN32) && !defined(_WIN64)
+// stricmp is Windows-specific, strcasecmp is POSIX-specific, both are not C stndard
+  #define stricmp strcasecmp
+#endif
+
+
 
 extern "C" {
 #include "uxmlpars.h"

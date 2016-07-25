@@ -20,7 +20,7 @@
 #include <QHeaderView>
 #include <QDateTime>
 #include "qtablewidgetpoints.h"
-#include "QUtils.h"
+#include "qutils.h"
 #include "pointeditcommand.h"
 
 ////////////////////////////////////////////////////////////////////////////////
