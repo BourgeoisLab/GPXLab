@@ -20,6 +20,8 @@
 #include <string.h>
 #include <string>
 #include <time.h>
+#include <sstream>
+#include <locale>
 #include "gpxfile.h"
 
 #if !defined(_WIN32) && !defined(_WIN64)
@@ -607,10 +609,16 @@ static void tagAttribute(void* pXml, char* pTag, char *pAttribute, char* pConten
         case PARSING_TRKPT:
             if (stricmp(pTag, "trkpt") == 0)
             {
+                // atof() function is locale-aware, at least on linux
+                // To correctly parse GPX on any locale (e.g. where comma is decimal separator)
+                // , need to suppress the locale while parsing. Do it C++ way
+                std::istringstream istr(pContent);
+                istr.imbue(std::locale("C"));
+
                 if (stricmp(pAttribute, "lat") == 0)
-                    gpxm->trk.back().trkseg.back().trkpt.back().latitude = atof(pContent);
+                    istr >> gpxm->trk.back().trkseg.back().trkpt.back().latitude;
                 else if (stricmp(pAttribute, "lon") == 0)
-                    gpxm->trk.back().trkseg.back().trkpt.back().longitude = atof(pContent);
+                    istr >> gpxm->trk.back().trkseg.back().trkpt.back().longitude;
             }
             break;
 
