@@ -6,11 +6,15 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 greaterThan(QT_MAJOR_VERSION, 4): cache()
 
 VERSION = 0.9.7.9
+TARGET = qmapcontrol
+TEMPLATE = lib
+!win32: CONFIG += staticlib
 
 DEFINES += QMAPCONTROL_LIBRARY
 
+OBJECTS_DIR = tmp
 MOC_DIR = tmp
-OBJECTS_DIR = obj
+UI_DIR = tmp
 DESTDIR = ../bin
 
 HEADERS += curve.h \

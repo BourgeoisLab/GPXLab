@@ -12,8 +12,9 @@ DEFINES += ORGANISATION=\\\"$$ORGANISATION\\\" TARGET=\\\"$$TARGET\\\" VERSION=\
 
 win32:RC_ICONS += gpxlab.ico
 
+OBJECTS_DIR = tmp
 MOC_DIR = tmp
-OBJECTS_DIR = obj
+UI_DIR = tmp
 DESTDIR = ../bin
 
 win32 {
