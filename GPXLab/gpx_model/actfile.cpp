@@ -21,6 +21,11 @@
 #include <time.h>
 #include "actfile.h"
 
+#if !defined(_WIN32) && !defined(_WIN64)
+// stricmp is Windows-specific, strcasecmp is POSIX-specific, both are not C stndard
+  #define stricmp strcasecmp
+#endif
+
 extern "C" {
 #include "uxmlpars.h"
 }
