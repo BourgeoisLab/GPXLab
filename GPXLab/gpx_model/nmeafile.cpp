@@ -19,34 +19,13 @@
 #include <string.h>
 #include <time.h>
 #include "nmeafile.h"
+#include "utils.h"
 
 // Maximal length of a NMEA sentence
 #define NMEA_MAXLENGTH                  82
 
 static bool hasDate = false;
 static int tm_mday = 0, tm_mon = 0, tm_year = 0;
-
-static void SYS_setenv(const char *name, const char *value)
-{
-  #ifdef WIN32
-    char str[128];
-    sprintf(str, "%s=%s", name, value);
-    putenv(str);
-  #else
-    setenv(name, value, 1);
-  #endif
-}
-
-static void SYS_unsetenv(const char *name)
-{
-  #ifdef WIN32
-    char str[128];
-    sprintf(str, "%s=", name);
-    putenv(str);
-  #else
-    unsetenv(name);
-  #endif
-}
 
 static int parse_hex(char c)
 {
@@ -82,7 +61,7 @@ static void copy_value(char *dst, const char *src, int maxsize)
 static double parse_position(const char *value)
 {
     int degrees = atoi(value) / 100;
-    double decimal = (atof(value) - (degrees * 100)) / 60.0f;
+    double decimal = (UTILS_atof(value) - (degrees * 100)) / 60.0f;
     return degrees + decimal;
 }
 
@@ -190,16 +169,16 @@ static int parseNMEA(GPX_wptType *pWp, const char *pNmea)
 
         // horizontal dilution of position
         p = strchr(p, ',') + 1;
-        pWp->hdop = (float)atof(p);
+        pWp->hdop = (float)UTILS_atof(p);
 
         // altitude
         p = strchr(p, ',') + 1;
-        pWp->altitude = atof(p) ;
+        pWp->altitude = UTILS_atof(p) ;
         p = strchr(p, ',') + 1;
 
         // height of geoid
         p = strchr(p, ',') + 1;
-        pWp->geoidheight = (float)atof(p);
+        pWp->geoidheight = (float)UTILS_atof(p);
         p = strchr(p, ',') + 1;
 
         return 1;
@@ -253,11 +232,11 @@ static int parseNMEA(GPX_wptType *pWp, const char *pNmea)
 
         // speed
         p = strchr(p, ',') + 1;
-        pWp->speed = (float)atof(p) * 1.852f; // knots -> km/h
+        pWp->speed = (float)UTILS_atof(p) * 1.852f; // knots -> km/h
 
         // angle
         p = strchr(p, ',') + 1;
-        pWp->heading = (float)atof(p);
+        pWp->heading = (float)UTILS_atof(p);
 
         // date
         hasDate = true;
@@ -346,7 +325,7 @@ GPX_model::retCode_e NMEAFile::load(ifstream* fp, GPX_model* gpxm, const string&
 
     // set timezone temporary to UTC
     char *tz = getenv("TZ");
-    SYS_setenv("TZ", "UTC");
+    UTILS_setenv("TZ", "UTC");
     tzset();
 
     hasDate = false;
@@ -403,9 +382,9 @@ GPX_model::retCode_e NMEAFile::load(ifstream* fp, GPX_model* gpxm, const string&
 
     // change back timezone
     if (tz)
-        SYS_setenv("TZ", tz);
+        UTILS_setenv("TZ", tz);
     else
-        SYS_unsetenv("TZ");
+        UTILS_unsetenv("TZ");
     tzset();
 
     // add last track point

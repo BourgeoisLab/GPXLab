@@ -20,15 +20,8 @@
 #include <string>
 #include <time.h>
 #include "actfile.h"
-
-#if !defined(_WIN32) && !defined(_WIN64)
-// stricmp is Windows-specific, strcasecmp is POSIX-specific, both are not C stndard
-  #define stricmp strcasecmp
-#endif
-
-extern "C" {
 #include "uxmlpars.h"
-}
+#include "utils.h"
 
 #define BUFFER_SIZE     1024
 #define MAX_SEGMENTS    1024
@@ -86,23 +79,23 @@ static void openTag(void* pXml, char* pTag)
     switch (xml->state)
     {
     case PARSING_NONE:
-        if (stricmp(pTag, "trackHeader") == 0)
+        if (strcmp(pTag, "trackheader") == 0)
         {
             xml->state = PARSING_TRACKHEADER;
         }
-        else if (stricmp(pTag, "trackLapMaster") == 0)
+        else if (strcmp(pTag, "tracklapmaster") == 0)
         {
             GPX_trksegType trkseg;
             gpxm->trk.back().trkseg.push_back(trkseg);
             xml->state = PARSING_TRACKLAP;
         }
-        else if (stricmp(pTag, "trackmaster") == 0)
+        else if (strcmp(pTag, "trackmaster") == 0)
         {
             GPX_trksegType trkseg;
             gpxm->trk.back().trkseg.push_back(trkseg);
             xml->state = PARSING_TRACK;
         }
-        else if (stricmp(pTag, "trackpoints") == 0 || stricmp(pTag, "trackLapPoints") == 0)
+        else if (strcmp(pTag, "trackpoints") == 0 || strcmp(pTag, "tracklappoints") == 0)
         {
             size_t i;
             GPX_wptType wpt;
@@ -120,7 +113,7 @@ static void openTag(void* pXml, char* pTag)
 
             xml->state = PARSING_POINT;
         }
-        else if (stricmp(pTag, "tblnote") == 0)
+        else if (strcmp(pTag, "tblnote") == 0)
         {
             xml->state = PARSING_NOTE;
         }
@@ -138,170 +131,170 @@ static void tagContent(void* pXml, char* pTag, char* pContent)
     {       
     case PARSING_TRACKHEADER:
     case PARSING_TRACK:
-        //if (stricmp(pTag, "TrackID") == 0)
+        //if (strcmp(pTag, "trackid") == 0)
         //    gpxm->metadata.name = sContent;
         //else
-        if (stricmp(pTag, "TrackName") == 0)
+        if (strcmp(pTag, "trackname") == 0)
         {
             getStartDateTime(1, pContent);
             gpxm->trk.back().metadata.name = sContent;
         }
-        else if (stricmp(pTag, "StartTime") == 0)
+        else if (strcmp(pTag, "starttime") == 0)
             gTime = getStartDateTime(2, pContent);
-        //else if (stricmp(pTag, "Duration") == 0 || stricmp(pTag, "During") == 0)
+        //else if (strcmp(pTag, "duration") == 0 || strcmp(pTag, "during") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "TotalDist") == 0)
+        //else if (strcmp(pTag, "totaldist") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "Calories") == 0)
+        //else if (strcmp(pTag, "calories") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "MaxSpeed") == 0)
+        //else if (strcmp(pTag, "maxspeed") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "MaxHearRate") == 0)
+        //else if (strcmp(pTag, "maxhearrate") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "AvgHeartRate") == 0)
+        //else if (strcmp(pTag, "avgheartrate") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "NoOfPoints") == 0)
+        //else if (strcmp(pTag, "noofpoints") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "NoOfLaps") == 0)
+        //else if (strcmp(pTag, "nooflaps") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "AUpheight") == 0)
+        //else if (strcmp(pTag, "aupheight") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "ADownheight") == 0)
+        //else if (strcmp(pTag, "adownheight") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "AvgCadence") == 0)
+        //else if (strcmp(pTag, "avgcadence") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "MaxCadence") == 0)
+        //else if (strcmp(pTag, "maxcadence") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "AvgPower") == 0)
+        //else if (strcmp(pTag, "avgpower") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "MaxPower") == 0)
+        //else if (strcmp(pTag, "maxpower") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "MinAltitude") == 0)
+        //else if (strcmp(pTag, "minaltitude") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "MaxAltitude") == 0)
+        //else if (strcmp(pTag, "maxaltitude") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "MultiSport") == 0)
+        //else if (strcmp(pTag, "multisport") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "Sport1") == 0)
+        //else if (strcmp(pTag, "sport1") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "Sport2") == 0)
+        //else if (strcmp(pTag, "sport2") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "Sport3") == 0)
+        //else if (strcmp(pTag, "sport3") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "Sport4") == 0)
+        //else if (strcmp(pTag, "sport4") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "Sport5") == 0)
+        //else if (strcmp(pTag, "sport5") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "LapNo") == 0)
+        //else if (strcmp(pTag, "lapno") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "AccruedTime") == 0)
+        //else if (strcmp(pTag, "accruedtime") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "TotalTime") == 0)
+        //else if (strcmp(pTag, "totaltime") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "TotalDistance") == 0)
+        //else if (strcmp(pTag, "totaldistance") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "Calory") == 0)
+        //else if (strcmp(pTag, "calory") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "LapMaxSpeed") == 0)
+        //else if (strcmp(pTag, "lapmaxspeed") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "LapMaxHR") == 0)
+        //else if (strcmp(pTag, "lapmaxhr") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "LapAvgHR") == 0)
+        //else if (strcmp(pTag, "lapavghr") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "startIndex") == 0)
+        //else if (strcmp(pTag, "startindex") == 0)
         //    gSegementEndIndexes[gpxm->trk.back().trkseg.size() - 1] = atoi(pContent);
-        else if (stricmp(pTag, "endIndex") == 0)
+        else if (strcmp(pTag, "endindex") == 0)
             gSegementEndIndexes[gpxm->trk.back().trkseg.size() - 1] = atoi(pContent);
-        //else if (stricmp(pTag, "LapAvgCad") == 0)
+        //else if (strcmp(pTag, "lapavgcad") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "LapMaxCad") == 0)
+        //else if (strcmp(pTag, "lapmaxcad") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "LapAvgPwr") == 0)
+        //else if (strcmp(pTag, "lapavgpwr") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "LapMaxPwr") == 0)
+        //else if (strcmp(pTag, "lapmaxpwr") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "LapMinAlti") == 0)
+        //else if (strcmp(pTag, "lapminalti") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "LapMaxAlti") == 0)
+        //else if (strcmp(pTag, "lapmaxalti") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "SportType") == 0)
+        //else if (strcmp(pTag, "sporttype") == 0)
         //    gpxm->metadata.name = sContent;
         break;
 
     case PARSING_TRACKLAP:
-        // if (stricmp(pTag, "TrackMasterID") == 0)
+        // if (strcmp(pTag, "trackmasterid") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "LapNo") == 0)
+        //else if (strcmp(pTag, "lapno") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "AccruedTime") == 0)
+        //else if (strcmp(pTag, "accruedtime") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "TotalTime") == 0)
+        //else if (strcmp(pTag, "totaltime") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "TotalDistance") == 0)
+        //else if (strcmp(pTag, "totaldistance") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "Calory") == 0)
+        //else if (strcmp(pTag, "calory") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "MaxSpeed") == 0)
+        //else if (strcmp(pTag, "maxspeed") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "MaxHR") == 0)
+        //else if (strcmp(pTag, "maxhr") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "AvgHR") == 0)
+        //else if (strcmp(pTag, "avghr") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "startIndex") == 0)
+        //else if (strcmp(pTag, "startindex") == 0)
         //    gSegementEndIndexes[gpxm->trk.back().trkseg.size() - 1] = atoi(pContent);
         //else
-        if (stricmp(pTag, "endIndex") == 0)
+        if (strcmp(pTag, "endindex") == 0)
             gSegementEndIndexes[gpxm->trk.back().trkseg.size() - 1] = atoi(pContent);
-        //else if (stricmp(pTag, "AvgCadence") == 0)
+        //else if (strcmp(pTag, "avgcadence") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "BestCadence") == 0)
+        //else if (strcmp(pTag, "bestcadence") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "AvgPower") == 0)
+        //else if (strcmp(pTag, "avgpower") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "MaxPower") == 0)
+        //else if (strcmp(pTag, "maxpower") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "MinAltitude") == 0)
+        //else if (strcmp(pTag, "minaltitude") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "MaxAltitude") == 0)
+        //else if (strcmp(pTag, "maxaltitude") == 0)
         //    gpxm->metadata.name = sContent;
-        //else if (stricmp(pTag, "MultiSportIndex") == 0)
+        //else if (strcmp(pTag, "multisportindex") == 0)
         //    gpxm->metadata.name = sContent;
         break;
 
     case PARSING_POINT:
-        //if (stricmp(pTag, "SLNo") == 0 || stricmp(pTag, "Sl_x0020_No") == 0)
+        //if (strcmp(pTag, "slno") == 0 || strcmp(pTag, "sl_x0020_no") == 0)
         //    gTrkseg->trkpt.back().altitude = 0;
         //else
-        if (stricmp(pTag, "Latitude") == 0)
-            gTrkseg->trkpt.back().latitude = atof(pContent);
-        else if (stricmp(pTag, "Longitude") == 0)
-            gTrkseg->trkpt.back().longitude = atof(pContent);
-        else if (stricmp(pTag, "Altitude") == 0)
-            gTrkseg->trkpt.back().altitude = atof(pContent);
-        else if (stricmp(pTag, "Speed") == 0)
-            gTrkseg->trkpt.back().speed = (float)atof(pContent);
-        else if (stricmp(pTag, "HeartRate") == 0 || stricmp(pTag, "Heart_x0020_Rate") == 0)
+        if (strcmp(pTag, "latitude") == 0)
+            gTrkseg->trkpt.back().latitude = UTILS_atof(pContent);
+        else if (strcmp(pTag, "longitude") == 0)
+            gTrkseg->trkpt.back().longitude = UTILS_atof(pContent);
+        else if (strcmp(pTag, "altitude") == 0)
+            gTrkseg->trkpt.back().altitude = UTILS_atof(pContent);
+        else if (strcmp(pTag, "speed") == 0)
+            gTrkseg->trkpt.back().speed = (float)UTILS_atof(pContent);
+        else if (strcmp(pTag, "heartrate") == 0 || strcmp(pTag, "heart_x0020_rate") == 0)
             gTrkseg->trkpt.back().extensionsGarmin.heartrate = atoi(pContent);
-        else if (stricmp(pTag, "IntervalTime") == 0 || stricmp(pTag, "Interval_x0020_Time") == 0)
+        else if (strcmp(pTag, "intervaltime") == 0 || strcmp(pTag, "interval_x0020_time") == 0)
         {
             gTime += atoi(pContent);
             gTrkseg->trkpt.back().timestamp = gTime;
         }
-        //else if (stricmp(pTag, "Index") == 0)
+        //else if (strcmp(pTag, "index") == 0)
         //    gTrkseg->trkpt.back().altitude = 0;
-        //else if (stricmp(pTag, "Cadence") == 0)
+        //else if (strcmp(pTag, "cadence") == 0)
         //    gTrkseg->trkpt.back().altitude = 0;
-        //else if (stricmp(pTag, "PwrCadence") == 0)
+        //else if (strcmp(pTag, "pwrcadence") == 0)
         //    gTrkseg->trkpt.back().altitude = 0;
-        //else if (stricmp(pTag, "Power") == 0)
+        //else if (strcmp(pTag, "power") == 0)
         //    gTrkseg->trkpt.back().altitude = 0;
         break;
 
     case PARSING_NOTE:
-        //if (stricmp(pTag, "Column1") == 0)
+        //if (strcmp(pTag, "column1") == 0)
         //    gpxm->trk.back().metadata.cmt += sContent;
         //else
-        if (stricmp(pTag, "Column2") == 0)
+        if (strcmp(pTag, "column2") == 0)
             gpxm->trk.back().metadata.cmt += sContent;
         break;
     }
@@ -314,27 +307,27 @@ static void closeTag(void* pXml, char* pTag)
     switch (xml->state)
     {
     case PARSING_TRACKHEADER:
-        if (stricmp(pTag, "trackHeader") == 0)
+        if (strcmp(pTag, "trackheader") == 0)
             xml->state = PARSING_NONE;
         break;
 
     case PARSING_TRACKLAP:
-        if (stricmp(pTag, "trackLapMaster") == 0)
+        if (strcmp(pTag, "tracklapmaster") == 0)
             xml->state = PARSING_NONE;
         break;
 
     case PARSING_TRACK:
-        if (stricmp(pTag, "trackmaster") == 0)
+        if (strcmp(pTag, "trackmaster") == 0)
             xml->state = PARSING_NONE;
         break;
 
     case PARSING_POINT:
-        if (stricmp(pTag, "trackpoints") == 0 || stricmp(pTag, "trackLapPoints") == 0)
+        if (strcmp(pTag, "trackpoints") == 0 || strcmp(pTag, "tracklappoints") == 0)
             xml->state = PARSING_NONE;
         break;
 
     case PARSING_NOTE:
-        if (stricmp(pTag, "tblnote") == 0)
+        if (strcmp(pTag, "tblnote") == 0)
             xml->state = PARSING_NONE;
         break;
     }

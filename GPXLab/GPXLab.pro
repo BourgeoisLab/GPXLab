@@ -5,7 +5,7 @@ greaterThan(QT_MAJOR_VERSION, 4): cache()
 
 ORGANISATION = BourgeoisLab
 TARGET = GPXLab
-VERSION = 0.4.0.0
+VERSION = 0.4.1.0
 TEMPLATE = app
 
 DEFINES += ORGANISATION=\\\"$$ORGANISATION\\\" TARGET=\\\"$$TARGET\\\" VERSION=\\\"$$VERSION\\\"
@@ -15,6 +15,7 @@ win32:RC_ICONS += gpxlab.ico
 OBJECTS_DIR = tmp
 MOC_DIR = tmp
 UI_DIR = tmp
+RCC_DIR = tmp
 DESTDIR = ../bin
 
 win32 {
@@ -35,6 +36,7 @@ SOURCES += main.cpp\
     gpx_model/gpx_model.cpp \
     gpx_model/gpxfile.cpp \
     gpx_model/uxmlpars.c \
+    gpx_model/utils.c \
     gpx_model/nmeafile.cpp \
     gpx_model/actfile.cpp \
     functions/srtm.cpp \
@@ -74,6 +76,7 @@ HEADERS  += \
     settings.h \
     gpx_model/gpx_model.h \
     gpx_model/uxmlpars.h \
+    gpx_model/utils.h \
     gpx_model/gpxfile.h \
     gpx_model/nmeafile.h \
     gpx_model/actfile.h \

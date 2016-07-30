@@ -328,7 +328,7 @@ static enum e_item UXML_findItem(T_uXml* pXML)
 
                 // string termination
                 if (m_Counter > 0 && m_Counter <= UXML_TAG_SIZE)
-                    pXML->pTag[m_Counter-1] = 0;
+                    pXML->pTag[m_Counter-1] = '\0';
                 return CLOSE_TAG; // found close tag
             }
 
@@ -336,7 +336,7 @@ static enum e_item UXML_findItem(T_uXml* pXML)
             else
             {
                 // read TAG
-                pXML->pTag[m_Counter++] = c;
+                pXML->pTag[m_Counter++] = tolower(c);
                 while(pXML->pTag[m_Counter - read] != '>' &&
                       pXML->pTag[m_Counter - read] != ' ' &&
                       pXML->pTag[m_Counter - read] != '/' &&
@@ -458,7 +458,7 @@ static int UXML_scanAttributes(T_uXml* pXML)
     }
 
     // read attribute name
-    pXML->pAttribute[m_Counter++] = c;
+    pXML->pAttribute[m_Counter++] = tolower(c);
     while (pXML->pAttribute[m_Counter - read] != '>' &&
         pXML->pAttribute[m_Counter - read] != '=' &&
         pXML->pAttribute[m_Counter - read] != ' ' &&
@@ -478,7 +478,7 @@ static int UXML_scanAttributes(T_uXml* pXML)
 
     // string termination
     if (m_Counter > 0 && m_Counter <= UXML_TAG_SIZE)
-        pXML->pAttribute[m_Counter - 1] = 0;
+        pXML->pAttribute[m_Counter - 1] = '\0';
 
     if (c == ' ')
     {

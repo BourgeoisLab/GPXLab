@@ -47,17 +47,17 @@ namespace qmapcontrol
     void FixedImageOverlay::draw(QPainter* painter, const MapAdapter* mapadapter, const QRect &, const QPoint)
     {
         if (!visible)
+        {
             return;
+        }
 
-            const QPointF c = QPointF(X, Y);
-            QPoint topleft = mapadapter->coordinateToDisplay(c);
+        const QPointF c = QPointF(X, Y);
+        QPoint topleft = mapadapter->coordinateToDisplay(c);
 
-            const QPointF c2 = QPointF(x_lowerright, y_lowerright);
-            QPoint lowerright = mapadapter->coordinateToDisplay(c2);
+        const QPointF c2 = QPointF(x_lowerright, y_lowerright);
+        QPoint lowerright = mapadapter->coordinateToDisplay(c2);
 
         painter->drawPixmap(topleft.x(), topleft.y(), lowerright.x()-topleft.x(), lowerright.y()-topleft.y(), mypixmap);
-
-
     }
 
     FixedImageOverlay::~FixedImageOverlay()

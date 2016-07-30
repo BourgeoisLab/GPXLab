@@ -15,25 +15,13 @@
  *   along with This program. If not, see <http://www.gnu.org/licenses/>.   *
  ****************************************************************************/
 
-
 #include <stdlib.h>
 #include <string.h>
 #include <string>
 #include <time.h>
-#include <sstream>
-#include <locale>
 #include "gpxfile.h"
-
-#if !defined(_WIN32) && !defined(_WIN64)
-// stricmp is Windows-specific, strcasecmp is POSIX-specific, both are not C stndard
-  #define stricmp strcasecmp
-#endif
-
-
-
-extern "C" {
 #include "uxmlpars.h"
-}
+#include "utils.h"
 
 #define BUFFER_SIZE                     1024
 #define DEPTH_INDENT                    2
@@ -68,28 +56,6 @@ static bool gExtensionHasContent = false;
 static int gExtensionPrevState = PARSING_NONE;
 static int gExtensionLevelDepth = 0;
 static bool gExtensionDoubleOpen = false;
-
-static void SYS_setenv(const char *name, const char *value)
-{
-  #ifdef WIN32
-    char str[128];
-    sprintf(str, "%s=%s", name, value);
-    putenv(str);
-  #else
-    setenv(name, value, 1);
-  #endif
-}
-
-static void SYS_unsetenv(const char *name)
-{
-  #ifdef WIN32
-    char str[128];
-    sprintf(str, "%s=", name);
-    putenv(str);
-  #else
-    unsetenv(name);
-  #endif
-}
 
 static int getChar(void* ptr)
 {
@@ -140,25 +106,25 @@ static void openTag(void* pXml, char* pTag)
     switch (xml->state)
     {
     case PARSING_NONE:
-        if (stricmp(pTag, "gpx") == 0)
+        if (strcmp(pTag, "gpx") == 0)
         {
             xml->state = PARSING_GPX;
         }
         break;
 
     case PARSING_GPX:
-        if (stricmp(pTag, "metadata") == 0)
+        if (strcmp(pTag, "metadata") == 0)
         {
             xml->state = PARSING_METADATA;
         }
-        else if (stricmp(pTag, "trk") == 0)
+        else if (strcmp(pTag, "trk") == 0)
         {
             // add new track
             GPX_trkType trk(gpxm->trk.size());
             gpxm->trk.push_back(trk);
             xml->state = PARSING_TRK;
         }
-        else if (stricmp(pTag, "extensions") == 0)
+        else if (strcmp(pTag, "extensions") == 0)
         {
             gExtensionPrevState = PARSING_GPX;
             gExtensionVector = &gpxm->extensions.extension;
@@ -170,25 +136,25 @@ static void openTag(void* pXml, char* pTag)
         break;
 
     case PARSING_METADATA:
-        if (stricmp(pTag, "author") == 0 && gVersion != 10)
+        if (strcmp(pTag, "author") == 0 && gVersion != 10)
         {
             xml->state = PARSING_METADATA_AUTHOR;
         }
-        else if (stricmp(pTag, "link") == 0)
+        else if (strcmp(pTag, "link") == 0)
         {
             // add new link
             GPX_linkType link;
             gpxm->metadata.links.push_back(link);
             xml->state = PARSING_METADATA_LINK;
         }
-        else if (stricmp(pTag, "trk") == 0 && gVersion == 10)
+        else if (strcmp(pTag, "trk") == 0 && gVersion == 10)
         {
             // add new track
             GPX_trkType trk(gpxm->trk.size());
             gpxm->trk.push_back(trk);
             xml->state = PARSING_TRK;
         }
-        else if (stricmp(pTag, "extensions") == 0)
+        else if (strcmp(pTag, "extensions") == 0)
         {
             gExtensionPrevState = PARSING_METADATA;
             gExtensionVector = &gpxm->metadata.extensions.extension;
@@ -200,7 +166,7 @@ static void openTag(void* pXml, char* pTag)
 
         if (gVersion == 10)
         {
-            if (stricmp(pTag, "url") == 0)
+            if (strcmp(pTag, "url") == 0)
             {
                 // add new link
                 GPX_linkType link;
@@ -216,21 +182,21 @@ static void openTag(void* pXml, char* pTag)
         break;
 
     case PARSING_TRK:
-        if (stricmp(pTag, "trkseg") == 0)
+        if (strcmp(pTag, "trkseg") == 0)
         {
             // add new track segment
             GPX_trksegType trkseg;
             gpxm->trk.back().trkseg.push_back(trkseg);
             xml->state = PARSING_TRKSEG;
         }
-        else if (stricmp(pTag, "link") == 0)
+        else if (strcmp(pTag, "link") == 0)
         {
             // add new link
             GPX_linkType link;
             gpxm->trk.back().metadata.links.push_back(link);
             xml->state = PARSING_TRK_LINK;
         }
-        else if (stricmp(pTag, "extensions") == 0)
+        else if (strcmp(pTag, "extensions") == 0)
         {
             gExtensionPrevState = PARSING_TRK;
             gExtensionVector = &gpxm->trk.back().extensions.extension;
@@ -242,7 +208,7 @@ static void openTag(void* pXml, char* pTag)
 
         if (gVersion == 10)
         {
-            if (stricmp(pTag, "url") == 0)
+            if (strcmp(pTag, "url") == 0)
             {
                 // add new link
                 GPX_linkType link;
@@ -255,14 +221,14 @@ static void openTag(void* pXml, char* pTag)
         break;
 
     case PARSING_TRKSEG:
-        if (stricmp(pTag, "trkpt") == 0)
+        if (strcmp(pTag, "trkpt") == 0)
         {
             // add new track point
             GPX_wptType wpt;
             gpxm->trk.back().trkseg.back().trkpt.push_back(wpt);
             xml->state = PARSING_TRKPT;
         }
-        else if (stricmp(pTag, "extensions") == 0)
+        else if (strcmp(pTag, "extensions") == 0)
         {
             gExtensionPrevState = PARSING_TRKSEG;
             gExtensionVector = &gpxm->trk.back().trkseg.back().extensions.extension;
@@ -274,14 +240,14 @@ static void openTag(void* pXml, char* pTag)
         break;
 
     case PARSING_TRKPT:
-        if (stricmp(pTag, "link") == 0)
+        if (strcmp(pTag, "link") == 0)
         {
             // add new link
             GPX_linkType link;
             gpxm->trk.back().trkseg.back().trkpt.back().links.push_back(link);
             xml->state = PARSING_TRKPT_LINK;
         }
-        else if (stricmp(pTag, "extensions") == 0)
+        else if (strcmp(pTag, "extensions") == 0)
         {
             gExtensionPrevState = PARSING_TRKPT;
             gExtensionVector = &gpxm->trk.back().trkseg.back().trkpt.back().extensions.extension;
@@ -293,7 +259,7 @@ static void openTag(void* pXml, char* pTag)
 
         if (gVersion == 10)
         {
-            if (stricmp(pTag, "url") == 0)
+            if (strcmp(pTag, "url") == 0)
             {
                 // add new link
                 GPX_linkType link;
@@ -306,7 +272,7 @@ static void openTag(void* pXml, char* pTag)
         break;
 
     case PARSING_TRKPT_EXTENSIONS:
-        if (stricmp(pTag, "gpxtpx:TrackPointExtension") == 0)
+        if (strcmp(pTag, "gpxtpx:trackpointextension") == 0)
         {
             gExtensionVector = &gpxm->trk.back().trkseg.back().trkpt.back().extensionsGarmin.other;
             gExtensionStr = "";
@@ -316,7 +282,7 @@ static void openTag(void* pXml, char* pTag)
             break;
         }
     case PARSING_TRKPT_EXTENSIONS_GPXTPX:
-        if (stricmp(pTag, "gpxtpx:hr") == 0)
+        if (strcmp(pTag, "gpxtpx:hr") == 0)
         {
             break;
         }
@@ -357,27 +323,27 @@ static void tagContent(void* pXml, char* pTag, char* pContent)
         case PARSING_METADATA:
             if (gOverwriteMetadata)
             {
-                if (stricmp(pTag, "name") == 0)
+                if (strcmp(pTag, "name") == 0)
                     gpxm->metadata.name = sContent;
-                else if (stricmp(pTag, "desc") == 0)
+                else if (strcmp(pTag, "desc") == 0)
                     gpxm->metadata.desc = sContent;
-                else if (stricmp(pTag, "year") == 0)
+                else if (strcmp(pTag, "year") == 0)
                     gpxm->metadata.copyright.year = sContent;
-                else if (stricmp(pTag, "license") == 0)
+                else if (strcmp(pTag, "license") == 0)
                     gpxm->metadata.copyright.license = sContent;
-                else if (stricmp(pTag, "time") == 0)
+                else if (strcmp(pTag, "time") == 0)
                 {
                     gpxm->metadata.timestamp = strToTime(sContent);
                     gpxm->metadata.millisecond = strToMilliseconds(sContent);
                 }
-                else if (stricmp(pTag, "keywords") == 0)
+                else if (strcmp(pTag, "keywords") == 0)
                     gpxm->metadata.keywords = sContent;
 
                 if (gVersion == 10)
                 {
-                    if (stricmp(pTag, "author") == 0)
+                    if (strcmp(pTag, "author") == 0)
                         gpxm->metadata.author.name = sContent;
-                    else if (stricmp(pTag, "email") == 0)
+                    else if (strcmp(pTag, "email") == 0)
                     {
                         size_t atPos = sContent.find_last_of("@");
                         if (atPos > 0)
@@ -386,9 +352,9 @@ static void tagContent(void* pXml, char* pTag, char* pContent)
                             gpxm->metadata.author.email.domain = sContent.substr(atPos);
                         }
                     }
-                    else if (stricmp(pTag, "url") == 0)
+                    else if (strcmp(pTag, "url") == 0)
                         gpxm->metadata.links.back().href = sContent;
-                    else if (stricmp(pTag, "urlname") == 0)
+                    else if (strcmp(pTag, "urlname") == 0)
                         gpxm->metadata.links.back().text = sContent;
                 }
             }
@@ -397,9 +363,9 @@ static void tagContent(void* pXml, char* pTag, char* pContent)
         case PARSING_METADATA_LINK:
             if (gOverwriteMetadata)
             {
-                if (stricmp(pTag, "text") == 0)
+                if (strcmp(pTag, "text") == 0)
                     gpxm->metadata.links.back().text = sContent;
-                else if (stricmp(pTag, "type") == 0)
+                else if (strcmp(pTag, "type") == 0)
                     gpxm->metadata.links.back().type = sContent;
             }
             break;
@@ -407,42 +373,42 @@ static void tagContent(void* pXml, char* pTag, char* pContent)
         case PARSING_METADATA_AUTHOR:
             if (gOverwriteMetadata)
             {
-                if (stricmp(pTag, "name") == 0)
+                if (strcmp(pTag, "name") == 0)
                     gpxm->metadata.author.name = sContent;
-                else if (stricmp(pTag, "text") == 0)
+                else if (strcmp(pTag, "text") == 0)
                     gpxm->metadata.author.link.text = sContent;
-                else if (stricmp(pTag, "type") == 0)
+                else if (strcmp(pTag, "type") == 0)
                     gpxm->metadata.author.link.type = sContent;
             }
             break;
 
         case PARSING_TRK:
-            if (stricmp(pTag, "name") == 0)
+            if (strcmp(pTag, "name") == 0)
                 gpxm->trk.back().metadata.name = sContent;
-            else if (stricmp(pTag, "cmt") == 0)
+            else if (strcmp(pTag, "cmt") == 0)
                 gpxm->trk.back().metadata.cmt = sContent;
-            else if (stricmp(pTag, "desc") == 0)
+            else if (strcmp(pTag, "desc") == 0)
                 gpxm->trk.back().metadata.desc = sContent;
-            else if (stricmp(pTag, "src") == 0)
+            else if (strcmp(pTag, "src") == 0)
                 gpxm->trk.back().metadata.src = sContent;
-            //else if (stricmp(pTag, "number") == 0)
+            //else if (strcmp(pTag, "number") == 0)
             //    gpxm->trk.back().metadata.number = atoi(pContent);
-            else if (stricmp(pTag, "type") == 0)
+            else if (strcmp(pTag, "type") == 0)
                 gpxm->trk.back().metadata.type = sContent;
 
             if (gVersion == 10)
             {
-                if (stricmp(pTag, "url") == 0)
+                if (strcmp(pTag, "url") == 0)
                     gpxm->trk.back().metadata.links.back().href = sContent;
-                else if (stricmp(pTag, "urlname") == 0)
+                else if (strcmp(pTag, "urlname") == 0)
                     gpxm->trk.back().metadata.links.back().text = sContent;
             }
             break;
 
         case PARSING_TRK_LINK:
-            if (stricmp(pTag, "text") == 0)
+            if (strcmp(pTag, "text") == 0)
                 gpxm->trk.back().metadata.links.back().text = sContent;
-            else if (stricmp(pTag, "type") == 0)
+            else if (strcmp(pTag, "type") == 0)
                 gpxm->trk.back().metadata.links.back().type = sContent;
             break;
 
@@ -450,62 +416,62 @@ static void tagContent(void* pXml, char* pTag, char* pContent)
             break;
 
         case PARSING_TRKPT:
-            if (stricmp(pTag, "ele") == 0)
-                gpxm->trk.back().trkseg.back().trkpt.back().altitude = atof(pContent);
-            else if (stricmp(pTag, "time") == 0)
+            if (strcmp(pTag, "ele") == 0)
+                gpxm->trk.back().trkseg.back().trkpt.back().altitude = UTILS_atof(pContent);
+            else if (strcmp(pTag, "time") == 0)
             {
                 gpxm->trk.back().trkseg.back().trkpt.back().timestamp = strToTime(sContent);
                 gpxm->trk.back().trkseg.back().trkpt.back().millisecond = strToMilliseconds(sContent);
             }
-            else if (stricmp(pTag, "magvar") == 0)
-                gpxm->trk.back().trkseg.back().trkpt.back().magvar = (float)atof(pContent);
-            else if (stricmp(pTag, "geoidheight") == 0)
-                gpxm->trk.back().trkseg.back().trkpt.back().geoidheight = (float)atof(pContent);
-            else if (stricmp(pTag, "name") == 0)
+            else if (strcmp(pTag, "magvar") == 0)
+                gpxm->trk.back().trkseg.back().trkpt.back().magvar = (float)UTILS_atof(pContent);
+            else if (strcmp(pTag, "geoidheight") == 0)
+                gpxm->trk.back().trkseg.back().trkpt.back().geoidheight = (float)UTILS_atof(pContent);
+            else if (strcmp(pTag, "name") == 0)
                 gpxm->trk.back().trkseg.back().trkpt.back().name = sContent;
-            else if (stricmp(pTag, "cmt") == 0)
+            else if (strcmp(pTag, "cmt") == 0)
                 gpxm->trk.back().trkseg.back().trkpt.back().cmt = sContent;
-            else if (stricmp(pTag, "desc") == 0)
+            else if (strcmp(pTag, "desc") == 0)
                 gpxm->trk.back().trkseg.back().trkpt.back().desc = sContent;
-            else if (stricmp(pTag, "src") == 0)
+            else if (strcmp(pTag, "src") == 0)
                 gpxm->trk.back().trkseg.back().trkpt.back().src = sContent;
-            else if (stricmp(pTag, "sym") == 0)
+            else if (strcmp(pTag, "sym") == 0)
                 gpxm->trk.back().trkseg.back().trkpt.back().sym = sContent;
-            else if (stricmp(pTag, "type") == 0)
+            else if (strcmp(pTag, "type") == 0)
                 gpxm->trk.back().trkseg.back().trkpt.back().type = sContent;
-            else if (stricmp(pTag, "fix") == 0)
+            else if (strcmp(pTag, "fix") == 0)
                 gpxm->trk.back().trkseg.back().trkpt.back().fix = sContent;
-            else if (stricmp(pTag, "sat") == 0)
+            else if (strcmp(pTag, "sat") == 0)
                 gpxm->trk.back().trkseg.back().trkpt.back().sat = atoi(pContent);
-            else if (stricmp(pTag, "hdop") == 0)
-                gpxm->trk.back().trkseg.back().trkpt.back().hdop = (float)atof(pContent);
-            else if (stricmp(pTag, "vdop") == 0)
-                gpxm->trk.back().trkseg.back().trkpt.back().vdop = (float)atof(pContent);
-            else if (stricmp(pTag, "pdop") == 0)
-                gpxm->trk.back().trkseg.back().trkpt.back().pdop = (float)atof(pContent);
-            else if (stricmp(pTag, "ageofdgpsdata") == 0)
-                gpxm->trk.back().trkseg.back().trkpt.back().ageofdgpsdata = (float)atof(pContent);
-            else if (stricmp(pTag, "dgpsid") == 0)
+            else if (strcmp(pTag, "hdop") == 0)
+                gpxm->trk.back().trkseg.back().trkpt.back().hdop = (float)UTILS_atof(pContent);
+            else if (strcmp(pTag, "vdop") == 0)
+                gpxm->trk.back().trkseg.back().trkpt.back().vdop = (float)UTILS_atof(pContent);
+            else if (strcmp(pTag, "pdop") == 0)
+                gpxm->trk.back().trkseg.back().trkpt.back().pdop = (float)UTILS_atof(pContent);
+            else if (strcmp(pTag, "ageofdgpsdata") == 0)
+                gpxm->trk.back().trkseg.back().trkpt.back().ageofdgpsdata = (float)UTILS_atof(pContent);
+            else if (strcmp(pTag, "dgpsid") == 0)
                 gpxm->trk.back().trkseg.back().trkpt.back().dgpsid = atoi(pContent);
 
             if (gVersion == 10)
             {
-                if (stricmp(pTag, "url") == 0)
+                if (strcmp(pTag, "url") == 0)
                     gpxm->trk.back().trkseg.back().trkpt.back().links.back().href = sContent;
-                else if (stricmp(pTag, "urlname") == 0)
+                else if (strcmp(pTag, "urlname") == 0)
                     gpxm->trk.back().trkseg.back().trkpt.back().links.back().text = sContent;
             }
             break;
 
         case PARSING_TRKPT_LINK:
-            if (stricmp(pTag, "text") == 0)
+            if (strcmp(pTag, "text") == 0)
                 gpxm->trk.back().trkseg.back().trkpt.back().links.back().text = sContent;
-            else if (stricmp(pTag, "type") == 0)
+            else if (strcmp(pTag, "type") == 0)
                 gpxm->trk.back().trkseg.back().trkpt.back().links.back().type = sContent;
             break;
 
         case PARSING_TRKPT_EXTENSIONS_GPXTPX:
-            if (stricmp(pTag, "gpxtpx:hr") == 0)
+            if (strcmp(pTag, "gpxtpx:hr") == 0)
             {
                 gpxm->trk.back().trkseg.back().trkpt.back().extensionsGarmin.heartrate = atoi(pContent);
                 break;
@@ -530,11 +496,11 @@ static void tagAttribute(void* pXml, char* pTag, char *pAttribute, char* pConten
     switch (xml->state)
     {
         case PARSING_GPX:
-            if (stricmp(pTag, "gpx") == 0)
+            if (strcmp(pTag, "gpx") == 0)
             {
-                if (stricmp(pAttribute, "version") == 0)
+                if (strcmp(pAttribute, "version") == 0)
                 {
-                    gVersion = (int)(10 * atof(pContent));
+                    gVersion = (int)(10 * UTILS_atof(pContent));
                     if (gVersion == 10)
                         xml->state = PARSING_METADATA;
                 }
@@ -544,21 +510,21 @@ static void tagAttribute(void* pXml, char* pTag, char *pAttribute, char* pConten
         case PARSING_METADATA:
             if (gOverwriteMetadata)
             {
-                if (stricmp(pTag, "copyright") == 0)
+                if (strcmp(pTag, "copyright") == 0)
                 {
-                    if (stricmp(pAttribute, "author") == 0)
+                    if (strcmp(pAttribute, "author") == 0)
                         gpxm->metadata.copyright.author = sContent;
                 }
-                else if (stricmp(pTag, "bounds") == 0)
+                else if (strcmp(pTag, "bounds") == 0)
                 {
-                    if (stricmp(pAttribute, "minlat") == 0)
-                        gpxm->metadata.bounds.minlat = atof(pContent);
-                    else if (stricmp(pAttribute, "minlon") == 0)
-                        gpxm->metadata.bounds.minlon = atof(pContent);
-                    else if (stricmp(pAttribute, "maxlat") == 0)
-                        gpxm->metadata.bounds.maxlat = atof(pContent);
-                    else if (stricmp(pAttribute, "maxlon") == 0)
-                        gpxm->metadata.bounds.maxlon = atof(pContent);
+                    if (strcmp(pAttribute, "minlat") == 0)
+                        gpxm->metadata.bounds.minlat = UTILS_atof(pContent);
+                    else if (strcmp(pAttribute, "minlon") == 0)
+                        gpxm->metadata.bounds.minlon = UTILS_atof(pContent);
+                    else if (strcmp(pAttribute, "maxlat") == 0)
+                        gpxm->metadata.bounds.maxlat = UTILS_atof(pContent);
+                    else if (strcmp(pAttribute, "maxlon") == 0)
+                        gpxm->metadata.bounds.maxlon = UTILS_atof(pContent);
                 }
             }
             break;
@@ -566,9 +532,9 @@ static void tagAttribute(void* pXml, char* pTag, char *pAttribute, char* pConten
         case PARSING_METADATA_LINK:
             if (gOverwriteMetadata)
             {
-                if (stricmp(pTag, "link") == 0)
+                if (strcmp(pTag, "link") == 0)
                 {
-                    if (stricmp(pAttribute, "href") == 0)
+                    if (strcmp(pAttribute, "href") == 0)
                         gpxm->metadata.links.back().href = sContent;
                 }
             }
@@ -577,16 +543,16 @@ static void tagAttribute(void* pXml, char* pTag, char *pAttribute, char* pConten
         case PARSING_METADATA_AUTHOR:
             if (gOverwriteMetadata)
             {
-                if (stricmp(pTag, "email") == 0)
+                if (strcmp(pTag, "email") == 0)
                 {
-                    if (stricmp(pAttribute, "id") == 0)
+                    if (strcmp(pAttribute, "id") == 0)
                         gpxm->metadata.author.email.id = sContent;
-                    else if (stricmp(pAttribute, "domain") == 0)
+                    else if (strcmp(pAttribute, "domain") == 0)
                         gpxm->metadata.author.email.domain = sContent;
                 }
-                else if (stricmp(pTag, "link") == 0)
+                else if (strcmp(pTag, "link") == 0)
                 {
-                    if (stricmp(pAttribute, "href") == 0)
+                    if (strcmp(pAttribute, "href") == 0)
                         gpxm->metadata.author.link.href = sContent;
                 }
             }
@@ -596,9 +562,9 @@ static void tagAttribute(void* pXml, char* pTag, char *pAttribute, char* pConten
             break;
 
         case PARSING_TRK_LINK:
-            if (stricmp(pTag, "link") == 0)
+            if (strcmp(pTag, "link") == 0)
             {
-                if (stricmp(pAttribute, "href") == 0)
+                if (strcmp(pAttribute, "href") == 0)
                     gpxm->trk.back().metadata.links.back().href = sContent;
             }
             break;
@@ -607,25 +573,19 @@ static void tagAttribute(void* pXml, char* pTag, char *pAttribute, char* pConten
             break;
 
         case PARSING_TRKPT:
-            if (stricmp(pTag, "trkpt") == 0)
+            if (strcmp(pTag, "trkpt") == 0)
             {
-                // atof() function is locale-aware, at least on linux
-                // To correctly parse GPX on any locale (e.g. where comma is decimal separator)
-                // , need to suppress the locale while parsing. Do it C++ way
-                std::istringstream istr(pContent);
-                istr.imbue(std::locale("C"));
-
-                if (stricmp(pAttribute, "lat") == 0)
-                    istr >> gpxm->trk.back().trkseg.back().trkpt.back().latitude;
-                else if (stricmp(pAttribute, "lon") == 0)
-                    istr >> gpxm->trk.back().trkseg.back().trkpt.back().longitude;
+                if (strcmp(pAttribute, "lat") == 0)
+                    gpxm->trk.back().trkseg.back().trkpt.back().latitude = UTILS_atof(pContent);
+                else if (strcmp(pAttribute, "lon") == 0)
+                    gpxm->trk.back().trkseg.back().trkpt.back().longitude = UTILS_atof(pContent);
             }
             break;
 
         case PARSING_TRKPT_LINK:
-            if (stricmp(pTag, "link") == 0)
+            if (strcmp(pTag, "link") == 0)
             {
-                if (stricmp(pAttribute, "href") == 0)
+                if (strcmp(pAttribute, "href") == 0)
                     gpxm->trk.back().trkseg.back().trkpt.back().links.back().href = sContent;
             }
             break;
@@ -657,27 +617,27 @@ static void closeTag(void* pXml, char* pTag)
         break;
 
     case PARSING_GPX:
-        if (stricmp(pTag, "gpx") == 0)
+        if (strcmp(pTag, "gpx") == 0)
             xml->state = PARSING_NONE;
         break;
 
     case PARSING_METADATA:
-        if (stricmp(pTag, "metadata") == 0)
+        if (strcmp(pTag, "metadata") == 0)
             xml->state = PARSING_GPX;
         break;
 
     case PARSING_METADATA_LINK:
-        if (stricmp(pTag, "link") == 0)
+        if (strcmp(pTag, "link") == 0)
             xml->state = PARSING_METADATA;
         break;
 
     case PARSING_METADATA_AUTHOR:
-        if (stricmp(pTag, "author") == 0)
+        if (strcmp(pTag, "author") == 0)
             xml->state = PARSING_METADATA;
         break;
 
     case PARSING_TRK:
-        if (stricmp(pTag, "trk") == 0)
+        if (strcmp(pTag, "trk") == 0)
         {
             // update track
             GPX_model *gpxm = (GPX_model*)xml->pObject;
@@ -687,27 +647,27 @@ static void closeTag(void* pXml, char* pTag)
         break;
 
     case PARSING_TRK_LINK:
-        if (stricmp(pTag, "link") == 0)
+        if (strcmp(pTag, "link") == 0)
             xml->state = PARSING_TRK;
         break;
 
     case PARSING_TRKSEG:
-        if (stricmp(pTag, "trkseg") == 0)
+        if (strcmp(pTag, "trkseg") == 0)
             xml->state = PARSING_TRK;
         break;
 
     case PARSING_TRKPT:
-        if (stricmp(pTag, "trkpt") == 0)
+        if (strcmp(pTag, "trkpt") == 0)
             xml->state = PARSING_TRKSEG;
         break;
 
     case PARSING_TRKPT_LINK:
-        if (stricmp(pTag, "link") == 0)
+        if (strcmp(pTag, "link") == 0)
             xml->state = PARSING_TRKPT;
         break;
 
     case PARSING_TRKPT_EXTENSIONS_GPXTPX:
-        if (stricmp(pTag, "gpxtpx:TrackPointExtension") == 0)
+        if (strcmp(pTag, "gpxtpx:trackpointextension") == 0)
         {
             gExtensionVector = &gpxm->trk.back().trkseg.back().trkpt.back().extensions.extension;
             gExtensionStr = "";
@@ -716,7 +676,7 @@ static void closeTag(void* pXml, char* pTag)
             xml->state = PARSING_TRKPT_EXTENSIONS;
             break;
         }
-        else if (stricmp(pTag, "gpxtpx:hr") == 0)
+        else if (strcmp(pTag, "gpxtpx:hr") == 0)
         {
             break;
         }
@@ -725,7 +685,7 @@ static void closeTag(void* pXml, char* pTag)
         case PARSING_TRK_EXTENSIONS:
         case PARSING_TRKSEG_EXTENSIONS:
         case PARSING_TRKPT_EXTENSIONS:
-            if (stricmp(pTag, "extensions") == 0)
+            if (strcmp(pTag, "extensions") == 0)
             {
                 gExtensionVector = NULL;
                 xml->state = gExtensionPrevState;
@@ -781,7 +741,7 @@ GPX_model::retCode_e GPXFile::load(ifstream* fp, GPX_model* gpxm, bool overwrite
 
     // set timezone temporary to UTC
     tz = getenv("TZ");
-    SYS_setenv("TZ", "UTC");
+    UTILS_setenv("TZ", "UTC");
     tzset();
 
     // parse file
@@ -789,9 +749,9 @@ GPX_model::retCode_e GPXFile::load(ifstream* fp, GPX_model* gpxm, bool overwrite
 
     // change back timezone
     if (tz)
-        SYS_setenv("TZ", tz);
+        UTILS_setenv("TZ", tz);
     else
-        SYS_unsetenv("TZ");
+        UTILS_unsetenv("TZ");
     tzset();
 
     if (ret != 0)

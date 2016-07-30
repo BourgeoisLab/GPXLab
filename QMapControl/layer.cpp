@@ -377,11 +377,11 @@ namespace qmapcontrol
             // Fetch the top/bottom rows
             for (int i=prefetch_tile_left; i<=prefetch_tile_right; ++i)
             {
-                //if (mapAdapter->isTileValid(i, prefetch_tile_top, mapAdapter->currentZoom())) // FBO, to check
+                if (mapAdapter->isTileValid(i, prefetch_tile_top, mapAdapter->currentZoom()))
                 {
                     m_ImageManager->prefetchImage(mapAdapter->host(), mapAdapter->query(i, prefetch_tile_top, mapAdapter->currentZoom()));
                 }
-                //if (mapAdapter->isTileValid(i, prefetch_tile_bottom, mapAdapter->currentZoom())) // FBO, to check
+                if (mapAdapter->isTileValid(i, prefetch_tile_bottom, mapAdapter->currentZoom()))
                 {
                     m_ImageManager->prefetchImage(mapAdapter->host(), mapAdapter->query(i, prefetch_tile_bottom, mapAdapter->currentZoom()));
                 }
@@ -389,11 +389,11 @@ namespace qmapcontrol
 
             for (int i=prefetch_tile_top; i<=prefetch_tile_bottom; ++i)
             {
-                //if (mapAdapter->isTileValid(prefetch_tile_left, i, mapAdapter->currentZoom())) // FBO, to check
+                if (mapAdapter->isTileValid(prefetch_tile_left, i, mapAdapter->currentZoom()))
                 {
                     m_ImageManager->prefetchImage(mapAdapter->host(), mapAdapter->query(prefetch_tile_left, i, mapAdapter->currentZoom()));
                 }
-                //if (mapAdapter->isTileValid(prefetch_tile_right, i, mapAdapter->currentZoom())) // FBO, to check
+                if (mapAdapter->isTileValid(prefetch_tile_right, i, mapAdapter->currentZoom()))
                 {
                     m_ImageManager->prefetchImage(mapAdapter->host(), mapAdapter->query(prefetch_tile_right, i, mapAdapter->currentZoom()));
                 }

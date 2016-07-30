@@ -1,4 +1,13 @@
 build-Debug
 build-Release
+bin
 doc/html
 GPXLab.pro.user
+.qmake.stash
+GPXLab/.qmake.cache
+QMapControl/.qmake.cache
+Makefile
+GPXLab/Makefile
+QMapControl/Makefile
+GPXLab/tmp
+QMapControl/tmp

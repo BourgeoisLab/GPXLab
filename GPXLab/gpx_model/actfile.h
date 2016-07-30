@@ -39,8 +39,8 @@ using namespace std;
  * @see http://www.a-rival.de
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 10 Jan 2015
+ * @version 1.1
+ * @date 30 Jul 2016
  */
 namespace ACTFile
 {

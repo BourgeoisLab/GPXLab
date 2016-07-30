@@ -22,8 +22,8 @@
  *
  * Generic XML parser.
  *
- * The user must specify callback functions and a buffer which will contain the
- * tag content whit its size.
+ * The user must specify callback functions and a buffer (pContent) which
+ * will contain the tag content and the size of the buffer (maxContent).
  *
  * Callback functions:
  *   - \b UXML_GetChar       Called to get the next character from a stream (file or buffer)
@@ -33,12 +33,16 @@
  *   - \b UXML_setAttribute  Called when a tag attribute was found
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 25 Oct 2014
+ * @version 1.1
+ * @date 30 Jul 2016
  */
 
 #ifndef _UXMLPARS_H_
 #define _UXMLPARS_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** Maximal length of a tag */
 #define UXML_TAG_SIZE   256
@@ -68,8 +72,8 @@ typedef struct t_uXml
     int                 unget_c;                    /**< "Ungeted" character (intern use) */
     int                 recursionDepth;             /**< Recursion depth */
     int                 maxContent;                 /**< Maximal size of buffer *pContent */
-    char                pTag[UXML_TAG_SIZE];        /**< Begin and end tag name */
-    char                pAttribute[UXML_TAG_SIZE];  /**< Attribute name */
+    char                pTag[UXML_TAG_SIZE];        /**< Begin and end tag name in lower case */
+    char                pAttribute[UXML_TAG_SIZE];  /**< Attribute name in lower case */
     char*               pContent;                   /**< Tag content buffer */
     void*               pObject;                    /**< User defined object */
     UXML_GetChar        getChar;                    /**< Called to get the next character from a stream (file or buffer) */
@@ -91,5 +95,9 @@ void UXML_init(T_uXml* pXML);
  * @return 0 on success
  */
 int UXML_parseFile(T_uXml* pXML);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //_UXMLPARS_H_
