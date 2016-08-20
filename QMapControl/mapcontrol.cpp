@@ -160,6 +160,7 @@ namespace qmapcontrol
             QPoint step = (dest-start);
             m_layermanager->scrollView(step);
             updateRequestNew();
+            emit viewChanged(currentCoordinate(), currentZoom());
         }
     }
 
@@ -350,6 +351,7 @@ namespace qmapcontrol
             QPoint offset = pre_click_px - QPoint(evnt->x(), evnt->y());
             m_layermanager->scrollView(offset);
             pre_click_px = QPoint(evnt->x(), evnt->y());
+            emit viewChanged(currentCoordinate(), currentZoom());
         }
         else if (mousepressed && (mymousemode == Dragging || mymousemode == DraggingNoZoom))
         {
@@ -434,21 +436,18 @@ namespace qmapcontrol
     {
         m_layermanager->zoomIn();
         updateView();
-        emit viewChanged(currentCoordinate(), currentZoom());
     }
 
     void MapControl::zoomOut()
     {
         m_layermanager->zoomOut();
         updateView();
-        emit viewChanged(currentCoordinate(), currentZoom());
     }
 
     void MapControl::setZoom(int zoomlevel)
     {
         m_layermanager->setZoom(zoomlevel);
         updateView();
-        emit viewChanged(currentCoordinate(), currentZoom());
     }
 
     int MapControl::currentZoom() const

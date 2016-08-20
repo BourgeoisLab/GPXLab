@@ -85,10 +85,22 @@
  * 
  * @section ReleaseNotes Release Notes
  *
+ * <b>[v0.4.2]</b>
+ * - [new] Show latitude and longitude in the status bar.
+ * - [new] Show speed also in min/km.
+ * - [new] "Follow item" and "show only selected item" are store in the settings.
+ * - [fix] Following selected item failed.
+ *
+ * <b>[v0.4.1]</b>
+ * - [fix] Compilation with Linux should work now.
+ * - [fix] Combination of atof() and locale.
+ *
  * <b>[v0.4.0]</b>
+ * - [update] Updated to Qt 5.7.
  * - [update] Updated QMapControl to version 0.9.7.9.
+ * - [update] Updated QCustomPlot to version 1.3.2.
  * - [new] The diagram's x axis now show elapsed time instead of absoulte time.
- * - [fix] Corrected timezone problem in NMEA parser.
+ * - [fix] Corrected timezone problem in NMEA and GPX parser.
  *
  * <b>[v0.3.0]</b>
  * - [update] Updated QMapControl to version 0.9.7.8.
@@ -139,6 +151,7 @@
 #include <QMenu>
 #include <QUndoStack>
 #include <QTreeWidgetItem>
+#include <QLabel>
 #include "settings.h"
 #include "gpx_wrapper.h"
 
@@ -158,8 +171,8 @@ class GPXLab;
  * @brief Main application class
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.3
- * @date 9 Jul 2016
+ * @version 1.4
+ * @date 20 Aug 2016
  */
 class GPXLab : public QMainWindow
 {
@@ -423,6 +436,10 @@ private slots:
 
     void on_actionInsert_Point_triggered();
 
+    void on_pushButtonEditFileProperties_clicked();
+
+    void on_pushButtonEditTrackProperties_clicked();
+
 private:
 
     void updateActions(bool enabled);
@@ -460,6 +477,12 @@ private:
 
     /** @brief Slider to change zoom of map */
     QSlider *zoomSlider;
+
+    /** @brief Status bar label to show coordinates */
+    QLabel *lblCoordinates;
+
+    /** @brief Status bar label to show informations */
+    QLabel *lblStatus;
 };
 
 /** @} GPXLab */

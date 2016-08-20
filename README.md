@@ -59,6 +59,17 @@ Credits
  
 Release Notes
 -------------
+
+**[v0.4.2]**
+- [new] Show latitude and longitude in the status bar.
+- [new] Show speed also in min/km.
+- [new] "Follow item" and "show only selected item" are store in the settings.
+- [fix] Following selected item failed.
+
+**[v0.4.1]**
+- [fix] Compilation with Linux should work now.
+- [fix] Combination of atof() and locale.
+ 
 **[v0.4.0]**
 - [update] Updated to Qt 5.7.
 - [update] Updated QMapControl to version 0.9.7.9.

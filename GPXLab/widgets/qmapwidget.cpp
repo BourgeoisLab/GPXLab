@@ -300,7 +300,8 @@ void QMapWidget::selectTrack(int trackNumber)
 
 void QMapWidget::selectedPointSetVisible(bool visible, double lat, double lon)
 {
-    selectedPoint->setCoordinate(QPointF(lon, lat));
+    if (visible)
+        selectedPoint->setCoordinate(QPointF(lon, lat));
     selectedPoint->setVisible(visible);
 }
 

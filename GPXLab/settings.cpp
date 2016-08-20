@@ -61,6 +61,19 @@ void Settings::restoreLayout()
     parent->restoreState(defaultState);
 }
 
+void Settings::setValue(const QString &key, QVariant &value)
+{
+    QSettings qsettings;
+    qsettings.setValue(key, value);
+    emit settingsChanged(true);
+}
+
+QVariant Settings::getValue(const QString &key)
+{
+    QSettings qsettings;
+    return qsettings.value(key);
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 void Settings::addToRecentFile(const QString &fileName)

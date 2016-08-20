@@ -64,6 +64,11 @@ void GPXLab::on_actionEdit_File_Properties_triggered()
     delete dlg;
 }
 
+void GPXLab::on_pushButtonEditFileProperties_clicked()
+{
+    on_actionEdit_File_Properties_triggered();
+}
+
 void GPXLab::on_actionEdit_Track_Properties_triggered()
 {
     const GPX_statsType *stats = gpxmw->getTrackStats(gpxmw->getSelectedTrackNumber());
@@ -75,6 +80,11 @@ void GPXLab::on_actionEdit_Track_Properties_triggered()
             undoStack->push(new EditTrackPropertiesCommand(gpxmw, gpxmw->getSelectedTrackNumber(), metadata));
         delete dlg;
     }
+}
+
+void GPXLab::on_pushButtonEditTrackProperties_clicked()
+{
+    on_actionEdit_Track_Properties_triggered();
 }
 
 void GPXLab::tree_doubleClicked(QTreeWidgetItem* item, int column)
@@ -271,11 +281,13 @@ void GPXLab::on_actionFit_Point_triggered()
 
 void GPXLab::on_actionFollow_Item_toggled(bool follow)
 {
+    settings->setValue("FollowItem", QVariant(follow));
     ui->mapWidget->setFollowSelection(follow);
 }
 
 void GPXLab::on_actionShow_Only_Selected_Track_toggled(bool checked)
 {
+    settings->setValue("ShowOnlySelectedItem", QVariant(checked));
     ui->mapWidget->setShowOnlySelectedTrack(checked);
     ui->mapWidget->selectTrack(gpxmw->getSelectedTrackNumber());
 }

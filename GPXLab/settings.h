@@ -33,8 +33,8 @@
  * @brief Manage the settings
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.1
- * @date 4 Jan 2015
+ * @version 1.2
+ * @date 30 Jul 2016
  */
 class Settings : public QObject
 {
@@ -61,6 +61,20 @@ public:
      * @brief Restores the window layout
      */
     void restoreLayout();
+
+    /**
+     * @brief Sets a settings
+     * @param key Key
+     * @param value Value
+     */
+    void setValue(const QString &key, QVariant &value);
+
+    /**
+     * @brief Gets a settings
+     * @param key Key
+     * @return Value
+     */
+    QVariant getValue(const QString &key);
 
     /**
      * @brief Adds a file to the recent file list
