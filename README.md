@@ -60,7 +60,7 @@ Credits
 Release Notes
 -------------
 
-** [v0.4.2.1]**
+**[v0.4.2.1]**
 - [fix] Increased gpx buffer size to 4096.
 - [fix] Const in Settings::setValue(const QString &key, const QVariant &value)
  
