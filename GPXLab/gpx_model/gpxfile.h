@@ -40,8 +40,8 @@ using namespace std;
  * @see http://www.topografix.com/gpx.asp
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.4
- * @date 30 Jul 2016
+ * @version 1.5
+ * @date 22 Aug 2016
  */
 namespace GPXFile
 {

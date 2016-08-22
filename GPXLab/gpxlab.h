@@ -85,6 +85,10 @@
  * 
  * @section ReleaseNotes Release Notes
  *
+ * <b>[v0.4.2.1]</b>
+ * - [fix] Increased gpx buffer size to 4096.
+ * - [fix] Const in Settings::setValue(const QString &key, const QVariant &value)
+ *
  * <b>[v0.4.2]</b>
  * - [new] Show latitude and longitude in the status bar.
  * - [new] Show speed also in min/km.

@@ -61,7 +61,7 @@ void Settings::restoreLayout()
     parent->restoreState(defaultState);
 }
 
-void Settings::setValue(const QString &key, QVariant &value)
+void Settings::setValue(const QString &key, const QVariant &value)
 {
     QSettings qsettings;
     qsettings.setValue(key, value);

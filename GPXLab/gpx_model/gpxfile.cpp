@@ -23,7 +23,10 @@
 #include "uxmlpars.h"
 #include "utils.h"
 
-#define BUFFER_SIZE                     1024
+// Buffer size used to parse gpx file
+#define BUFFER_SIZE                     4096
+
+// Number of space characters added per xml tree depth, while writing gpx file
 #define DEPTH_INDENT                    2
 
 static char gBuffer[BUFFER_SIZE];

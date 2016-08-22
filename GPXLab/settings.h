@@ -33,8 +33,8 @@
  * @brief Manage the settings
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.2
- * @date 30 Jul 2016
+ * @version 1.3
+ * @date 22 Aug 2016
  */
 class Settings : public QObject
 {
@@ -67,7 +67,7 @@ public:
      * @param key Key
      * @param value Value
      */
-    void setValue(const QString &key, QVariant &value);
+    void setValue(const QString &key, const QVariant &value);
 
     /**
      * @brief Gets a settings
