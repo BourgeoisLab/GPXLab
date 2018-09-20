@@ -179,7 +179,7 @@ static void UXML_ungetc(T_uXml* pXML, int c)
  * Reads one character from peripheral.
  * Returns the number of bytes written in the destination buffer.
  */
-static int readEncodedChar(T_uXml* pXML, char* buffer, int max)
+static int readEncodedChar(T_uXml* pXML, char* buffer, int max, int lowercase)
 {
     int nwrite=0;
 
@@ -192,7 +192,10 @@ static int readEncodedChar(T_uXml* pXML, char* buffer, int max)
     {
         if (pXML->encoding == ENCODE_ANSI)
         {
-            buffer[nwrite++] = (char)(c&0xFF);
+            if (lowercase)
+                buffer[nwrite++] = (char)tolower(c&0xFF);
+            else
+                buffer[nwrite++] = (char)(c&0xFF);
         }
         else // c is Unicode wide char. (BOM)
         {
@@ -317,7 +320,7 @@ static enum e_item UXML_findItem(T_uXml* pXML)
                 // read TAG
                 while(pXML->pTag[m_Counter-read] != '>' && m_Counter < UXML_TAG_SIZE && !pXML->eof)
                 {
-                    read = readEncodedChar(pXML, &pXML->pTag[m_Counter], UXML_TAG_SIZE-m_Counter);
+                    read = readEncodedChar(pXML, &pXML->pTag[m_Counter], UXML_TAG_SIZE-m_Counter, 1);
                     m_Counter += read;
                 }
                 if (read == 0 && !pXML->eof)
@@ -342,7 +345,7 @@ static enum e_item UXML_findItem(T_uXml* pXML)
                       pXML->pTag[m_Counter - read] != '/' &&
                       m_Counter < UXML_TAG_SIZE && !pXML->eof)
                 {
-                    read = readEncodedChar(pXML, &pXML->pTag[m_Counter], UXML_TAG_SIZE - m_Counter);
+                    read = readEncodedChar(pXML, &pXML->pTag[m_Counter], UXML_TAG_SIZE - m_Counter, 1);
                     m_Counter += read;
                 }
                 if (read == 0 && !pXML->eof)
@@ -394,7 +397,7 @@ static int UXML_scanContent(T_uXml* pXML, char delim, int ungetDelim, int isCDAT
         // read until "]]>"
         while(!pXML->eof)
         {
-            read = readEncodedChar(pXML, &pXML->pContent[m_scanContentIndex], pXML->maxContent-m_scanContentIndex);
+            read = readEncodedChar(pXML, &pXML->pContent[m_scanContentIndex], pXML->maxContent-m_scanContentIndex, 0);
             m_scanContentIndex += read;
             if (pXML->pContent[m_scanContentIndex-read-2] == ']' &&
                 pXML->pContent[m_scanContentIndex-read-1] == ']' &&
@@ -416,7 +419,7 @@ static int UXML_scanContent(T_uXml* pXML, char delim, int ungetDelim, int isCDAT
         // read until 'delim'
         while(!pXML->eof)
         {
-            read = readEncodedChar(pXML, &pXML->pContent[m_scanContentIndex], pXML->maxContent-m_scanContentIndex);
+            read = readEncodedChar(pXML, &pXML->pContent[m_scanContentIndex], pXML->maxContent-m_scanContentIndex, 0);
             m_scanContentIndex += read;
             if (pXML->pContent[m_scanContentIndex-read] == delim)
                 break;
@@ -465,7 +468,7 @@ static int UXML_scanAttributes(T_uXml* pXML)
         pXML->pAttribute[m_Counter - read] != '/' &&
         m_Counter < UXML_TAG_SIZE && !pXML->eof)
     {
-        read = readEncodedChar(pXML, &pXML->pAttribute[m_Counter], UXML_TAG_SIZE - m_Counter);
+        read = readEncodedChar(pXML, &pXML->pAttribute[m_Counter], UXML_TAG_SIZE - m_Counter, 1);
         m_Counter += read;
     }
     if (read == 0 && !pXML->eof)
