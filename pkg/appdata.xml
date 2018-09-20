@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+	<id>gpxlab.desktop</id>
+	<metadata_license>MIT</metadata_license>
+	<project_license>GPL-3.0</project_license>
+
+	<name>GPXLab</name>
+	<summary>Program to show and manipulate GPS tracks</summary>
+	<description>
+		<p>GPXLab is an application to display and manage GPS tracks previously recorded with a GPS tracker.</p>
+
+		<p>Features:</p>
+		<ul>
+			<li>Support opening GPX (v1.0 or v1.1), NMEA and SpoQ files.</li>
+			<li>Combine several tracks into one single GPX file.</li>
+			<li>Rearrange the tracks (move/add/delete).</li>
+			<li>Modify the meta data of the GPX file and of any tracks inside the file.</li>
+			<li>Get altitude data from the SRTM database.</li>
+			<li>Show statistic information about the summarized tracks and about a single track.</li>
+			<li>Show a map of all tracks.</li>
+			<li>Show an altitude and a speed diagram.</li>
+			<li>Show a list of the track points.</li>
+		</ul>
+	</description>
+
+	<screenshots>
+		<screenshot type="default">
+			<image>https://raw.githubusercontent.com/BourgeoisLab/GPXLab/master/doc/demo.png</image>
+		</screenshot>
+	</screenshots>
+
+	<categories>
+		<category>Graphics</category>
+		<category>Viewer</category>
+	</categories>
+
+	<url type="homepage">https://github.com/BourgeoisLab/GPXLab</url>
+
+	<launchable type="desktop-id">gpxlab.desktop</launchable>
+
+	<provides>
+		<binary>gpxlab</binary>
+	</provides>
+
+	<mimetypes>
+		<mimetype>application/gpx+xml</mimetype>
+		<mimetype>application/vnd.nmea.nmea</mimetype>
+	</mimetypes>
+</component>
