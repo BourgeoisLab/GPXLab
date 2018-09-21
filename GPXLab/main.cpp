@@ -17,6 +17,16 @@
 
 #include "gpxlab.h"
 #include <QApplication>
+#include <QLibraryInfo>
+#include <QTranslator>
+
+#if defined(Q_OS_WIN32)
+# define TRANSLATIONS_DIR QApplication::applicationDirPath() + QString("/translations")
+#elif defined(Q_OS_MAC)
+# define TRANSLATIONS_DIR QApplication::applicationDirPath() + QString("/../Resources/translations")
+#else
+# define TRANSLATIONS_DIR QString("/usr/share/gpxlab/translations")
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -25,6 +35,19 @@ int main(int argc, char *argv[])
     app.setOrganizationName(GPXLab::organisationName);
     app.setApplicationName(GPXLab::appName);
     app.setApplicationVersion(GPXLab::appVersion);
+
+    QTranslator gpxlab;
+    gpxlab.load(QLocale::system(), "gpxlab", "_", TRANSLATIONS_DIR);
+    app.installTranslator(&gpxlab);
+
+    QTranslator qt;
+#if defined(Q_OS_WIN32) || defined(Q_OS_MAC)
+    qt.load(QLocale::system(), "qt", "_", TRANSLATIONS_DIR);
+#else
+    qt.load(QLocale::system(), "qt", "_", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+#endif
+    app.installTranslator(&qt);
+
     if (argc > 1)
         gxplab = new GPXLab(QString(argv[1]));
     else
