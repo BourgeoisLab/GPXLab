@@ -19,7 +19,7 @@
 #include "ui_dialog_srtm.h"
 #include "qutils.h"
 
-const QString Dialog_srtm::dlgName = "Get Altitude From Database";
+const QString Dialog_srtm::dlgName = tr("Get Altitude From Database");
 
 Dialog_srtm::Dialog_srtm(const GPX_wrapper *gpxmw, QWidget *parent) :
     QDialog(parent),
@@ -41,7 +41,7 @@ Dialog_srtm::Dialog_srtm(const GPX_wrapper *gpxmw, QWidget *parent) :
     ui->widgetPlot->xAxis->setTickLabelType(QCPAxis::ltDateTime);
     ui->widgetPlot->xAxis->setDateTimeFormat("H:mm");
     ui->widgetPlot->xAxis->setDateTimeSpec(Qt::UTC);
-    ui->widgetPlot->yAxis->setLabel("Altitude [m]");
+    ui->widgetPlot->yAxis->setLabel(tr("Altitude [m]"));
     ui->widgetPlot->addGraph();
     ui->widgetPlot->addGraph();
     ui->widgetPlot->graph(0)->setPen(QPen(Qt::blue));
@@ -174,8 +174,8 @@ void Dialog_srtm::on_pushButtonFetchData_clicked()
     else
     {
         QString url = QString::fromStdString(srtm->getFileURL());
-        ui->labelNotFound->setText("Height file not found: " + QString::fromStdString(srtm->getFileName()));
-        ui->labelDownload->setText("Donwload file here: <a href=\"" + url + "\">" + url + "</a>");
+        ui->labelNotFound->setText(tr("Height file not found: ") + QString::fromStdString(srtm->getFileName()));
+        ui->labelDownload->setText(tr("Download file here: ") + "<a href=\"" + url + "\">" + url + "</a>");
     }
 }
 
