@@ -994,6 +994,8 @@ static void writeMetadata(ofstream* fp, int depth, const GPX_metadataType* m)
 
 GPX_model::retCode_e GPXFile::save(ofstream* fp, const GPX_model* gpxm)
 {
+    setlocale(LC_ALL, "C");
+
     writeStr(fp, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>");
     writeStr(fp, "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"", false);
     writeStr(fp, gpxm->creator.c_str(), false);
@@ -1122,5 +1124,8 @@ GPX_model::retCode_e GPXFile::save(ofstream* fp, const GPX_model* gpxm)
     }
     writeExtensions(fp, 1, &gpxm->extensions);
     writeStr(fp, "</gpx>");
+
+    setlocale(LC_ALL, "");
+
     return GPX_model::GPXM_OK;
 }
