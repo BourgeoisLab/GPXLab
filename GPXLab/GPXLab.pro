@@ -123,3 +123,7 @@ OTHER_FILES +=
 
 RESOURCES += \
     resources.qrc
+
+TRANSLATIONS += \
+    locale/gpxlab_fi.ts \
+    locale/gpxlab_ru.ts

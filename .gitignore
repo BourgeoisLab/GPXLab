@@ -11,3 +11,4 @@ GPXLab/Makefile
 QMapControl/Makefile
 GPXLab/tmp
 QMapControl/tmp
+*.qm
