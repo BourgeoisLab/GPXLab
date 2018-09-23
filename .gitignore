@@ -1,3 +1,4 @@
+.DS_Store
 build-Debug
 build-Release
 bin
@@ -11,3 +12,4 @@ GPXLab/Makefile
 QMapControl/Makefile
 GPXLab/tmp
 QMapControl/tmp
+*.qm

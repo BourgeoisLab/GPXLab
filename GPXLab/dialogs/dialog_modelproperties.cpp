@@ -20,7 +20,7 @@
 #include "ui_dialog_modelproperties.h"
 #include "qutils.h"
 
-const QString Dialog_modelProperties::dlgName = "File Properties";
+const QString Dialog_modelProperties::dlgName = tr("File Properties");
 
 Dialog_modelProperties::Dialog_modelProperties(GPX_metadataType &metadata, const GPX_statsType &stats, QWidget *parent) :
     QDialog(parent),
@@ -77,12 +77,12 @@ Dialog_modelProperties::Dialog_modelProperties(GPX_metadataType &metadata, const
     timestamp.setTime_t(stats.endTime);
     ui->labelEndTime->setText(timestamp.toString("dd.MM.yyyy H:mm:ss"));
     ui->labelDuration->setText(QUtils::seconds_to_DHMS(stats.duration));
-    ui->labelDistance->setText(QString::number(stats.distance, 'f', 1) + " km");
-    ui->labelSpeed->setText(QString::number(stats.speed, 'f', 1) + " km/h");
-    ui->labelHeightMin->setText(QString::number(stats.minhei, 'f', 0) + " m");
-    ui->labelHeightMax->setText(QString::number(stats.maxhei, 'f', 0) + " m");
-    ui->labelHeightIntUp->setText(QString::number(stats.heightIntUp, 'f', 0) + " m");
-    ui->labelHeightIntDown->setText(QString::number(stats.heightIntDown, 'f', 0) + " m");
+    ui->labelDistance->setText(QString::number(stats.distance, 'f', 1) + " " + tr("km"));
+    ui->labelSpeed->setText(QString::number(stats.speed, 'f', 1) + " " + tr("km/h"));
+    ui->labelHeightMin->setText(QString::number(stats.minhei, 'f', 0) + " " + tr("m"));
+    ui->labelHeightMax->setText(QString::number(stats.maxhei, 'f', 0) + " " + tr("m"));
+    ui->labelHeightIntUp->setText(QString::number(stats.heightIntUp, 'f', 0) + " " + tr("m"));
+    ui->labelHeightIntDown->setText(QString::number(stats.heightIntDown, 'f', 0) + " " + tr("m"));
 
     // set modified flag after setText()
     setModified(false);

@@ -249,59 +249,59 @@ QString GPX_wrapper::getTrackPointPropertyLabel(TrackPointProperty property, boo
     switch(property)
     {
     case none:
-        return "None";
+        return tr("None");
     case fix:
-        return "Fix";
+        return tr("Fix");
     case sat:
-        return "Satellites";
+        return tr("Satellites");
     case timestamp:
-        return "Date & Time";
+        return tr("Date & Time");
     case magvar:
-        return newLines ? "Magnetic\nvariation" : "Magnetic variation";
+        return newLines ? tr("Magnetic\nvariation") : tr("Magnetic variation");
     case altitude:
-        return newLines ? "Elevation\n[m]" : "Elevation [m]";
+        return newLines ? tr("Elevation\n[m]") : tr("Elevation [m]");
     case hdop:
-        return "HDOP";
+        return tr("HDOP");
     case vdop:
-        return "VDOP";
+        return tr("VDOP");
     case pdop:
-        return "PDOP";
+        return tr("PDOP");
     case ageofdgpsdata:
-        return newLines ? "Age of\nDGPS" : "Age of DGPS";
+        return newLines ? tr("Age of\nDGPS") : tr("Age of DGPS");
     case dgpsid:
-        return newLines ? "DGPS\nID" : "DGPS ID";
+        return newLines ? tr("DGPS\nID") : tr("DGPS ID");
     case geoidheight:
-        return newLines ? "Geoid height\n[m]" : "Geoid height [m]";
+        return newLines ? tr("Geoid height\n[m]") : tr("Geoid height [m]");
     case latitude:
-        return newLines ? "Latitude\n[deg]" : "Latitude [deg]";
+        return newLines ? tr("Latitude\n[deg]") : tr("Latitude [deg]");
     case longitude:
-        return newLines ? "Longitude\n[deg]" : "Longitude [deg]";
+        return newLines ? tr("Longitude\n[deg]") : tr("Longitude [deg]");
     case name:
-        return "Name";
+        return tr("Name");
     case cmt:
-        return "Comment";
+        return tr("Comment");
     case desc:
-        return "Description";
+        return tr("Description");
     case src:
-        return "Source";
+        return tr("Source");
     case links:
-        return "Links";
+        return tr("Links");
     case sym:
-        return "Symbol";
+        return tr("Symbol");
     case type:
-        return "Type";
+        return tr("Type");
     case heartrate:
-        return newLines ? "Heart rate\n[bpm]" : "Heart rate [bpm]";
+        return newLines ? tr("Heart rate\n[bpm]") : tr("Heart rate [bpm]");
     case speed:
-        return newLines ? "Speed\n[km/h]" : "Speed [km/h]";
+        return newLines ? tr("Speed\n[km/h]") : tr("Speed [km/h]");
     case heading:
-        return "Heading";
+        return tr("Heading");
     case leglength:
-        return newLines ? "Leg length\n[m]" : "Leg length [m]";
+        return newLines ? tr("Leg length\n[m]") : tr("Leg length [m]");
     case distance:
-        return newLines ? "Distance\n[km]" : "Distance [km]";
+        return newLines ? tr("Distance\n[km]") : tr("Distance [km]");
     case elapsedTime:
-        return newLines ? "Elapsed time\n[s]" : "Elapsed time [s]";
+        return newLines ? tr("Elapsed time\n[s]") : tr("Elapsed time [s]");
     default:
         return "";
     }

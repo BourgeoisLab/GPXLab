@@ -310,7 +310,7 @@ void QMapWidget::overPointSetVisible(bool visible, const GPX_wptType *trkpt)
     if (visible)
     {
             QString text = QUtils::seconds_to_DHMS(trkpt->elapsedTime);
-            text += "\n" + QString::number(trkpt->distanceTot, 'f', 1) + " km";
+            text += "\n" + QString::number(trkpt->distanceTot, 'f', 1) + " " + tr("km");
             overPointWidget->setText(text);
             overPoint->setCoordinate(QPointF(trkpt->longitude, trkpt->latitude));
             overPoint->setVisible(true);

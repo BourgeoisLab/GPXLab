@@ -393,11 +393,11 @@ void GPXLab::updateFileProperties(bool clear)
         ui->labelFileName->setText(QString::fromStdString(metadata->name));
         ui->labelFileTracks->setText(QString::number(gpxmw->getNumTracks()));
         ui->labelFileDuration->setText(QUtils::seconds_to_DHMS(stats->duration));
-        ui->labelFileDistance->setText(QString::number(stats->distance, 'f', 1) + " km");
-        ui->labelFileSpeed->setText(QString::number(stats->speed, 'f', 1) + " km/h");
-        ui->labelFileSpeed2->setText(QString::number(60/stats->speed, 'f', 1) + " min/km");
-        ui->labelFileHeightIntUp->setText(QString::number(stats->heightIntUp, 'f', 0) + " m");
-        ui->labelFileHeightIntDown->setText(QString::number(stats->heightIntDown, 'f', 0) + " m");
+        ui->labelFileDistance->setText(QString::number(stats->distance, 'f', 1) + " " + tr("km"));
+        ui->labelFileSpeed->setText(QString::number(stats->speed, 'f', 1) + " " + tr("km/h"));
+        ui->labelFileSpeed2->setText(QString::number(60/stats->speed, 'f', 1) + " " + tr("min/km"));
+        ui->labelFileHeightIntUp->setText(QString::number(stats->heightIntUp, 'f', 0) + " " + tr("m"));
+        ui->labelFileHeightIntDown->setText(QString::number(stats->heightIntDown, 'f', 0) + " " + tr("m"));
     }
     else
     {
@@ -426,13 +426,13 @@ void GPXLab::updateTrackProperties(bool clear)
             timestamp.setTime_t(stats->endTime);
             ui->labelTrackEndTime->setText(timestamp.toString("dd.MM.yyyy H:mm:ss"));
             ui->labelTrackDuration->setText(QUtils::seconds_to_DHMS(stats->duration));
-            ui->labelTrackDistance->setText(QString::number(stats->distance, 'f', 1) + " km");
-            ui->labelTrackSpeed->setText(QString::number(stats->speed, 'f', 1) + " km/h");
-            ui->labelTrackSpeed2->setText(QString::number(60/stats->speed, 'f', 1) + " min/km");
-            ui->labelTrackMinAltitude->setText(QString::number(stats->minhei, 'f', 0) + " m");
-            ui->labelTrackMaxAltitude->setText(QString::number(stats->maxhei, 'f', 0) + " m");
-            ui->labelTrackHeightIntUp->setText(QString::number(stats->heightIntUp, 'f', 0) + " m");
-            ui->labelTrackHeightIntDown->setText(QString::number(stats->heightIntDown, 'f', 0) + " m");
+            ui->labelTrackDistance->setText(QString::number(stats->distance, 'f', 1) + " " + tr("km"));
+            ui->labelTrackSpeed->setText(QString::number(stats->speed, 'f', 1) + " " + tr("km/h"));
+            ui->labelTrackSpeed2->setText(QString::number(60/stats->speed, 'f', 1) + " " + tr("min/km"));
+            ui->labelTrackMinAltitude->setText(QString::number(stats->minhei, 'f', 0) + " " + tr("m"));
+            ui->labelTrackMaxAltitude->setText(QString::number(stats->maxhei, 'f', 0) + " " + tr("m"));
+            ui->labelTrackHeightIntUp->setText(QString::number(stats->heightIntUp, 'f', 0) + " " + tr("m"));
+            ui->labelTrackHeightIntDown->setText(QString::number(stats->heightIntDown, 'f', 0) + " " + tr("m"));
             return;
         }
     }

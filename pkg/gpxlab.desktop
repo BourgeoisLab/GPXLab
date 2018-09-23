@@ -1,6 +1,8 @@
 [Desktop Entry]
 Name=GPXLab
 Comment=Program to show and manipulate GPS tracks
+Comment[fi]=Ohjelma GPS-jälkien katseluun ja käsittelyyn
+Comment[ru]=Программа для просмотра и обработки GPS треков
 Exec=gpxlab %F
 Icon=gpxlab
 Terminal=false
