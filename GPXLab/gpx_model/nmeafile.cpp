@@ -61,7 +61,7 @@ static void copy_value(char *dst, const char *src, int maxsize)
 static double parse_position(const char *value)
 {
     int degrees = atoi(value) / 100;
-    double decimal = (UTILS_atof(value) - (degrees * 100)) / 60.0f;
+    double decimal = (atof(value) - (degrees * 100)) / 60.0f;
     return degrees + decimal;
 }
 
@@ -169,16 +169,16 @@ static int parseNMEA(GPX_wptType *pWp, const char *pNmea)
 
         // horizontal dilution of position
         p = strchr(p, ',') + 1;
-        pWp->hdop = (float)UTILS_atof(p);
+        pWp->hdop = (float)atof(p);
 
         // altitude
         p = strchr(p, ',') + 1;
-        pWp->altitude = UTILS_atof(p) ;
+        pWp->altitude = atof(p) ;
         p = strchr(p, ',') + 1;
 
         // height of geoid
         p = strchr(p, ',') + 1;
-        pWp->geoidheight = (float)UTILS_atof(p);
+        pWp->geoidheight = (float)atof(p);
         p = strchr(p, ',') + 1;
 
         return 1;
@@ -232,11 +232,11 @@ static int parseNMEA(GPX_wptType *pWp, const char *pNmea)
 
         // speed
         p = strchr(p, ',') + 1;
-        pWp->speed = (float)UTILS_atof(p) * 1.852f; // knots -> km/h
+        pWp->speed = (float)atof(p) * 1.852f; // knots -> km/h
 
         // angle
         p = strchr(p, ',') + 1;
-        pWp->heading = (float)UTILS_atof(p);
+        pWp->heading = (float)atof(p);
 
         // date
         hasDate = true;

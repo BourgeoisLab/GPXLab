@@ -29,6 +29,7 @@ void UTILS_setenv(const char *name, const char *value)
   #else
     setenv(name, value, 1);
   #endif
+    setlocale(LC_ALL, "C");
 }
 
 void UTILS_unsetenv(const char *name)
@@ -40,13 +41,5 @@ void UTILS_unsetenv(const char *name)
   #else
     unsetenv(name);
   #endif
-}
-
-double UTILS_atof(const char *str)
-{
-    double val;
-    setlocale(LC_NUMERIC, "C");
-    val = atof(str);
-    setlocale(LC_NUMERIC, "");
-    return val;
+    setlocale(LC_ALL, "");
 }

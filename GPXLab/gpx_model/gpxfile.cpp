@@ -420,16 +420,16 @@ static void tagContent(void* pXml, char* pTag, char* pContent)
 
         case PARSING_TRKPT:
             if (strcmp(pTag, "ele") == 0)
-                gpxm->trk.back().trkseg.back().trkpt.back().altitude = UTILS_atof(pContent);
+                gpxm->trk.back().trkseg.back().trkpt.back().altitude = atof(pContent);
             else if (strcmp(pTag, "time") == 0)
             {
                 gpxm->trk.back().trkseg.back().trkpt.back().timestamp = strToTime(sContent);
                 gpxm->trk.back().trkseg.back().trkpt.back().millisecond = strToMilliseconds(sContent);
             }
             else if (strcmp(pTag, "magvar") == 0)
-                gpxm->trk.back().trkseg.back().trkpt.back().magvar = (float)UTILS_atof(pContent);
+                gpxm->trk.back().trkseg.back().trkpt.back().magvar = (float)atof(pContent);
             else if (strcmp(pTag, "geoidheight") == 0)
-                gpxm->trk.back().trkseg.back().trkpt.back().geoidheight = (float)UTILS_atof(pContent);
+                gpxm->trk.back().trkseg.back().trkpt.back().geoidheight = (float)atof(pContent);
             else if (strcmp(pTag, "name") == 0)
                 gpxm->trk.back().trkseg.back().trkpt.back().name = sContent;
             else if (strcmp(pTag, "cmt") == 0)
@@ -447,13 +447,13 @@ static void tagContent(void* pXml, char* pTag, char* pContent)
             else if (strcmp(pTag, "sat") == 0)
                 gpxm->trk.back().trkseg.back().trkpt.back().sat = atoi(pContent);
             else if (strcmp(pTag, "hdop") == 0)
-                gpxm->trk.back().trkseg.back().trkpt.back().hdop = (float)UTILS_atof(pContent);
+                gpxm->trk.back().trkseg.back().trkpt.back().hdop = (float)atof(pContent);
             else if (strcmp(pTag, "vdop") == 0)
-                gpxm->trk.back().trkseg.back().trkpt.back().vdop = (float)UTILS_atof(pContent);
+                gpxm->trk.back().trkseg.back().trkpt.back().vdop = (float)atof(pContent);
             else if (strcmp(pTag, "pdop") == 0)
-                gpxm->trk.back().trkseg.back().trkpt.back().pdop = (float)UTILS_atof(pContent);
+                gpxm->trk.back().trkseg.back().trkpt.back().pdop = (float)atof(pContent);
             else if (strcmp(pTag, "ageofdgpsdata") == 0)
-                gpxm->trk.back().trkseg.back().trkpt.back().ageofdgpsdata = (float)UTILS_atof(pContent);
+                gpxm->trk.back().trkseg.back().trkpt.back().ageofdgpsdata = (float)atof(pContent);
             else if (strcmp(pTag, "dgpsid") == 0)
                 gpxm->trk.back().trkseg.back().trkpt.back().dgpsid = atoi(pContent);
 
@@ -503,7 +503,7 @@ static void tagAttribute(void* pXml, char* pTag, char *pAttribute, char* pConten
             {
                 if (strcmp(pAttribute, "version") == 0)
                 {
-                    gVersion = (int)(10 * UTILS_atof(pContent));
+                    gVersion = (int)(10 * atof(pContent));
                     if (gVersion == 10)
                         xml->state = PARSING_METADATA;
                 }
@@ -521,13 +521,13 @@ static void tagAttribute(void* pXml, char* pTag, char *pAttribute, char* pConten
                 else if (strcmp(pTag, "bounds") == 0)
                 {
                     if (strcmp(pAttribute, "minlat") == 0)
-                        gpxm->metadata.bounds.minlat = UTILS_atof(pContent);
+                        gpxm->metadata.bounds.minlat = atof(pContent);
                     else if (strcmp(pAttribute, "minlon") == 0)
-                        gpxm->metadata.bounds.minlon = UTILS_atof(pContent);
+                        gpxm->metadata.bounds.minlon = atof(pContent);
                     else if (strcmp(pAttribute, "maxlat") == 0)
-                        gpxm->metadata.bounds.maxlat = UTILS_atof(pContent);
+                        gpxm->metadata.bounds.maxlat = atof(pContent);
                     else if (strcmp(pAttribute, "maxlon") == 0)
-                        gpxm->metadata.bounds.maxlon = UTILS_atof(pContent);
+                        gpxm->metadata.bounds.maxlon = atof(pContent);
                 }
             }
             break;
@@ -579,9 +579,9 @@ static void tagAttribute(void* pXml, char* pTag, char *pAttribute, char* pConten
             if (strcmp(pTag, "trkpt") == 0)
             {
                 if (strcmp(pAttribute, "lat") == 0)
-                    gpxm->trk.back().trkseg.back().trkpt.back().latitude = UTILS_atof(pContent);
+                    gpxm->trk.back().trkseg.back().trkpt.back().latitude = atof(pContent);
                 else if (strcmp(pAttribute, "lon") == 0)
-                    gpxm->trk.back().trkseg.back().trkpt.back().longitude = UTILS_atof(pContent);
+                    gpxm->trk.back().trkseg.back().trkpt.back().longitude = atof(pContent);
             }
             break;
 
@@ -994,7 +994,10 @@ static void writeMetadata(ofstream* fp, int depth, const GPX_metadataType* m)
 
 GPX_model::retCode_e GPXFile::save(ofstream* fp, const GPX_model* gpxm)
 {
-    setlocale(LC_ALL, "C");
+    // set timezone temporary to UTC
+    char *tz = getenv("TZ");
+    UTILS_setenv("TZ", "UTC");
+    tzset();
 
     writeStr(fp, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>");
     writeStr(fp, "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"", false);
@@ -1125,7 +1128,12 @@ GPX_model::retCode_e GPXFile::save(ofstream* fp, const GPX_model* gpxm)
     writeExtensions(fp, 1, &gpxm->extensions);
     writeStr(fp, "</gpx>");
 
-    setlocale(LC_ALL, "");
+    // change back timezone
+    if (tz)
+        UTILS_setenv("TZ", tz);
+    else
+        UTILS_unsetenv("TZ");
+    tzset();
 
     return GPX_model::GPXM_OK;
 }

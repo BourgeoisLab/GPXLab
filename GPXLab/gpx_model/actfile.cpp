@@ -266,13 +266,13 @@ static void tagContent(void* pXml, char* pTag, char* pContent)
         //    gTrkseg->trkpt.back().altitude = 0;
         //else
         if (strcmp(pTag, "latitude") == 0)
-            gTrkseg->trkpt.back().latitude = UTILS_atof(pContent);
+            gTrkseg->trkpt.back().latitude = atof(pContent);
         else if (strcmp(pTag, "longitude") == 0)
-            gTrkseg->trkpt.back().longitude = UTILS_atof(pContent);
+            gTrkseg->trkpt.back().longitude = atof(pContent);
         else if (strcmp(pTag, "altitude") == 0)
-            gTrkseg->trkpt.back().altitude = UTILS_atof(pContent);
+            gTrkseg->trkpt.back().altitude = atof(pContent);
         else if (strcmp(pTag, "speed") == 0)
-            gTrkseg->trkpt.back().speed = (float)UTILS_atof(pContent);
+            gTrkseg->trkpt.back().speed = (float)atof(pContent);
         else if (strcmp(pTag, "heartrate") == 0 || strcmp(pTag, "heart_x0020_rate") == 0)
             gTrkseg->trkpt.back().extensionsGarmin.heartrate = atoi(pContent);
         else if (strcmp(pTag, "intervaltime") == 0 || strcmp(pTag, "interval_x0020_time") == 0)
@@ -358,9 +358,21 @@ GPX_model::retCode_e ACTFile::load(ifstream* fp, GPX_model* gpxm)
     // add track
     gpxm->trk.push_back(trk);
 
+    // set timezone temporary to UTC
+    char *tz = getenv("TZ");
+    UTILS_setenv("TZ", "UTC");
+    tzset();
+
     // parse file
     if (UXML_parseFile(&uXML) != 0)
         return GPX_model::GPXM_ERR_FAILED;
+
+    // change back timezone
+    if (tz)
+        UTILS_setenv("TZ", tz);
+    else
+        UTILS_unsetenv("TZ");
+    tzset();
 
     // update track
     gpxm->updateTrack(gpxm->trk.back());
