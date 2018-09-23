@@ -35,13 +35,6 @@ void UTILS_setenv(const char *name, const char *value);
  */
 void UTILS_unsetenv(const char *name);
 
-/**
- * @brief Converts a string to a double
- * @param str String
- * @return Double value
- */
-double UTILS_atof(const char *str);
-
 #ifdef __cplusplus
 }
 #endif
