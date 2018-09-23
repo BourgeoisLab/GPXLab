@@ -79,7 +79,6 @@ private:
 
 private:
 
-    static const QString dlgName;
     Ui::Dialog_srtm *ui;
     bool modified;
     SRTM *srtm;

@@ -94,7 +94,6 @@ private:
 
 private:
 
-    static const QString dlgName;
     Ui::Dialog_modelProperties *ui;
     bool modified;
     GPX_metadataType &metadata;

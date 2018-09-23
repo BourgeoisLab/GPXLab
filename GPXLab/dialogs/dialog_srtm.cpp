@@ -19,8 +19,6 @@
 #include "ui_dialog_srtm.h"
 #include "qutils.h"
 
-const QString Dialog_srtm::dlgName = tr("Get Altitude From Database");
-
 Dialog_srtm::Dialog_srtm(const GPX_wrapper *gpxmw, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Dialog_srtm),
@@ -80,9 +78,9 @@ const QVector<double> &Dialog_srtm::getValues() const
 void Dialog_srtm::setModified(bool modified)
 {
     if (modified)
-        setWindowTitle("*" + dlgName);
+        setWindowTitle("*" + tr("Get Altitude From Database"));
     else
-        setWindowTitle(dlgName);
+        setWindowTitle(tr("Get Altitude From Database"));
     this->modified = modified;
 }
 

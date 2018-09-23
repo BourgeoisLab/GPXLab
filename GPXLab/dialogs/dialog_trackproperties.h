@@ -82,7 +82,6 @@ private:
 
 private:
 
-    static const QString dlgName;
     Ui::Dialog_trackProperties *ui;
     bool modified;
     GPX_trkMetadataType &metadata;

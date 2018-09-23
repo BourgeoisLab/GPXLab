@@ -20,8 +20,6 @@
 #include "ui_dialog_modelproperties.h"
 #include "qutils.h"
 
-const QString Dialog_modelProperties::dlgName = tr("File Properties");
-
 Dialog_modelProperties::Dialog_modelProperties(GPX_metadataType &metadata, const GPX_statsType &stats, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Dialog_modelProperties),
@@ -147,9 +145,9 @@ void Dialog_modelProperties::on_Dialog_modelProperties_accepted()
 void Dialog_modelProperties::setModified(bool modified)
 {
     if (modified)
-        setWindowTitle("*" + QString::fromStdString(metadata.name) + " - " + dlgName);
+        setWindowTitle("*" + QString::fromStdString(metadata.name) + " - " + tr("File Properties"));
     else
-        setWindowTitle(QString::fromStdString(metadata.name) + " - " + dlgName);
+        setWindowTitle(QString::fromStdString(metadata.name) + " - " + tr("File Properties"));
     this->modified = modified;
 }
 

@@ -20,8 +20,6 @@
 #include "ui_dialog_trackproperties.h"
 #include "qutils.h"
 
-const QString Dialog_trackProperties::dlgName = tr("Track Properties");
-
 Dialog_trackProperties::Dialog_trackProperties(GPX_trkMetadataType &metadata, const GPX_statsType &stats, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Dialog_trackProperties),
@@ -116,9 +114,9 @@ void Dialog_trackProperties::on_Dialog_trackProperties_accepted()
 void Dialog_trackProperties::setModified(bool modified)
 {
     if (modified)
-        setWindowTitle("*" + QString::fromStdString(metadata.name) + " - " + dlgName);
+        setWindowTitle("*" + QString::fromStdString(metadata.name) + " - " + tr("Track Properties"));
     else
-        setWindowTitle(QString::fromStdString(metadata.name) + " - " + dlgName);
+        setWindowTitle(QString::fromStdString(metadata.name) + " - " + tr("Track Properties"));
     this->modified = modified;
 }
 
