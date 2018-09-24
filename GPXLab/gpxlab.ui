@@ -1217,7 +1217,7 @@ selection-background-color: rgb(100, 200, 127);</string>
     <string>Open File</string>
    </property>
    <property name="toolTip">
-    <string>Open file</string>
+    <string>Open file (Ctrl+O)</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -1250,7 +1250,10 @@ selection-background-color: rgb(100, 200, 127);</string>
     <string>Save File</string>
    </property>
    <property name="toolTip">
-    <string>Save file</string>
+    <string>Save file (Ctrl+S)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="actionSave_File_As">
@@ -1265,7 +1268,10 @@ selection-background-color: rgb(100, 200, 127);</string>
     <string>Save File As...</string>
    </property>
    <property name="toolTip">
-    <string>Save file as...</string>
+    <string>Save file as (Ctrl+Shift+S)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
    </property>
   </action>
   <action name="actionGetAltitudeFromSRTM">
@@ -1407,7 +1413,10 @@ selection-background-color: rgb(100, 200, 127);</string>
     <string>Close File</string>
    </property>
    <property name="toolTip">
-    <string>Close file</string>
+    <string>Close file (Ctrl+W)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
    </property>
   </action>
   <action name="actionSplit_Track">

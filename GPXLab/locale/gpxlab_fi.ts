@@ -764,14 +764,29 @@ p, li { white-space: pre-wrap; }
         <translation>Poistu sovelluksesta</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1253"/>
-        <source>Save file</source>
-        <translation>Tallenna tiedosto</translation>
+        <location filename="../gpxlab.ui" line="1220"/>
+        <source>Open file (Ctrl+O)</source>
+        <translation>Avaa tiedosto (Ctrl+O)</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1410"/>
-        <source>Close file</source>
-        <translation>Sulje</translation>
+        <location filename="../gpxlab.ui" line="1253"/>
+        <source>Save file (Ctrl+S)</source>
+        <translation>Tallenna tiedosto (Ctrl+S)</translation>
+    </message>
+    <message>
+        <location filename="../gpxlab.ui" line="1271"/>
+        <source>Save file as (Ctrl+Shift+S)</source>
+        <translation>Tallenna tiedosto nimellä (Ctrl+Shift+S)</translation>
+    </message>
+    <message>
+        <location filename="../gpxlab.ui" line="1274"/>
+        <source>Ctrl+Shift+S</source>
+        <translation>Ctrl+Shift+S</translation>
+    </message>
+    <message>
+        <location filename="../gpxlab.ui" line="1416"/>
+        <source>Close file (Ctrl+W)</source>
+        <translation>Sulje tiedosto (Ctrl+W)</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="1208"/>
@@ -797,11 +812,6 @@ p, li { white-space: pre-wrap; }
         <translation>Avaa tiedosto</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1220"/>
-        <source>Open file</source>
-        <translation>Avaa tiedosto</translation>
-    </message>
-    <message>
         <location filename="../gpxlab.ui" line="1223"/>
         <source>Ctrl+O</source>
         <translation>Ctrl+O</translation>
@@ -824,174 +834,179 @@ p, li { white-space: pre-wrap; }
         <translation>Tallenna tiedosto</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1265"/>
+        <location filename="../gpxlab.ui" line="1256"/>
+        <source>Ctrl+S</source>
+        <translation>Ctrl+S</translation>
+    </message>
+    <message>
+        <location filename="../gpxlab.ui" line="1268"/>
         <source>Save File As...</source>
         <translation>Tallenna tiedosto nimellä...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1268"/>
-        <source>Save file as...</source>
-        <translation>Tallenna tiedosto nimellä...</translation>
-    </message>
-    <message>
-        <location filename="../gpxlab.ui" line="1280"/>
+        <location filename="../gpxlab.ui" line="1286"/>
         <source>Get Altitude From Database</source>
         <translation>Hae korkeus tietokannasta</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1283"/>
+        <location filename="../gpxlab.ui" line="1289"/>
         <source>Get altitude from Database</source>
         <translation>Hae korkeus tietokannasta</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1295"/>
+        <location filename="../gpxlab.ui" line="1301"/>
         <source>Edit File Properties</source>
         <translation>Muokkaa tiedoston ominaisuuksia</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1298"/>
+        <location filename="../gpxlab.ui" line="1304"/>
         <source>Edit file properties</source>
         <translation>Muokkaa tiedoston ominaisuuksia</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1310"/>
+        <location filename="../gpxlab.ui" line="1316"/>
         <source>Edit Track Properties</source>
         <translation>Muokkaa jäljen ominaisuuksia</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1313"/>
+        <location filename="../gpxlab.ui" line="1319"/>
         <source>Edit track properties</source>
         <translation>Muokkaa jäljen ominaisuuksia</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1325"/>
+        <location filename="../gpxlab.ui" line="1331"/>
         <source>Fit View</source>
         <translation>Sovita näkymä</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1328"/>
+        <location filename="../gpxlab.ui" line="1334"/>
         <source>Fit view to tracks</source>
         <translation>Sovita näkymä jäljille</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1340"/>
+        <location filename="../gpxlab.ui" line="1346"/>
         <source>Fit View to Track</source>
         <translation>Sovita näkymä jäljelle</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1343"/>
+        <location filename="../gpxlab.ui" line="1349"/>
         <source>Fit view to selected track</source>
         <translation>Sovita näkymä valitulle jäljelle</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1355"/>
+        <location filename="../gpxlab.ui" line="1361"/>
         <source>Fit view to Point</source>
         <translation>Sovita näkymä pisteelle</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1358"/>
+        <location filename="../gpxlab.ui" line="1364"/>
         <source>Fit view to selected point</source>
         <translation>Sovita näkymä valitulle pisteelle</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1373"/>
+        <location filename="../gpxlab.ui" line="1379"/>
         <source>Follow Item</source>
         <translation>Seuraa valitun reittipistettä</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1376"/>
+        <location filename="../gpxlab.ui" line="1382"/>
         <source>Follow Selected Item</source>
         <translation>Seuraa valitun reittipistettä</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1391"/>
+        <location filename="../gpxlab.ui" line="1397"/>
         <source>Show Only Selected Track</source>
         <translation>Näytä vain valittu jälki</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1394"/>
+        <location filename="../gpxlab.ui" line="1400"/>
         <source>Show only selected track</source>
         <translation>Näytä vain valittu jälki</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1399"/>
+        <location filename="../gpxlab.ui" line="1405"/>
         <source>About</source>
         <translation>Tietoja GPXLab:stä</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1407"/>
+        <location filename="../gpxlab.ui" line="1413"/>
         <source>Close File</source>
-        <translation>Sulje</translation>
+        <translation>Sulje tiedosto</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1422"/>
+        <location filename="../gpxlab.ui" line="1419"/>
+        <source>Ctrl+W</source>
+        <translation>Ctrl+W</translation>
+    </message>
+    <message>
+        <location filename="../gpxlab.ui" line="1431"/>
         <source>Split Track</source>
         <translation>Jaa jälki</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1425"/>
+        <location filename="../gpxlab.ui" line="1434"/>
         <source>Split track</source>
         <translation>Jaa jälki</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1437"/>
+        <location filename="../gpxlab.ui" line="1446"/>
         <source>Combine Track</source>
         <translation>Yhdistää jälkiä</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1440"/>
+        <location filename="../gpxlab.ui" line="1449"/>
         <source>Combine track</source>
         <translation>Yhdistää jälkiä</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1445"/>
+        <location filename="../gpxlab.ui" line="1454"/>
         <source>Restore Default View</source>
         <translation>Palauta oletusnäkymä</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1448"/>
+        <location filename="../gpxlab.ui" line="1457"/>
         <source>Restore default view</source>
         <translation>Palauta oletusnäkymä</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1461"/>
-        <location filename="../gpxlab.ui" line="1464"/>
+        <location filename="../gpxlab.ui" line="1470"/>
+        <location filename="../gpxlab.ui" line="1473"/>
         <source>Map Zoom</source>
         <translation>Kartan zoomi</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1473"/>
-        <location filename="../gpxlab.ui" line="1476"/>
+        <location filename="../gpxlab.ui" line="1482"/>
+        <location filename="../gpxlab.ui" line="1485"/>
         <source>Settings</source>
         <translation>Asetukset</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1488"/>
+        <location filename="../gpxlab.ui" line="1497"/>
         <source>Delete Point</source>
         <translation>Poista piste</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1491"/>
+        <location filename="../gpxlab.ui" line="1500"/>
         <source>Delete point</source>
         <translation>Poista piste</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1503"/>
+        <location filename="../gpxlab.ui" line="1512"/>
         <source>Set Start Time</source>
         <translation>Aseta alkamisaika</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1506"/>
+        <location filename="../gpxlab.ui" line="1515"/>
         <source>Set start time</source>
         <translation>Aseta alkamisaika</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1518"/>
+        <location filename="../gpxlab.ui" line="1527"/>
         <source>Insert Point</source>
         <translation>Lisää piste</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1521"/>
+        <location filename="../gpxlab.ui" line="1530"/>
         <source>Insert point</source>
         <translation>Lisää piste</translation>
     </message>

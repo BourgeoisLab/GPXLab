@@ -764,14 +764,29 @@ p, li { white-space: pre-wrap; }
         <translation>Выйти из приложения</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1253"/>
-        <source>Save file</source>
-        <translation>Сохранить файл</translation>
+        <location filename="../gpxlab.ui" line="1220"/>
+        <source>Open file (Ctrl+O)</source>
+        <translation>Открыть файл (Ctrl+O)</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1410"/>
-        <source>Close file</source>
-        <translation>Закрыть</translation>
+        <location filename="../gpxlab.ui" line="1253"/>
+        <source>Save file (Ctrl+S)</source>
+        <translation>Сохранить файл (Ctrl+S)</translation>
+    </message>
+    <message>
+        <location filename="../gpxlab.ui" line="1271"/>
+        <source>Save file as (Ctrl+Shift+S)</source>
+        <translation>Сохранить файл как (Ctrl+Shift+S)</translation>
+    </message>
+    <message>
+        <location filename="../gpxlab.ui" line="1274"/>
+        <source>Ctrl+Shift+S</source>
+        <translation>Ctrl+Shift+S</translation>
+    </message>
+    <message>
+        <location filename="../gpxlab.ui" line="1416"/>
+        <source>Close file (Ctrl+W)</source>
+        <translation>Закрыть файл (Ctrl+W)</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="1208"/>
@@ -797,11 +812,6 @@ p, li { white-space: pre-wrap; }
         <translation>Открыть файл</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1220"/>
-        <source>Open file</source>
-        <translation>Открыть файл</translation>
-    </message>
-    <message>
         <location filename="../gpxlab.ui" line="1223"/>
         <source>Ctrl+O</source>
         <translation>Ctrl+O</translation>
@@ -824,174 +834,179 @@ p, li { white-space: pre-wrap; }
         <translation>Сохранить файл</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1265"/>
+        <location filename="../gpxlab.ui" line="1256"/>
+        <source>Ctrl+S</source>
+        <translation>Ctrl+S</translation>
+    </message>
+    <message>
+        <location filename="../gpxlab.ui" line="1268"/>
         <source>Save File As...</source>
         <translation>Сохранить файл как...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1268"/>
-        <source>Save file as...</source>
-        <translation>Сохранить файл как...</translation>
-    </message>
-    <message>
-        <location filename="../gpxlab.ui" line="1280"/>
+        <location filename="../gpxlab.ui" line="1286"/>
         <source>Get Altitude From Database</source>
         <translation>Получить высоту из базы данных</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1283"/>
+        <location filename="../gpxlab.ui" line="1289"/>
         <source>Get altitude from Database</source>
         <translation>Получить высоту из базы данных</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1295"/>
+        <location filename="../gpxlab.ui" line="1301"/>
         <source>Edit File Properties</source>
         <translation>Редактировать свойства файла</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1298"/>
+        <location filename="../gpxlab.ui" line="1304"/>
         <source>Edit file properties</source>
         <translation>Редактировать свойства файла</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1310"/>
+        <location filename="../gpxlab.ui" line="1316"/>
         <source>Edit Track Properties</source>
         <translation>Редактировать свойства трека</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1313"/>
+        <location filename="../gpxlab.ui" line="1319"/>
         <source>Edit track properties</source>
         <translation>Редактировать свойства трека</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1325"/>
+        <location filename="../gpxlab.ui" line="1331"/>
         <source>Fit View</source>
         <translation>Показать все треки</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1328"/>
+        <location filename="../gpxlab.ui" line="1334"/>
         <source>Fit view to tracks</source>
         <translation>Отображать треки по центру</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1340"/>
+        <location filename="../gpxlab.ui" line="1346"/>
         <source>Fit View to Track</source>
         <translation>Отображать трек по центру</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1343"/>
+        <location filename="../gpxlab.ui" line="1349"/>
         <source>Fit view to selected track</source>
         <translation>Отображать выбранный трек по центру</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1355"/>
+        <location filename="../gpxlab.ui" line="1361"/>
         <source>Fit view to Point</source>
         <translation>Отображать точку по центру</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1358"/>
+        <location filename="../gpxlab.ui" line="1364"/>
         <source>Fit view to selected point</source>
         <translation>Отображать выбранную точку по центру</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1373"/>
+        <location filename="../gpxlab.ui" line="1379"/>
         <source>Follow Item</source>
         <translation>Следовать за выбранной точкой трека</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1376"/>
+        <location filename="../gpxlab.ui" line="1382"/>
         <source>Follow Selected Item</source>
         <translation>Следовать за выбранной точкой трека</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1391"/>
+        <location filename="../gpxlab.ui" line="1397"/>
         <source>Show Only Selected Track</source>
         <translation>Показать только выбранный трек</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1394"/>
+        <location filename="../gpxlab.ui" line="1400"/>
         <source>Show only selected track</source>
         <translation>Показать только выбранный трек</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1399"/>
+        <location filename="../gpxlab.ui" line="1405"/>
         <source>About</source>
         <translation>О GPXLab</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1407"/>
+        <location filename="../gpxlab.ui" line="1413"/>
         <source>Close File</source>
         <translation>Закрыть</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1422"/>
+        <location filename="../gpxlab.ui" line="1419"/>
+        <source>Ctrl+W</source>
+        <translation>Ctrl+W</translation>
+    </message>
+    <message>
+        <location filename="../gpxlab.ui" line="1431"/>
         <source>Split Track</source>
         <translation>Разделить трек</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1425"/>
+        <location filename="../gpxlab.ui" line="1434"/>
         <source>Split track</source>
         <translation>Разделить трек</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1437"/>
+        <location filename="../gpxlab.ui" line="1446"/>
         <source>Combine Track</source>
         <translation>Объединить трек</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1440"/>
+        <location filename="../gpxlab.ui" line="1449"/>
         <source>Combine track</source>
         <translation>Объединить трек</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1445"/>
+        <location filename="../gpxlab.ui" line="1454"/>
         <source>Restore Default View</source>
         <translation>Восстановить вид по умолчанию</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1448"/>
+        <location filename="../gpxlab.ui" line="1457"/>
         <source>Restore default view</source>
         <translation>Восстановить вид по умолчанию</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1461"/>
-        <location filename="../gpxlab.ui" line="1464"/>
+        <location filename="../gpxlab.ui" line="1470"/>
+        <location filename="../gpxlab.ui" line="1473"/>
         <source>Map Zoom</source>
         <translation>Масштаб карты</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1473"/>
-        <location filename="../gpxlab.ui" line="1476"/>
+        <location filename="../gpxlab.ui" line="1482"/>
+        <location filename="../gpxlab.ui" line="1485"/>
         <source>Settings</source>
         <translation>Параметры</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1488"/>
+        <location filename="../gpxlab.ui" line="1497"/>
         <source>Delete Point</source>
         <translation>Удалить точку</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1491"/>
+        <location filename="../gpxlab.ui" line="1500"/>
         <source>Delete point</source>
         <translation>Удалить точку</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1503"/>
+        <location filename="../gpxlab.ui" line="1512"/>
         <source>Set Start Time</source>
         <translation>Установите время начала</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1506"/>
+        <location filename="../gpxlab.ui" line="1515"/>
         <source>Set start time</source>
         <translation>Установите время начала</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1518"/>
+        <location filename="../gpxlab.ui" line="1527"/>
         <source>Insert Point</source>
         <translation>Вставить точку</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1521"/>
+        <location filename="../gpxlab.ui" line="1530"/>
         <source>Insert point</source>
         <translation>Вставить точку</translation>
     </message>
