@@ -588,51 +588,53 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../gpxlab.ui" line="87"/>
-        <location filename="../gpxlab.ui" line="227"/>
-        <source>File</source>
-        <translation>Tiedosto</translation>
+        <source>&amp;File</source>
+        <translation>&amp;Tiedosto</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="101"/>
-        <source>Track</source>
-        <translation>Jälki</translation>
+        <source>&amp;Track</source>
+        <translation>Jäl&amp;ki</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="111"/>
-        <source>Map</source>
-        <translation>Kartta</translation>
+        <source>&amp;Map</source>
+        <translation>&amp;Kartta</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="122"/>
-        <source>View</source>
-        <translation>Näytä</translation>
+        <source>&amp;View</source>
+        <translation>&amp;Näytä</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="127"/>
-        <source>Help</source>
-        <translation>Ohje</translation>
+        <source>&amp;Help</source>
+        <translation>&amp;Ohje</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="133"/>
-        <source>Edit</source>
-        <translation>Muokkaa</translation>
+        <source>&amp;Edit</source>
+        <translation>&amp;Muokkaa</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="138"/>
-        <location filename="../gpxlab.ui" line="1473"/>
-        <location filename="../gpxlab.ui" line="1476"/>
-        <source>Settings</source>
-        <translation>Asetukset</translation>
+        <source>&amp;Settings</source>
+        <translation>&amp;Asetukset</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="144"/>
-        <source>Point</source>
-        <translation>Pisteet</translation>
+        <source>&amp;Point</source>
+        <translation>&amp;Pisteet</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="160"/>
         <source>Toolbar</source>
         <translation>Työkalupalkki</translation>
+    </message>
+    <message>
+        <location filename="../gpxlab.ui" line="227"/>
+        <source>File</source>
+        <translation>Tiedosto</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="255"/>
@@ -761,6 +763,16 @@ p, li { white-space: pre-wrap; }
         <translation>Poistu sovelluksesta</translation>
     </message>
     <message>
+        <location filename="../gpxlab.ui" line="1253"/>
+        <source>Save file</source>
+        <translation>Tallenna tiedosto</translation>
+    </message>
+    <message>
+        <location filename="../gpxlab.ui" line="1410"/>
+        <source>Close file</source>
+        <translation>Sulje</translation>
+    </message>
+    <message>
         <location filename="../gpxlab.ui" line="1208"/>
         <source>Alt+F4</source>
         <translation>Alt+F4</translation>
@@ -796,11 +808,6 @@ p, li { white-space: pre-wrap; }
         <location filename="../gpxlab.ui" line="1250"/>
         <location filename="../gpxlab.cpp" line="282"/>
         <source>Save File</source>
-        <translation>Tallenna tiedosto</translation>
-    </message>
-    <message>
-        <location filename="../gpxlab.ui" line="1253"/>
-        <source>Save file</source>
         <translation>Tallenna tiedosto</translation>
     </message>
     <message>
@@ -904,11 +911,6 @@ p, li { white-space: pre-wrap; }
         <translation>Sulje</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1410"/>
-        <source>Close file</source>
-        <translation>Sulje</translation>
-    </message>
-    <message>
         <location filename="../gpxlab.ui" line="1422"/>
         <source>Split Track</source>
         <translation>Jaa jälki</translation>
@@ -943,6 +945,12 @@ p, li { white-space: pre-wrap; }
         <location filename="../gpxlab.ui" line="1464"/>
         <source>Map Zoom</source>
         <translation>Kartan zoomi</translation>
+    </message>
+    <message>
+        <location filename="../gpxlab.ui" line="1473"/>
+        <location filename="../gpxlab.ui" line="1476"/>
+        <source>Settings</source>
+        <translation>Asetukset</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="1488"/>

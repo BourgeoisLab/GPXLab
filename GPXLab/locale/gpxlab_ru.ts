@@ -588,51 +588,53 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../gpxlab.ui" line="87"/>
-        <location filename="../gpxlab.ui" line="227"/>
-        <source>File</source>
-        <translation>Файл</translation>
+        <source>&amp;File</source>
+        <translation>&amp;Файл</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="101"/>
-        <source>Track</source>
-        <translation>Трек</translation>
+        <source>&amp;Track</source>
+        <translation>&amp;Трек</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="111"/>
-        <source>Map</source>
-        <translation>Карта</translation>
+        <source>&amp;Map</source>
+        <translation>&amp;Карта</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="122"/>
-        <source>View</source>
-        <translation>Вид</translation>
+        <source>&amp;View</source>
+        <translation>&amp;Вид</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="127"/>
-        <source>Help</source>
-        <translation>Справка</translation>
+        <source>&amp;Help</source>
+        <translation>&amp;Справка</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="133"/>
-        <source>Edit</source>
-        <translation>Редактировать</translation>
+        <source>&amp;Edit</source>
+        <translation>&amp;Редактировать</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="138"/>
-        <location filename="../gpxlab.ui" line="1473"/>
-        <location filename="../gpxlab.ui" line="1476"/>
-        <source>Settings</source>
-        <translation>Параметры</translation>
+        <source>&amp;Settings</source>
+        <translation>&amp;Параметры</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="144"/>
-        <source>Point</source>
-        <translation>Точки</translation>
+        <source>&amp;Point</source>
+        <translation>То&amp;чки</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="160"/>
         <source>Toolbar</source>
         <translation>Панель инструментов</translation>
+    </message>
+    <message>
+        <location filename="../gpxlab.ui" line="227"/>
+        <source>File</source>
+        <translation>Файл</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="255"/>
@@ -761,6 +763,16 @@ p, li { white-space: pre-wrap; }
         <translation>Выйти из приложения</translation>
     </message>
     <message>
+        <location filename="../gpxlab.ui" line="1253"/>
+        <source>Save file</source>
+        <translation>Сохранить файл</translation>
+    </message>
+    <message>
+        <location filename="../gpxlab.ui" line="1410"/>
+        <source>Close file</source>
+        <translation>Закрыть</translation>
+    </message>
+    <message>
         <location filename="../gpxlab.ui" line="1208"/>
         <source>Alt+F4</source>
         <translation>Alt+F4</translation>
@@ -796,11 +808,6 @@ p, li { white-space: pre-wrap; }
         <location filename="../gpxlab.ui" line="1250"/>
         <location filename="../gpxlab.cpp" line="282"/>
         <source>Save File</source>
-        <translation>Сохранить файл</translation>
-    </message>
-    <message>
-        <location filename="../gpxlab.ui" line="1253"/>
-        <source>Save file</source>
         <translation>Сохранить файл</translation>
     </message>
     <message>
@@ -904,11 +911,6 @@ p, li { white-space: pre-wrap; }
         <translation>Закрыть</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1410"/>
-        <source>Close file</source>
-        <translation>Закрыть</translation>
-    </message>
-    <message>
         <location filename="../gpxlab.ui" line="1422"/>
         <source>Split Track</source>
         <translation>Разделить трек</translation>
@@ -943,6 +945,12 @@ p, li { white-space: pre-wrap; }
         <location filename="../gpxlab.ui" line="1464"/>
         <source>Map Zoom</source>
         <translation>Масштаб карты</translation>
+    </message>
+    <message>
+        <location filename="../gpxlab.ui" line="1473"/>
+        <location filename="../gpxlab.ui" line="1476"/>
+        <source>Settings</source>
+        <translation>Параметры</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="1488"/>

@@ -84,7 +84,7 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionAppend_File"/>
@@ -98,7 +98,7 @@
    </widget>
    <widget class="QMenu" name="menuTrack">
     <property name="title">
-     <string>Track</string>
+     <string>&amp;Track</string>
     </property>
     <addaction name="actionEdit_Track_Properties"/>
     <addaction name="actionGetAltitudeFromSRTM"/>
@@ -108,7 +108,7 @@
    </widget>
    <widget class="QMenu" name="menuMap">
     <property name="title">
-     <string>Map</string>
+     <string>&amp;Map</string>
     </property>
     <addaction name="actionFit_View"/>
     <addaction name="actionFit_Track"/>
@@ -119,29 +119,29 @@
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>View</string>
+     <string>&amp;View</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Help</string>
+     <string>&amp;Help</string>
     </property>
     <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
-     <string>Edit</string>
+     <string>&amp;Edit</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuSettings">
     <property name="title">
-     <string>Settings</string>
+     <string>&amp;Settings</string>
     </property>
     <addaction name="actionSettings"/>
    </widget>
    <widget class="QMenu" name="menuPoint">
     <property name="title">
-     <string>Point</string>
+     <string>&amp;Point</string>
     </property>
     <addaction name="actionInsert_Point"/>
     <addaction name="actionDelete_Point"/>
