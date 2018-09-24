@@ -216,7 +216,8 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../dialogs/dialog_modelproperties.ui" line="906"/>
         <source>Points</source>
-        <translation>Pistettä</translation>
+        <comment>GEN/PTV</comment>
+        <translation>Pisteitä</translation>
     </message>
     <message>
         <location filename="../dialogs/dialog_modelproperties.ui" line="954"/>
@@ -494,7 +495,8 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../dialogs/dialog_trackproperties.ui" line="528"/>
         <source>Points</source>
-        <translation>Pistettä</translation>
+        <comment>GEN/PTV</comment>
+        <translation>Pisteitä</translation>
     </message>
     <message>
         <location filename="../dialogs/dialog_trackproperties.ui" line="576"/>
@@ -644,11 +646,10 @@ p, li { white-space: pre-wrap; }
         <translation>Nimi</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="311"/>
-        <location filename="../gpxlab.ui" line="484"/>
-        <location filename="../gpxlab.cpp" line="846"/>
+        <location filename="../gpxlab.cpp" line="847"/>
         <source>Tracks</source>
-        <translation>Jälkeä</translation>
+        <extracomment>NOM</extracomment>
+        <translation>Jäljet</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="331"/>
@@ -776,6 +777,18 @@ p, li { white-space: pre-wrap; }
         <location filename="../gpxlab.ui" line="1208"/>
         <source>Alt+F4</source>
         <translation>Alt+F4</translation>
+    </message>
+    <message>
+        <location filename="../gpxlab.ui" line="311"/>
+        <source>Tracks</source>
+        <comment>GEN/PTV</comment>
+        <translation>Jälkiä</translation>
+    </message>
+    <message>
+        <location filename="../gpxlab.ui" line="484"/>
+        <source>Tracks</source>
+        <comment>NOM</comment>
+        <translation>Jäljet</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="1217"/>
@@ -1084,12 +1097,12 @@ p, li { white-space: pre-wrap; }
         <translation>Generoidaan pistelista...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="920"/>
+        <location filename="../gpxlab.cpp" line="921"/>
         <source>The file has been modified.</source>
         <translation>Tiedosto on muutettu.</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="921"/>
+        <location filename="../gpxlab.cpp" line="922"/>
         <source>Do you want to save your changes?</source>
         <translation>Haluatko tallentaa muutokset?</translation>
     </message>

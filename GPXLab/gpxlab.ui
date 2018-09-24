@@ -308,7 +308,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Tracks</string>
+        <string comment="GEN/PTV">Tracks</string>
        </property>
       </widget>
      </item>
@@ -481,7 +481,7 @@
     <set>Qt::LeftDockWidgetArea</set>
    </property>
    <property name="windowTitle">
-    <string>Tracks</string>
+    <string comment="NOM">Tracks</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
