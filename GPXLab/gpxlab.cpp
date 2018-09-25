@@ -843,6 +843,7 @@ void GPXLab::map_showContextMenu(const QPoint& pos)
     QAction *action;
     QAction *separator;
 
+    //: NOM
     trackSubMenu.setTitle(tr("Tracks"));
     for (int i = 0; i < gpxmw->getNumTracks(); ++i)
     {

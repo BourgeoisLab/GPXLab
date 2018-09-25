@@ -903,7 +903,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Points</string>
+          <string comment="GEN/PTV">Points</string>
          </property>
         </widget>
        </item>
