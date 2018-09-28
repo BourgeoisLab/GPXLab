@@ -53,9 +53,9 @@ Both sub-projects are ready to build, although it was only tested under Windows 
 Credits
 -------
 - **QCustomPlot Qt Widget:** http://www.qcustomplot.com
-- **QMapControl Qt Widget:** http://www.medieninf.de/qmapcontrol
-- **Nuvola Icons:** http://www.icon-king.com/projects/nuvola
-- **FactCow Icons:** http://www.fatcow.com
+- **QMapControl Qt Widget:** https://sourceforge.net/projects/qmapcontrol/
+- **Nuvola Icons:** https://www.iconfinder.com/iconsets/nuvola2
+- **FatCow Icons:** http://www.fatcow.com/free-icons
  
 Release Notes
 -------------
