@@ -26,7 +26,8 @@ Dialog_about::Dialog_about(QWidget *parent) :
     ui->setupUi(this);
 
     ui->labelMain->setText(GPXLab::appName + " v" + GPXLab::appVersion);
-    ui->labelCopyright->setText("© 2014 - 2016 " + GPXLab::organisationName);
+    ui->labelCopyright->setText("© 2014 - 2018 " + GPXLab::organisationName);
+    ui->labelQtVersion->setText("Qt " + QString(QT_VERSION_STR));
     ui->labelLinkHomepage->setOpenExternalLinks(true);
     ui->labelLinkSourceCode->setOpenExternalLinks(true);
     ui->labelLinkRelease->setOpenExternalLinks(true);

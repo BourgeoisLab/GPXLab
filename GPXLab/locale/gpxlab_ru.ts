@@ -27,37 +27,6 @@
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/images/gpxlab.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_about.ui" line="93"/>
-        <source>AppName</source>
-        <translation>AppName</translation>
-    </message>
-    <message>
-        <location filename="../dialogs/dialog_about.ui" line="106"/>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;You should have received a copy of the GNU General Public License along with this program.  If not, see &amp;lt;http://www.gnu.org/licenses/&amp;gt;.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;You should have received a copy of the GNU General Public License along with this program.  If not, see &amp;lt;http://www.gnu.org/licenses/&amp;gt;.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <location filename="../dialogs/dialog_about.ui" line="134"/>
-        <source>Copyright</source>
-        <translation>Copyright</translation>
-    </message>
-    <message>
         <location filename="../dialogs/dialog_about.ui" line="147"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://github.com/bourgeoislab/gpxlab&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://github.com/bourgeoislab/gpxlab&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://github.com/bourgeoislab/gpxlab&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://github.com/bourgeoislab/gpxlab&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
@@ -87,12 +56,18 @@ p, li { white-space: pre-wrap; }
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://github.com/bourgeoislab/gpxlab/releases&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://github.com/bourgeoislab/gpxlab/releases&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://github.com/bourgeoislab/gpxlab/releases&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://github.com/bourgeoislab/gpxlab/releases&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
+    <message>
+        <location filename="../dialogs/dialog_about.ui" line="249"/>
+        <source>Compiled with:</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Dialog_modelProperties</name>
     <message>
         <location filename="../dialogs/dialog_modelproperties.ui" line="26"/>
-        <location filename="../dialogs/dialog_modelproperties.cpp" line="23"/>
+        <location filename="../dialogs/dialog_modelproperties.cpp" line="148"/>
+        <location filename="../dialogs/dialog_modelproperties.cpp" line="150"/>
         <source>File Properties</source>
         <translation>Свойства файла</translation>
     </message>
@@ -284,20 +259,20 @@ p, li { white-space: pre-wrap; }
         <translation>Скорость Ø</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_modelproperties.cpp" line="80"/>
+        <location filename="../dialogs/dialog_modelproperties.cpp" line="78"/>
         <source>km</source>
         <translation>км</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_modelproperties.cpp" line="81"/>
+        <location filename="../dialogs/dialog_modelproperties.cpp" line="79"/>
         <source>km/h</source>
         <translation>км/ч</translation>
     </message>
     <message>
+        <location filename="../dialogs/dialog_modelproperties.cpp" line="80"/>
+        <location filename="../dialogs/dialog_modelproperties.cpp" line="81"/>
         <location filename="../dialogs/dialog_modelproperties.cpp" line="82"/>
         <location filename="../dialogs/dialog_modelproperties.cpp" line="83"/>
-        <location filename="../dialogs/dialog_modelproperties.cpp" line="84"/>
-        <location filename="../dialogs/dialog_modelproperties.cpp" line="85"/>
         <source>m</source>
         <translation>м</translation>
     </message>
@@ -349,7 +324,8 @@ p, li { white-space: pre-wrap; }
     <name>Dialog_srtm</name>
     <message>
         <location filename="../dialogs/dialog_srtm.ui" line="20"/>
-        <location filename="../dialogs/dialog_srtm.cpp" line="22"/>
+        <location filename="../dialogs/dialog_srtm.cpp" line="81"/>
+        <location filename="../dialogs/dialog_srtm.cpp" line="83"/>
         <source>Get Altitude From Database</source>
         <translation>Получить высоту из базы данных</translation>
     </message>
@@ -394,17 +370,17 @@ p, li { white-space: pre-wrap; }
         <translation>Получить данные</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_srtm.cpp" line="44"/>
+        <location filename="../dialogs/dialog_srtm.cpp" line="42"/>
         <source>Altitude [m]</source>
         <translation>Высота [м]</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_srtm.cpp" line="177"/>
+        <location filename="../dialogs/dialog_srtm.cpp" line="175"/>
         <source>Height file not found: </source>
         <translation>HGT файл не найден: </translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_srtm.cpp" line="178"/>
+        <location filename="../dialogs/dialog_srtm.cpp" line="176"/>
         <source>Download file here: </source>
         <translation>Скачать файл здесь: </translation>
     </message>
@@ -413,7 +389,8 @@ p, li { white-space: pre-wrap; }
     <name>Dialog_trackProperties</name>
     <message>
         <location filename="../dialogs/dialog_trackproperties.ui" line="26"/>
-        <location filename="../dialogs/dialog_trackproperties.cpp" line="23"/>
+        <location filename="../dialogs/dialog_trackproperties.cpp" line="117"/>
+        <location filename="../dialogs/dialog_trackproperties.cpp" line="119"/>
         <source>Track Properties</source>
         <translation>Свойства трека</translation>
     </message>
@@ -563,20 +540,20 @@ p, li { white-space: pre-wrap; }
         <translation>Скорость Ø</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_trackproperties.cpp" line="65"/>
+        <location filename="../dialogs/dialog_trackproperties.cpp" line="63"/>
         <source>km</source>
         <translation>км</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_trackproperties.cpp" line="66"/>
+        <location filename="../dialogs/dialog_trackproperties.cpp" line="64"/>
         <source>km/h</source>
         <translation>км/ч</translation>
     </message>
     <message>
+        <location filename="../dialogs/dialog_trackproperties.cpp" line="65"/>
+        <location filename="../dialogs/dialog_trackproperties.cpp" line="66"/>
         <location filename="../dialogs/dialog_trackproperties.cpp" line="67"/>
         <location filename="../dialogs/dialog_trackproperties.cpp" line="68"/>
-        <location filename="../dialogs/dialog_trackproperties.cpp" line="69"/>
-        <location filename="../dialogs/dialog_trackproperties.cpp" line="70"/>
         <source>m</source>
         <translation>м</translation>
     </message>

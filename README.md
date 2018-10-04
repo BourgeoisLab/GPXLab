@@ -44,11 +44,7 @@ This software is free software and licensed under GPL version 3.
 
 Compiling
 ---------
-The source code was developed under Qt 5.7.0. There is no guarantee that the code will compile with previous or later versions. 
-
 The project is separated in two sub-projects GPXLab and QMapControl. QMapControl is a widget to display a map. Since I had to made some modifications to the original code I added the modified version here. QMapControl is compiled as a library and linked to the main sub-project GPXLab.
-
-Both sub-projects are ready to build, although it was only tested under Windows 7 (64bit).
  
 Credits
 -------
@@ -59,6 +55,12 @@ Credits
  
 Release Notes
 -------------
+
+**[v0.5.0]**
+- [new] Standard shortcuts and menu accelerators added (thanks to sikmir)
+- [new] Finnish & Russian translations (thanks to sikmir)
+- [fix] Parsing with Locale different than English
+- [fix] Case-sensitivity while parsing removed
 
 **[v0.4.2.1]**
 - [fix] Increased gpx buffer size to 4096.
