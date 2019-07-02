@@ -1499,6 +1499,9 @@ selection-background-color: rgb(100, 200, 127);</string>
    <property name="toolTip">
     <string>Delete point</string>
    </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
   </action>
   <action name="actionSetStartTime">
    <property name="enabled">
