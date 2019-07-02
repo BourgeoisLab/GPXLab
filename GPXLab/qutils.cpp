@@ -57,5 +57,5 @@ void QUtils::movingAverage(QVector<double> &values, int order)
         else
             values[n] = total / (n + 1);
     }
-    delete window;
+    delete[] window;
 }
