@@ -1044,13 +1044,13 @@ GPX_model::retCode_e GPXFile::save(ofstream* fp, const GPX_model* gpxm)
                         {
                             writeLineIndent(fp, 3);
                             writeStr(fp, "<trkpt lat=\"", false);
-                            sprintf(gBuffer, "%.9f", trkpt->latitude);
+                            sprintf(gBuffer, "%.6f", trkpt->latitude);
                             writeStr(fp, gBuffer, false);
                             writeStr(fp, "\" lon=\"", false);
-                            sprintf(gBuffer, "%.9f", trkpt->longitude);
+                            sprintf(gBuffer, "%.6f", trkpt->longitude);
                             writeStr(fp, gBuffer, false);
                             writeStr(fp, "\">");
-                            sprintf(gBuffer, "%.6f", trkpt->altitude);
+                            sprintf(gBuffer, "%.2f", trkpt->altitude);
                             writeSimpleTag(fp, 4, "ele", gBuffer);
                             if (trkpt->timestamp > 0)
                                 writeTime(fp, 4, trkpt->timestamp, trkpt->millisecond);
