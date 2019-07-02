@@ -16,7 +16,7 @@
  ****************************************************************************/
  
 #ifndef _UTILS_H
-#define UTILS_H
+#define _UTILS_H
 
 #ifdef __cplusplus
 extern "C" {
