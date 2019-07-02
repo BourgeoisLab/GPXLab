@@ -41,7 +41,7 @@ GPXLab::GPXLab(const QString &fileName, QWidget *parent) :
     ui->setupUi(this);
 
     // create GPX_model wrapper
-    gpxmw = new GPX_wrapper(appName);
+    gpxmw = new GPX_wrapper(appName + " " + appVersion);
     connect(gpxmw, SIGNAL(fileLoaded()), this, SLOT(fileLoaded()));
     connect(gpxmw, SIGNAL(fileSaved()), this, SLOT(fileSaved()));
     connect(gpxmw, SIGNAL(modelCleared()), this, SLOT(modelCleared()));
@@ -216,7 +216,7 @@ bool GPXLab::openFile(QString fileName)
         undoStack->clear();
 
         // initialize GPX_model wrapper
-        gpxmw->init(appName);
+        gpxmw->init(appName + " " + appVersion);
 
         // load file
         lblStatus->setText(tr("Loading file: ") + fileName);
