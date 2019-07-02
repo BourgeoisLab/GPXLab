@@ -49,6 +49,9 @@ static char gBuffer[BUFFER_SIZE];
 #define PARSING_TRKPT_LINK                  13
 #define PARSING_TRKPT_EXTENSIONS            14
 #define PARSING_TRKPT_EXTENSIONS_GPXTPX     15  // Garmin TrackPointExtension extension
+#define PARSING_WPT                         16
+#define PARSING_WPT_LINK                    17
+#define PARSING_WPT_EXTENSIONS              18
 
 static bool gOverwriteMetadata = false;
 static int gVersion = 0;
@@ -135,6 +138,13 @@ static void openTag(void* pXml, char* pTag)
             gExtensionLevelDepth = xml->recursionDepth + 1;
             gExtensionDoubleOpen = false;
             xml->state = PARSING_FILE_EXTENSIONS;
+        }
+        else if (strcmp(pTag, "wpt") == 0)
+        {
+            // add new waypoint
+            GPX_wptType wpt;
+            gpxm->wpt.push_back(wpt);
+            xml->state = PARSING_WPT;
         }
         break;
 
@@ -293,6 +303,7 @@ static void openTag(void* pXml, char* pTag)
     case PARSING_METADATA_EXTENSIONS:
     case PARSING_TRK_EXTENSIONS:
     case PARSING_TRKSEG_EXTENSIONS:
+    case PARSING_WPT_EXTENSIONS:
         if (gExtensionDoubleOpen)
         {
             if (gExtensionVector)
@@ -308,6 +319,28 @@ static void openTag(void* pXml, char* pTag)
         gExtensionStr += pTag;
         gExtensionStr += ">";
         gExtensionHasContent = false;
+        break;
+
+    case PARSING_WPT:
+        if (strcmp(pTag, "link") == 0)
+        {
+            // add new link
+            GPX_linkType link;
+            gpxm->wpt.back().links.push_back(link);
+            xml->state = PARSING_WPT_LINK;
+        }
+        else if (strcmp(pTag, "extensions") == 0)
+        {
+            gExtensionPrevState = PARSING_WPT;
+            gExtensionVector = &gpxm->wpt.back().extensions.extension;
+            gExtensionStr = "";
+            gExtensionLevelDepth = xml->recursionDepth + 1;
+            gExtensionDoubleOpen = false;
+            xml->state = PARSING_WPT_EXTENSIONS;
+        }
+        break;
+
+    case PARSING_WPT_LINK:
         break;
     }
 }
@@ -484,8 +517,34 @@ static void tagContent(void* pXml, char* pTag, char* pContent)
         case PARSING_TRK_EXTENSIONS:
         case PARSING_TRKSEG_EXTENSIONS:
         case PARSING_TRKPT_EXTENSIONS:
+        case PARSING_WPT_EXTENSIONS:
             gExtensionHasContent = true;
             gExtensionStr += pContent;
+            break;
+
+        case PARSING_WPT:
+            if (strcmp(pTag, "ele") == 0)
+                gpxm->wpt.back().altitude = atof(pContent);
+            else if (strcmp(pTag, "time") == 0)
+            {
+                gpxm->wpt.back().timestamp = strToTime(sContent);
+                gpxm->wpt.back().millisecond = strToMilliseconds(sContent);
+            }
+            else if (strcmp(pTag, "name") == 0)
+                gpxm->wpt.back().name = sContent;
+            else if (strcmp(pTag, "cmt") == 0)
+                gpxm->wpt.back().cmt = sContent;
+            else if (strcmp(pTag, "desc") == 0)
+                gpxm->wpt.back().desc = sContent;
+            else if (strcmp(pTag, "sym") == 0)
+                gpxm->wpt.back().sym = sContent;
+            break;
+
+        case PARSING_WPT_LINK:
+            if (strcmp(pTag, "text") == 0)
+                gpxm->wpt.back().links.back().text = sContent;
+            else if (strcmp(pTag, "type") == 0)
+                gpxm->wpt.back().links.back().type = sContent;
             break;
     }
 }
@@ -599,12 +658,31 @@ static void tagAttribute(void* pXml, char* pTag, char *pAttribute, char* pConten
         case PARSING_TRKSEG_EXTENSIONS:
         case PARSING_TRKPT_EXTENSIONS:
         case PARSING_TRKPT_EXTENSIONS_GPXTPX:
+        case PARSING_WPT_EXTENSIONS:
             gExtensionStr.resize(gExtensionStr.size() - 1); // remove '>'
             gExtensionStr += " ";
             gExtensionStr += pAttribute;
             gExtensionStr += "=\"";
             gExtensionStr += pContent;
             gExtensionStr += "\">";
+            break;
+
+       case PARSING_WPT:
+            if (strcmp(pTag, "wpt") == 0)
+            {
+                if (strcmp(pAttribute, "lat") == 0)
+                    gpxm->wpt.back().latitude = atof(pContent);
+                else if (strcmp(pAttribute, "lon") == 0)
+                    gpxm->wpt.back().longitude = atof(pContent);
+            }
+            break;
+
+        case PARSING_WPT_LINK:
+            if (strcmp(pTag, "link") == 0)
+            {
+                if (strcmp(pAttribute, "href") == 0)
+                    gpxm->wpt.back().links.back().href = sContent;
+            }
             break;
     }
 }
@@ -688,6 +766,7 @@ static void closeTag(void* pXml, char* pTag)
         case PARSING_TRK_EXTENSIONS:
         case PARSING_TRKSEG_EXTENSIONS:
         case PARSING_TRKPT_EXTENSIONS:
+        case PARSING_WPT_EXTENSIONS:
             if (strcmp(pTag, "extensions") == 0)
             {
                 gExtensionVector = NULL;
@@ -717,6 +796,15 @@ static void closeTag(void* pXml, char* pTag)
                 gExtensionDoubleOpen = false;
             }
             break;
+
+    case PARSING_WPT:
+        if (strcmp(pTag, "wpt") == 0)
+            xml->state = PARSING_GPX;
+        break;
+
+    case PARSING_WPT_LINK:
+        if (strcmp(pTag, "link") == 0)
+            xml->state = PARSING_WPT;
     }
 }
 
@@ -1007,6 +1095,35 @@ GPX_model::retCode_e GPXFile::save(ofstream* fp, const GPX_model* gpxm)
     writeStr(fp, "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
     writeStr(fp, "     xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\">");
     writeMetadata(fp, 1, &gpxm->metadata);
+    if (!gpxm->wpt.empty())
+    {
+        for (vector<GPX_wptType>::const_iterator wpt = gpxm->wpt.begin(); wpt != gpxm->wpt.end(); ++wpt)
+        {
+            writeLineIndent(fp, 1);
+            writeStr(fp, "<wpt lat=\"", false);
+            sprintf(gBuffer, "%.6f", wpt->latitude);
+            writeStr(fp, gBuffer, false);
+            writeStr(fp, "\" lon=\"", false);
+            sprintf(gBuffer, "%.6f", wpt->longitude);
+            writeStr(fp, gBuffer, false);
+            writeStr(fp, "\">");
+            sprintf(gBuffer, "%.2f", wpt->altitude);
+            writeSimpleTag(fp, 2, "ele", gBuffer);
+            if (wpt->timestamp > 0)
+                writeTime(fp, 2, wpt->timestamp, wpt->millisecond);
+            if (!wpt->name.empty())
+                writeSimpleTag(fp, 2, "name", wpt->name.c_str());
+            if (!wpt->cmt.empty())
+                writeSimpleTag(fp, 2, "cmt", wpt->cmt.c_str());
+            if (!wpt->desc.empty())
+                writeSimpleTag(fp, 2, "desc", wpt->desc.c_str());
+            if (!wpt->sym.empty())
+                writeSimpleTag(fp, 2, "sym", wpt->sym.c_str());
+            writePointExtensions(fp, 2, &*wpt);
+            writeLineIndent(fp, 1);
+            writeStr(fp, "</wpt>");
+        }
+    }
     if (!gpxm->trk.empty())
     {
         for (vector<GPX_trkType>::const_iterator trk = gpxm->trk.begin(); trk != gpxm->trk.end(); ++trk)

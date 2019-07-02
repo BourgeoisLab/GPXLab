@@ -48,6 +48,7 @@ using namespace std;
  *       GPX_extensionsType [0...*]
  *       GPX_statsType [1]
  *       GPX_wptType [0...*]
+ *   GPX_wptType [0...*]
  * </PRE>
  *
  * @see http://www.topografix.com/gpx.asp
@@ -218,6 +219,7 @@ public:
     GPX_extType             extensions;         /**< Extensions */
     GPX_statsType           stats;              /**< Statistic information */
     vector <GPX_trkType>    trk;                /**< A list of tracks */
+    vector <GPX_wptType>    wpt;                /**< A list of waypoints */
 
     /**
      * @brief Gets the type of a file
