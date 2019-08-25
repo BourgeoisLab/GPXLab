@@ -56,6 +56,12 @@ Credits
 Release Notes
 -------------
 
+**[v0.6.0]**
+- [new] Height files must now be placed in configuration direcotry
+- [new] Increased OSM max zoom to 19 (thanks to sikmir)
+- [new] Set precision of generated lat/lon to 6 and of elevation to 2 (thanks to sikmir)
+- [new] Added waypoints parsing (thanks to sikmir)
+
 **[v0.5.0]**
 - [new] Standard shortcuts and menu accelerators added (thanks to sikmir)
 - [new] Finnish & Russian translations (thanks to sikmir)
@@ -120,8 +126,6 @@ Release Notes
 Information
 -----------
 **Author:** Frédéric Bourgeois <bourgeoislab@gmail.com>
-
-**Project homepage:** http://bourgeoislab.wordpress.com/gpxlab
 
 **Latest release:** http://github.com/bourgeoislab/gpxlab/releases
 

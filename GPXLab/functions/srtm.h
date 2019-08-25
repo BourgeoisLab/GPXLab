@@ -112,6 +112,18 @@ public:
     bool getAltitude(double latitude, double longitude, short &altitude);
 
     /**
+     * @brief Returns the directory where the HGT files are looked for
+     * @return Directory
+     */
+    string getDirectory() const;
+
+    /**
+     * @brief Sets the directory where the HGT files are looked for
+     * @param directory Directory
+     */
+    void setDirectory(const string& directory);
+
+    /**
      * @brief Returns the HGT file name of the last getAltitude() call
      * @return HGT file name
      */
@@ -162,6 +174,7 @@ private:
 
 private:
 
+    string directory;
     const int tileSize;
     int    iLatitude;
     int    iLongitude;

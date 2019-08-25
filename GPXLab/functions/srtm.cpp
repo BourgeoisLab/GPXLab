@@ -28,6 +28,7 @@ const string SRTM::folders[] = {"", "Eurasia", "North_America", "Australia",
                               "Islands", "South_America", "Africa"};
 
 SRTM::SRTM(SRTMModel model) :
+    directory(),
     tileSize((int)model),
     iLatitude(-1),
     iLongitude(-1),
@@ -39,6 +40,16 @@ SRTM::SRTM(SRTMModel model) :
 SRTM::~SRTM()
 {
     delete lookup;
+}
+
+string SRTM::getDirectory() const
+{
+    return directory;
+}
+
+void SRTM::setDirectory(const string& directory)
+{
+    this->directory = directory;
 }
 
 string SRTM::getFileName() const
@@ -74,7 +85,7 @@ bool SRTM::parseHGT()
     ifstream file;
 
     // open HGT file
-    file.open(getFileName().c_str());
+    file.open(directory + "/" + getFileName().c_str());
     if (!file)
     {
         failed = true;

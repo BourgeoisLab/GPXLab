@@ -747,7 +747,10 @@ void GPXLab::map_selectionChanged(int trackNumber, int trackSegmentNumber, doubl
     if (closing)
         return;
 
-    gpxmw->select(trackNumber, trackSegmentNumber, lat, lon);
+    if (gpxmw->getSelectedTrackNumber() == trackNumber)
+        gpxmw->select(trackNumber, trackSegmentNumber, lat, lon);
+    else
+        gpxmw->select(trackNumber);
 }
 
 void GPXLab::map_selectionChanged(int pointNumber)

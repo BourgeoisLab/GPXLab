@@ -25,13 +25,21 @@ Dialog_srtm::Dialog_srtm(const GPX_wrapper *gpxmw, QWidget *parent) :
     gpxmw(gpxmw)
 {
     // create new SRTM class
-     srtm = new SRTM();
+    QString dir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+    srtm = new SRTM();
+    srtm->setDirectory(dir.toStdString());
+    QDir tempDir;
+    tempDir.mkpath(dir);
 
     // setup UI
     ui->setupUi(this);
     ui->labelDownload->setTextFormat(Qt::RichText);
     ui->labelDownload->setTextInteractionFlags(Qt::TextBrowserInteraction);
     ui->labelDownload->setOpenExternalLinks(true);
+    ui->labelDownloadLocation->setTextFormat(Qt::RichText);
+    ui->labelDownloadLocation->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    ui->labelDownloadLocation->setOpenExternalLinks(true);
+    ui->widgetDownload->setVisible(false);
     ui->labelKernelSize->setText(QString::number(ui->horizontalSliderKernelSize->value()));
     ui->labelNumPasses->setText(QString::number(ui->horizontalSliderNumPasses->value()));
 
@@ -155,8 +163,7 @@ void Dialog_srtm::on_pushButtonFetchData_clicked()
     // generate altitude values from SRTM database
     if (generateSRTMAltitudeValues(option))
     {
-        ui->labelNotFound->setText("");
-        ui->labelDownload->setText("");
+        ui->widgetDownload->setVisible(false);
 
         // average data
         for (int n = 0; n < ui->horizontalSliderNumPasses->value(); ++n)
@@ -172,8 +179,11 @@ void Dialog_srtm::on_pushButtonFetchData_clicked()
     else
     {
         QString url = QString::fromStdString(srtm->getFileURL());
+        QString dir = QString::fromStdString(srtm->getDirectory());
         ui->labelNotFound->setText(tr("Height file not found: ") + QString::fromStdString(srtm->getFileName()));
         ui->labelDownload->setText(tr("Download file here: ") + "<a href=\"" + url + "\">" + url + "</a>");
+        ui->labelDownloadLocation->setText(tr("Unzip and put file here: ") + "<a href=\"" + QUrl::fromLocalFile(dir).toString() + "\">" + dir + "</a>");
+        ui->widgetDownload->setVisible(true);
     }
 }
 
