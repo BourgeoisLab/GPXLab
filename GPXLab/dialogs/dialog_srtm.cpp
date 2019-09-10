@@ -25,7 +25,7 @@ Dialog_srtm::Dialog_srtm(const GPX_wrapper *gpxmw, QWidget *parent) :
     gpxmw(gpxmw)
 {
     // create new SRTM class
-    QString dir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+    QString dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     srtm = new SRTM();
     srtm->setDirectory(dir.toStdString());
     QDir tempDir;
