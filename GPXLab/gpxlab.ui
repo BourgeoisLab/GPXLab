@@ -1207,6 +1207,9 @@ selection-background-color: rgb(100, 200, 127);</string>
    <property name="shortcut">
     <string>Alt+F4</string>
    </property>
+   <property name="menuRole">
+    <enum>QAction::QuitRole</enum>
+   </property>
   </action>
   <action name="actionOpen">
    <property name="icon">
@@ -1404,6 +1407,9 @@ selection-background-color: rgb(100, 200, 127);</string>
    <property name="text">
     <string>About</string>
    </property>
+   <property name="menuRole">
+    <enum>QAction::AboutRole</enum>
+   </property>
   </action>
   <action name="actionClose_File">
    <property name="enabled">
@@ -1483,6 +1489,9 @@ selection-background-color: rgb(100, 200, 127);</string>
    </property>
    <property name="toolTip">
     <string>Settings</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::PreferencesRole</enum>
    </property>
   </action>
   <action name="actionDelete_Point">
