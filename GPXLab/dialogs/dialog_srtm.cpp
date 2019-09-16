@@ -26,7 +26,7 @@ Dialog_srtm::Dialog_srtm(const GPX_wrapper *gpxmw, QWidget *parent) :
 {
     // create new SRTM class
     QString dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    srtm = new SRTM();
+    srtm = new SRTM(SRTM::SRTMModel::OneArcSecond);
     srtm->setDirectory(dir.toStdString());
     QDir tempDir;
     tempDir.mkpath(dir);
@@ -41,7 +41,6 @@ Dialog_srtm::Dialog_srtm(const GPX_wrapper *gpxmw, QWidget *parent) :
     ui->labelDownloadLocation->setOpenExternalLinks(true);
     ui->widgetDownload->setVisible(false);
     ui->labelKernelSize->setText(QString::number(ui->horizontalSliderKernelSize->value()));
-    ui->labelNumPasses->setText(QString::number(ui->horizontalSliderNumPasses->value()));
 
     // add original curve
     ui->widgetPlot->xAxis->setTickLabelType(QCPAxis::ltDateTime);
@@ -166,8 +165,7 @@ void Dialog_srtm::on_pushButtonFetchData_clicked()
         ui->widgetDownload->setVisible(false);
 
         // average data
-        for (int n = 0; n < ui->horizontalSliderNumPasses->value(); ++n)
-            QUtils::movingAverage(values, ui->horizontalSliderKernelSize->value());
+        values = QUtils::movingAverage(values, ui->horizontalSliderKernelSize->value());
 
         // SRTM curve
         ui->widgetPlot->graph(1)->clearData();
@@ -178,10 +176,9 @@ void Dialog_srtm::on_pushButtonFetchData_clicked()
     }
     else
     {
-        QString url = QString::fromStdString(srtm->getFileURL());
         QString dir = QString::fromStdString(srtm->getDirectory());
-        ui->labelNotFound->setText(tr("Height file not found: ") + QString::fromStdString(srtm->getFileName()));
-        ui->labelDownload->setText(tr("Download file here: ") + "<a href=\"" + url + "\">" + url + "</a>");
+        ui->labelNotFound->setText(tr("Elevation data (SRTM1) not found: ") + QString::fromStdString(srtm->getFileName()));
+        ui->labelDownload->setText(tr("Download file for example from: ") + "<a href=\"https://dwtkns.com/srtm30m/\">https://dwtkns.com/srtm30m/</a>");
         ui->labelDownloadLocation->setText(tr("Unzip and put file here: ") + "<a href=\"" + QUrl::fromLocalFile(dir).toString() + "\">" + dir + "</a>");
         ui->widgetDownload->setVisible(true);
     }
@@ -190,9 +187,4 @@ void Dialog_srtm::on_pushButtonFetchData_clicked()
 void Dialog_srtm::on_horizontalSliderKernelSize_valueChanged(int value)
 {
     ui->labelKernelSize->setText(QString::number(value));
-}
-
-void Dialog_srtm::on_horizontalSliderNumPasses_valueChanged(int value)
-{
-    ui->labelNumPasses->setText(QString::number(value));
 }

@@ -97,9 +97,9 @@
    <property name="geometry">
     <rect>
      <x>90</x>
-     <y>160</y>
+     <y>140</y>
      <width>351</width>
-     <height>111</height>
+     <height>131</height>
     </rect>
    </property>
    <property name="html">
@@ -138,7 +138,7 @@ p, li { white-space: pre-wrap; }
    <property name="geometry">
     <rect>
      <x>190</x>
-     <y>110</y>
+     <y>90</y>
      <width>251</width>
      <height>20</height>
     </rect>
@@ -146,44 +146,15 @@ p, li { white-space: pre-wrap; }
    <property name="text">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://github.com/bourgeoislab/gpxlab&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://github.com/bourgeoislab/gpxlab&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
-  </widget>
-  <widget class="QLabel" name="label_3">
-   <property name="geometry">
-    <rect>
-     <x>90</x>
-     <y>90</y>
-     <width>100</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>Homepage:</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labelLinkHomepage">
-   <property name="geometry">
-    <rect>
-     <x>190</x>
-     <y>90</y>
-     <width>251</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://bourgeoislab.wordpress.com/gpxlab&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://bourgeoislab.wordpress.com/gpxlab&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   <property name="openExternalLinks">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QLabel" name="label_5">
    <property name="geometry">
     <rect>
      <x>90</x>
-     <y>110</y>
+     <y>90</y>
      <width>100</width>
      <height>20</height>
     </rect>
@@ -202,7 +173,7 @@ p, li { white-space: pre-wrap; }
    <property name="geometry">
     <rect>
      <x>90</x>
-     <y>130</y>
+     <y>110</y>
      <width>100</width>
      <height>20</height>
     </rect>
@@ -221,13 +192,16 @@ p, li { white-space: pre-wrap; }
    <property name="geometry">
     <rect>
      <x>190</x>
-     <y>130</y>
+     <y>110</y>
      <width>251</width>
      <height>20</height>
     </rect>
    </property>
    <property name="text">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://github.com/bourgeoislab/gpxlab/releases&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://github.com/bourgeoislab/gpxlab/releases&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="openExternalLinks">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QLabel" name="label_7">

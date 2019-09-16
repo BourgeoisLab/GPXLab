@@ -184,6 +184,11 @@ GPXLab::GPXLab(const QString &fileName, QWidget *parent) :
     {
         openFile(fileName);
     }
+    else if (settings->autoLoadLastFile && settings->recentFiles.size() > 0)
+    {
+        if (QFile::exists(settings->recentFiles[0]))
+            openFile(settings->recentFiles[0]);
+    }
 }
 
 GPXLab::~GPXLab()

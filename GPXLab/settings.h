@@ -124,6 +124,11 @@ public:
      */
     QString cachePath;
 
+    /**
+     * @brief Loads the last opened file on startup
+     */
+    bool autoLoadLastFile;
+
 signals:
 
     /**

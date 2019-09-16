@@ -52,9 +52,10 @@ namespace QUtils
     /**
      * @brief Averages the values with a moving average algorithm
      * @param values Values to average
-     * @param order Order of moving average, default = 3
+     * @param window_size Window size of moving average
+     * @return Averaged values
      */
-    void movingAverage(QVector<double> &values, int order = 3);
+    QVector<double> movingAverage(const QVector<double> &values, int window_size);
 }
 
 /** @} GPXLab */

@@ -70,8 +70,8 @@ using namespace std;
  * @see http://www2.jpl.nasa.gov/srtm/
  *
  * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 28 Oct 2014
+ * @version 1.1
+ * @date 16 Sept 2019
  */
 class SRTM
 {
@@ -89,17 +89,11 @@ public:
     /** Value for invalid altitude data */
     static const short INVALID_DATA = -32768;
 
-    /** URL to download HGT files (http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/) */
-    static const string URL;
-
-    /** Subfolders of HGT files (Eurasia, North_America, Australia, Islands, South_America, Africa */
-    static const string folders[];
-
     /**
      * @brief Constructs the SRTM class
      * @param model The model defines the precision of the HGT files
      */
-    SRTM(SRTMModel model = ThreeArcSecond);
+    SRTM(SRTMModel model);
     ~SRTM();
 
     /**
@@ -128,12 +122,6 @@ public:
      * @return HGT file name
      */
     string getFileName() const;
-
-    /**
-     * @brief Returns the URL to download the HGT file of the last getAltitude() call
-     * @return HGT download URL
-     */
-    string getFileURL() const;
 
 private:
 

@@ -20,12 +20,6 @@
 #include <sstream>
 #include <math.h>
 #include "srtm.h"
-#include "srtmtiles.cpp"
-
-const string SRTM::URL = "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/";
-
-const string SRTM::folders[] = {"", "Eurasia", "North_America", "Australia",
-                              "Islands", "South_America", "Africa"};
 
 SRTM::SRTM(SRTMModel model) :
     directory(),
@@ -62,13 +56,6 @@ string SRTM::getFileName() const
         << setw(3) << abs(iLongitude) << setw(0)
         << ".hgt";
     return ss.str();
-}
-
-string SRTM::getFileURL() const
-{
-    int idx = (iLatitude + 59)*360 + (iLongitude + 180);
-    int dir = srtmtiles[idx];
-    return URL + folders[dir] + "/" + getFileName() + ".zip";
 }
 
 bool SRTM::isLittleEndian()
@@ -152,8 +139,8 @@ short* SRTM::fixVoid(short *inAltitudes)
 
 bool SRTM::getAltitude(double latitude, double longitude, short &altitude)
 {
-    int _iLatitude  = (int)latitude;
-    int _iLongitude = (int)longitude;
+    int _iLatitude  = (int)floor(latitude);
+    int _iLongitude = (int)floor(longitude);
 
     // check if need to parse new map file
     if (_iLatitude != iLatitude || _iLongitude != iLongitude || failed)

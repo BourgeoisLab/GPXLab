@@ -32,6 +32,7 @@ Dialog_settings::Dialog_settings(Settings *settings, QWidget *parent) :
     ui->lineEditMapCachePath->setEnabled(settings->doPersistentCaching);
     ui->pushButtonMapCacheLocationSelect->setEnabled(settings->doPersistentCaching);
     ui->pushButtonMapCacheLocationDefault->setEnabled(settings->doPersistentCaching);
+    ui->checkBoxAutoload->setChecked(settings->autoLoadLastFile);
 }
 
 Dialog_settings::~Dialog_settings()
@@ -72,4 +73,9 @@ void Dialog_settings::on_pushButtonMapCacheLocationDefault_clicked()
 {
     ui->lineEditMapCachePath->setText(settings->defaultCachePath());
     on_lineEditMapCachePath_editingFinished();
+}
+
+void Dialog_settings::on_checkBoxAutoload_toggled(bool checked)
+{
+    settings->autoLoadLastFile = checked;
 }

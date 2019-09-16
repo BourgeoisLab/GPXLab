@@ -142,11 +142,7 @@
      <item row="0" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QCheckBox" name="checkBoxMapPersistentCache">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
+        <widget class="QCheckBox" name="checkBoxMapPersistentCache"/>
        </item>
        <item>
         <widget class="QPushButton" name="pushButtonMapClearCache">
@@ -168,6 +164,22 @@
         </widget>
        </item>
       </layout>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Autoload last file:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QCheckBox" name="checkBoxAutoload"/>
      </item>
     </layout>
    </widget>

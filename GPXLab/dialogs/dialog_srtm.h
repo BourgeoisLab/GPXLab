@@ -70,7 +70,6 @@ private slots:
     void on_Dialog_srtm_accepted();
     void on_pushButtonFetchData_clicked();
     void on_horizontalSliderKernelSize_valueChanged(int value);
-    void on_horizontalSliderNumPasses_valueChanged(int value);
 
 private:
 

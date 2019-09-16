@@ -40,6 +40,7 @@ void Settings::load()
     cachePath = qsettings.value("cachePath", "").toString();
     if (cachePath.isEmpty())
         cachePath = defaultCachePath();
+    autoLoadLastFile = qsettings.value("autoLoadLastFile", true).toBool();
     emit settingsChanged(true);
 }
 
@@ -51,6 +52,7 @@ void Settings::save()
     qsettings.setValue("recentFileList", recentFiles);
     qsettings.setValue("doPersistentCaching", doPersistentCaching);
     qsettings.setValue("cachePath", cachePath);
+    qsettings.setValue("autoLoadLastFile", autoLoadLastFile);
     emit settingsChanged(false);
 }
 

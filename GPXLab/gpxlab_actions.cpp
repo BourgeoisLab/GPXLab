@@ -239,14 +239,17 @@ void GPXLab::on_actionInsert_Point_triggered()
         int pointNumber = gpxmw->getSelectedPointNumber();
         if (pointNumber < gpxmw->getNumPoints(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber()) - 1)
         {
-            GPX_wptType wpt;
             const GPX_wptType *wptA = gpxmw->getPoint(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), pointNumber);
             const GPX_wptType *wptB = gpxmw->getPoint(gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), pointNumber + 1);
-            wpt.altitude = wptA->altitude + (wptB->altitude - wptA->altitude)/2;
-            wpt.latitude = wptA->latitude + (wptB->latitude - wptA->latitude)/2;
-            wpt.longitude = wptA->longitude + (wptB->longitude - wptA->longitude)/2;
-            wpt.timestamp = wptA->timestamp + (wptB->timestamp - wptA->timestamp)/2;
-            undoStack->push(new PointInsertCommand(gpxmw, gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), pointNumber + 1, wpt));
+            if (wptA && wptB)
+            {
+                GPX_wptType wpt;
+                wpt.altitude = wptA->altitude + (wptB->altitude - wptA->altitude)/2;
+                wpt.latitude = wptA->latitude + (wptB->latitude - wptA->latitude)/2;
+                wpt.longitude = wptA->longitude + (wptB->longitude - wptA->longitude)/2;
+                wpt.timestamp = wptA->timestamp + (wptB->timestamp - wptA->timestamp)/2;
+                undoStack->push(new PointInsertCommand(gpxmw, gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), pointNumber + 1, wpt));
+            }
         }
     }
 }
