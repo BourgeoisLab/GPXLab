@@ -3,8 +3,13 @@ QT += core gui network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 greaterThan(QT_MAJOR_VERSION, 4): cache()
 
-ORGANISATION = BourgeoisLab
-TARGET = GPXLab
+unix:!macx {
+    ORGANISATION = bourgeoislab
+    TARGET = gpxlab
+} else {
+    ORGANISATION = BourgeoisLab
+    TARGET = GPXLab
+}
 VERSION = 0.7.0
 TEMPLATE = app
 
@@ -132,7 +137,23 @@ macx {
     ICON = ../pkg/gpxlab.icns
     QMAKE_INFO_PLIST = ../pkg/Info.plist
     LOCALE.path = Contents/Resources/translations
-    LOCALE.files = locale/gpxlab_fi.qm \
-                   locale/gpxlab_ru.qm
+    LOCALE.files = locale/*.qm
     QMAKE_BUNDLE_DATA += LOCALE
+}
+
+unix:!macx {
+    isEmpty(PREFIX):PREFIX = /usr/local
+    DEFINES += PREFIX=\\\"$$PREFIX\\\"
+
+    TARGET.path = $$PREFIX/bin
+    TARGET.files = ../bin/gpxlab
+    LOCALE.path = $$PREFIX/share/bourgeoislab/gpxlab/translations
+    LOCALE.files = locale/*.qm
+    ICON.path = $$PREFIX/share/pixmaps
+    ICON.files = ../doc/gpxlab.png
+    DESKTOP.path = $$PREFIX/share/applications
+    DESKTOP.files = ../pkg/gpxlab.desktop
+    MIME.path = $$PREFIX/share/mime/packages
+    MIME.files = ../pkg/gpxlab.xml
+    INSTALLS += TARGET LOCALE ICON DESKTOP MIME
 }
