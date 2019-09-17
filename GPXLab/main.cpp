@@ -19,14 +19,9 @@
 #include <QApplication>
 #include <QLibraryInfo>
 #include <QTranslator>
+#include <QStandardPaths>
 
-#if defined(Q_OS_WIN32)
-# define TRANSLATIONS_DIR QApplication::applicationDirPath() + QString("/translations")
-#elif defined(Q_OS_MAC)
-# define TRANSLATIONS_DIR QApplication::applicationDirPath() + QString("/../Resources/translations")
-#else
-# define TRANSLATIONS_DIR QString("/usr/share/gpxlab/translations")
-#endif
+#define TRANSLATIONS_DIR QStandardPaths::locate(QStandardPaths::AppDataLocation, "translations", QStandardPaths::LocateDirectory)
 
 int main(int argc, char *argv[])
 {
