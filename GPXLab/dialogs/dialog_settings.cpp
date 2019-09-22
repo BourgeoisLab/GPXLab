@@ -40,23 +40,24 @@ Dialog_settings::~Dialog_settings()
     delete ui;
 }
 
+void Dialog_settings::on_Dialog_settings_accepted()
+{
+    settings->doPersistentCaching = ui->checkBoxMapPersistentCache->isChecked();
+    settings->cachePath = ui->lineEditMapCachePath->text();
+    settings->autoLoadLastFile = ui->checkBoxAutoload->isChecked();
+}
+
 void Dialog_settings::on_checkBoxMapPersistentCache_toggled(bool checked)
 {
-    settings->doPersistentCaching = checked;
-    ui->pushButtonMapClearCache->setEnabled(settings->doPersistentCaching);
-    ui->lineEditMapCachePath->setEnabled(settings->doPersistentCaching);
-    ui->pushButtonMapCacheLocationSelect->setEnabled(settings->doPersistentCaching);
-    ui->pushButtonMapCacheLocationDefault->setEnabled(settings->doPersistentCaching);
+    ui->pushButtonMapClearCache->setEnabled(checked);
+    ui->lineEditMapCachePath->setEnabled(checked);
+    ui->pushButtonMapCacheLocationSelect->setEnabled(checked);
+    ui->pushButtonMapCacheLocationDefault->setEnabled(checked);
 }
 
 void Dialog_settings::on_pushButtonMapClearCache_clicked()
 {
     settings->clearCache();
-}
-
-void Dialog_settings::on_lineEditMapCachePath_editingFinished()
-{
-    settings->cachePath = ui->lineEditMapCachePath->text();
 }
 
 void Dialog_settings::on_pushButtonMapCacheLocationSelect_clicked()
@@ -65,17 +66,10 @@ void Dialog_settings::on_pushButtonMapCacheLocationSelect_clicked()
     if (!path.isEmpty())
     {
         ui->lineEditMapCachePath->setText(path);
-        on_lineEditMapCachePath_editingFinished();
     }
 }
 
 void Dialog_settings::on_pushButtonMapCacheLocationDefault_clicked()
 {
     ui->lineEditMapCachePath->setText(settings->defaultCachePath());
-    on_lineEditMapCachePath_editingFinished();
-}
-
-void Dialog_settings::on_checkBoxAutoload_toggled(bool checked)
-{
-    settings->autoLoadLastFile = checked;
 }
