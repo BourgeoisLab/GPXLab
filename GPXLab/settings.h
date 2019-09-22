@@ -100,6 +100,12 @@ public:
     QString defaultCachePath();
 
     /**
+     * @brief Returns the default tiles URL
+     * @return Default tiles URL
+     */
+    QString defaultTilesURL();
+
+    /**
      * @brief Maximal number of undo commands stored
      */
     const int undoLimit;
@@ -128,6 +134,11 @@ public:
      * @brief Loads the last opened file on startup
      */
     bool autoLoadLastFile;
+
+    /**
+     * @brief Tiles URL
+     */
+    QString tilesURL;
 
 signals:
 

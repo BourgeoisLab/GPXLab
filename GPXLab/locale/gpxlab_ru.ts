@@ -296,6 +296,7 @@
     </message>
     <message>
         <location filename="../dialogs/dialog_settings.ui" line="136"/>
+        <location filename="../dialogs/dialog_settings.ui" line="221"/>
         <source>Default</source>
         <translation>По умолчанию</translation>
     </message>
@@ -310,7 +311,17 @@
         <translation>Автозагружать последний файл:</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_settings.cpp" line="64"/>
+        <location filename="../dialogs/dialog_settings.ui" line="193"/>
+        <source>Tiles URL:</source>
+        <translation>URL тайлов:</translation>
+    </message>
+    <message>
+        <location filename="../dialogs/dialog_settings.ui" line="202"/>
+        <source>Placeholders to be used inside &quot;Path&quot; definition: %1 = zoom; %2 = x; %3 = y</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dialogs/dialog_settings.cpp" line="69"/>
         <source>Cache Location</source>
         <translation>Расположение кэша</translation>
     </message>
@@ -618,7 +629,7 @@
         <translation>Название</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="855"/>
+        <location filename="../gpxlab.cpp" line="856"/>
         <source>Tracks</source>
         <extracomment>NOM</extracomment>
         <translation>Треки</translation>
@@ -779,7 +790,7 @@
     </message>
     <message>
         <location filename="../gpxlab.ui" line="1220"/>
-        <location filename="../gpxlab.cpp" line="209"/>
+        <location filename="../gpxlab.cpp" line="210"/>
         <source>Open File</source>
         <translation>Открыть файл</translation>
     </message>
@@ -790,7 +801,7 @@
     </message>
     <message>
         <location filename="../gpxlab.ui" line="1238"/>
-        <location filename="../gpxlab.cpp" line="261"/>
+        <location filename="../gpxlab.cpp" line="262"/>
         <source>Append Files</source>
         <translation>Добавить файлы</translation>
     </message>
@@ -801,7 +812,7 @@
     </message>
     <message>
         <location filename="../gpxlab.ui" line="1253"/>
-        <location filename="../gpxlab.cpp" line="287"/>
+        <location filename="../gpxlab.cpp" line="288"/>
         <source>Save File</source>
         <translation>Сохранить файл</translation>
     </message>
@@ -998,103 +1009,103 @@
         <translation>&amp;Вернуть</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="227"/>
+        <location filename="../gpxlab.cpp" line="228"/>
         <source>Loading file: </source>
         <translation>Загрузка файла: </translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="247"/>
+        <location filename="../gpxlab.cpp" line="248"/>
         <source>Failed to open &quot;</source>
         <translation>Не удалось открыть &quot;</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="274"/>
+        <location filename="../gpxlab.cpp" line="275"/>
         <source>Appending file: </source>
         <translation>Добавление файла: </translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="291"/>
+        <location filename="../gpxlab.cpp" line="292"/>
         <source>Saving file: </source>
         <translation>Сохранение файла: </translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="306"/>
+        <location filename="../gpxlab.cpp" line="307"/>
         <source>Failed to save &quot;</source>
         <translation>Не удалось сохранить &quot;</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="401"/>
-        <location filename="../gpxlab.cpp" line="434"/>
+        <location filename="../gpxlab.cpp" line="402"/>
+        <location filename="../gpxlab.cpp" line="435"/>
         <source>km</source>
         <translation>км</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="402"/>
-        <location filename="../gpxlab.cpp" line="435"/>
+        <location filename="../gpxlab.cpp" line="403"/>
+        <location filename="../gpxlab.cpp" line="436"/>
         <source>km/h</source>
         <translation>км/ч</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="403"/>
-        <location filename="../gpxlab.cpp" line="436"/>
+        <location filename="../gpxlab.cpp" line="404"/>
+        <location filename="../gpxlab.cpp" line="437"/>
         <source>min/km</source>
         <translation>мин/км</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="404"/>
         <location filename="../gpxlab.cpp" line="405"/>
-        <location filename="../gpxlab.cpp" line="437"/>
+        <location filename="../gpxlab.cpp" line="406"/>
         <location filename="../gpxlab.cpp" line="438"/>
         <location filename="../gpxlab.cpp" line="439"/>
         <location filename="../gpxlab.cpp" line="440"/>
+        <location filename="../gpxlab.cpp" line="441"/>
         <source>m</source>
         <translation>м</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="466"/>
-        <location filename="../gpxlab.cpp" line="521"/>
+        <location filename="../gpxlab.cpp" line="467"/>
+        <location filename="../gpxlab.cpp" line="522"/>
         <source>Updating file properties...</source>
         <translation>Обновление свойств файла...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="470"/>
-        <location filename="../gpxlab.cpp" line="529"/>
+        <location filename="../gpxlab.cpp" line="471"/>
+        <location filename="../gpxlab.cpp" line="530"/>
         <source>Generating track tree...</source>
         <translation>Генерация дерева треков...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="474"/>
+        <location filename="../gpxlab.cpp" line="475"/>
         <source>Generating map...</source>
         <translation>Генерация карты...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="478"/>
-        <location filename="../gpxlab.cpp" line="534"/>
+        <location filename="../gpxlab.cpp" line="479"/>
+        <location filename="../gpxlab.cpp" line="535"/>
         <source>Generating track calendar...</source>
         <translation>Генерация календаря треков...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="525"/>
+        <location filename="../gpxlab.cpp" line="526"/>
         <source>Updating track properties...</source>
         <translation>Обновление свойств трека...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="539"/>
+        <location filename="../gpxlab.cpp" line="540"/>
         <source>Generating diagram...</source>
         <translation>Генерация диаграммы...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="543"/>
+        <location filename="../gpxlab.cpp" line="544"/>
         <source>Generating point list...</source>
         <translation>Генерация списка точек...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="929"/>
+        <location filename="../gpxlab.cpp" line="930"/>
         <source>The file has been modified.</source>
         <translation>Файл был изменен.</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="930"/>
+        <location filename="../gpxlab.cpp" line="931"/>
         <source>Do you want to save your changes?</source>
         <translation>Хотите ли вы сохранить свои изменения?</translation>
     </message>
@@ -1324,7 +1335,7 @@ ID</translation>
 <context>
     <name>QMapWidget</name>
     <message>
-        <location filename="../widgets/qmapwidget.cpp" line="313"/>
+        <location filename="../widgets/qmapwidget.cpp" line="327"/>
         <source>km</source>
         <translation>км</translation>
     </message>

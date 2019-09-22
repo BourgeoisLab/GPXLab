@@ -30,7 +30,11 @@ namespace qmapcontrol
             :MapAdapter(host, serverPath, tilesize, minZoom, maxZoom)
     {
         PI = acos(-1.0);
+        parseParams(serverPath);
+    }
 
+    void TileMapAdapter::parseParams(const QString& serverPath)
+    {
         /*
             Initialize the "substring replace engine". First the string replacement
             in getQuery was made by QString().arg() but this was very slow. So this
@@ -153,6 +157,12 @@ namespace qmapcontrol
 
         return QPointF(longitude, latitude);
 
+    }
+
+    void TileMapAdapter::changeHostAddress(const QString qHost, const QString qServerPath)
+    {
+        MapAdapter::changeHostAddress(qHost, qServerPath);
+        parseParams(qServerPath);
     }
 
     bool TileMapAdapter::isTileValid(int x, int y, int z) const

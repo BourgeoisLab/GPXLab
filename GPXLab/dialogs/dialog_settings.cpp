@@ -28,6 +28,7 @@ Dialog_settings::Dialog_settings(Settings *settings, QWidget *parent) :
 
     ui->checkBoxMapPersistentCache->setChecked(settings->doPersistentCaching);
     ui->lineEditMapCachePath->setText(settings->cachePath);
+    ui->lineEditTilesURL->setText(settings->tilesURL);
     ui->pushButtonMapClearCache->setEnabled(settings->doPersistentCaching);
     ui->lineEditMapCachePath->setEnabled(settings->doPersistentCaching);
     ui->pushButtonMapCacheLocationSelect->setEnabled(settings->doPersistentCaching);
@@ -45,6 +46,9 @@ void Dialog_settings::on_Dialog_settings_accepted()
     settings->doPersistentCaching = ui->checkBoxMapPersistentCache->isChecked();
     settings->cachePath = ui->lineEditMapCachePath->text();
     settings->autoLoadLastFile = ui->checkBoxAutoload->isChecked();
+    settings->tilesURL = ui->lineEditTilesURL->text();
+
+    settings->save();
 }
 
 void Dialog_settings::on_checkBoxMapPersistentCache_toggled(bool checked)
@@ -72,4 +76,9 @@ void Dialog_settings::on_pushButtonMapCacheLocationSelect_clicked()
 void Dialog_settings::on_pushButtonMapCacheLocationDefault_clicked()
 {
     ui->lineEditMapCachePath->setText(settings->defaultCachePath());
+}
+
+void Dialog_settings::on_pushButtonTilesURLDefault_clicked()
+{
+    ui->lineEditTilesURL->setText(settings->defaultTilesURL());
 }

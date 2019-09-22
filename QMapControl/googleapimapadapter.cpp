@@ -40,7 +40,7 @@
 namespace qmapcontrol
 {
     googleApiMapadapter::googleApiMapadapter(layerType qMapType, apiType qApiType, QString qApiKey, QString qApiClientID, QString qServerAddress)
-    : TileMapAdapter(qServerAddress, "/maps/api/staticmap?", 256, 1, 22),
+    : TileMapAdapter("http://" + qServerAddress, "/maps/api/staticmap?", 256, 1, 22),
       mApiKey(qApiKey),
       mApiClientID(qApiClientID),
       mApiType( qApiType )
