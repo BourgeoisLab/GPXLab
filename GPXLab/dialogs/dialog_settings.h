@@ -56,12 +56,11 @@ public:
 
 private slots:
 
+    void on_Dialog_settings_accepted();
     void on_checkBoxMapPersistentCache_toggled(bool checked);
-    void on_lineEditMapCachePath_editingFinished();
     void on_pushButtonMapCacheLocationSelect_clicked();
     void on_pushButtonMapClearCache_clicked();
     void on_pushButtonMapCacheLocationDefault_clicked();
-    void on_checkBoxAutoload_toggled(bool checked);
 
 private:
 
