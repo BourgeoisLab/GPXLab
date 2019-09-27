@@ -60,6 +60,11 @@ Release Notes
 - [new] Use SRTM version 3.0 global 1 arc second data
 - [new] SRTM files must now be located in the QStandardPaths::AppDataLocation directory
 - [new] Settings to automatically reload the last opened file on startup
+- [new] Support arbitrary map provider (thanks to sikmir). Tested with:
+  - default: `http://tile.openstreetmap.org/%1/%2/%3.png`
+  - with query: `http://a.tile.thunderforest.com/cycle/%1/%2/%3.png?apikey=<my-api-key>`
+  - with https: `https://a.tile.opentopomap.org/%1/%2/%3.png`
+  - with explicit port: `https://a.tile.opentopomap.org:443/%1/%2/%3.png`
 
 **[v0.6.0]**
 - [new] Height files must now be placed in configuration direcotry
