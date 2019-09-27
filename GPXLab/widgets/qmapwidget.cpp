@@ -15,6 +15,7 @@
  *   along with This program. If not, see <http://www.gnu.org/licenses/>.   *
  ****************************************************************************/
 
+#include <QSettings>
 #include "gpxlab.h"
 #include "qutils.h"
 #include "osmmapadapter.h"
@@ -36,10 +37,10 @@ QMapWidget::QMapWidget(QWidget *parent, Qt::WindowFlags windowFlags) :
     showOnlySelectedTrack(false)
 {
     // create OpenStreetMap adapter
-    MapAdapter* OSMAdapter = new OSMMapAdapter();
+    MapAdapter* TileAdapter = new TileMapAdapter("", "", 256, 0, 19);
 
     // create a layer for the tracks
-    trackLayer = new MapLayer("Tracks", OSMAdapter, true);
+    trackLayer = new MapLayer("Tracks", TileAdapter, true);
     addLayer(trackLayer);
     trackLayer->setVisible(false);
 
@@ -49,7 +50,7 @@ QMapWidget::QMapWidget(QWidget *parent, Qt::WindowFlags windowFlags) :
     connect(this, SIGNAL(mouseEventCoordinate(const QMouseEvent*, const QPointF)), this, SLOT(mouseEventCoordinate(const QMouseEvent*, const QPointF)));
 
     // create a layer for the geometries on the "top"
-    Layer *topLayer = new GeometryLayer("Top", OSMAdapter, false);
+    Layer *topLayer = new GeometryLayer("Top", TileAdapter, false);
     addLayer(topLayer);
     topLayer->setVisible(true);
 
@@ -79,7 +80,7 @@ QMapWidget::QMapWidget(QWidget *parent, Qt::WindowFlags windowFlags) :
     setEnabled(false);
 }
 
-void QMapWidget::init(GPX_wrapper *gpxmw, QUndoStack *undoStack, bool doPersistentCaching, QString &cachePath)
+void QMapWidget::init(GPX_wrapper *gpxmw, QUndoStack *undoStack, bool doPersistentCaching, QString &cachePath, QString &tilesURL)
 {
     this->gpxmw = gpxmw;
     this->undoStack = undoStack;
@@ -87,6 +88,8 @@ void QMapWidget::init(GPX_wrapper *gpxmw, QUndoStack *undoStack, bool doPersiste
     // enable persitent cache of tiles
     if (doPersistentCaching)
         enablePersistentCache(QDir(cachePath));
+
+    setTilesURL(tilesURL);
 }
 
 void QMapWidget::build(bool zoomIn)
@@ -204,6 +207,17 @@ void QMapWidget::leaveEvent(QEvent *event)
 {
     Q_UNUSED(event);
     geometryOver(NULL, QPoint());
+}
+
+void QMapWidget::setTilesURL(const QString &tilesURL)
+{
+    QUrl url(tilesURL);
+    QString server(url.scheme() + "://" + url.authority());
+    QString serverPath(url.path());
+    if (url.hasQuery())
+        serverPath += "?" + url.query();
+
+    trackLayer->mapadapter()->changeHostAddress(server, serverPath);
 }
 
 void QMapWidget::setViewAndZoomIn(const GPX_boundsType &bounds)
@@ -545,4 +559,10 @@ void QMapWidget::mouseEventCoordinate(const QMouseEvent* evnt, const QPointF coo
         }
         selectedPointSetVisible(true, coordinate.y(), coordinate.x());
     }
+}
+
+void QMapWidget::settingsChanged(bool loaded)
+{
+    QSettings qsettings;
+    setTilesURL(qsettings.value("tilesURL").toString());
 }

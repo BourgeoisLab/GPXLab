@@ -27,7 +27,7 @@
 namespace qmapcontrol
 {
     OpenAerialMapAdapter::OpenAerialMapAdapter()
-            : TileMapAdapter("tile.openaerialmap.org", "/tiles/1.0.0/openaerialmap-900913/%1/%2/%3.png", 256, 0, 17)
+            : TileMapAdapter("http://tile.openaerialmap.org", "/tiles/1.0.0/openaerialmap-900913/%1/%2/%3.png", 256, 0, 17)
     {
     }
 

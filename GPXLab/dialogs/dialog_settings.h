@@ -61,6 +61,7 @@ private slots:
     void on_pushButtonMapCacheLocationSelect_clicked();
     void on_pushButtonMapClearCache_clicked();
     void on_pushButtonMapCacheLocationDefault_clicked();
+    void on_pushButtonTilesURLDefault_clicked();
 
 private:
 

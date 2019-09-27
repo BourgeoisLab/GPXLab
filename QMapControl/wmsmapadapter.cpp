@@ -29,7 +29,7 @@
 namespace qmapcontrol
 {
     WMSMapAdapter::WMSMapAdapter(QString host, QString serverPath, int tilesize)
-            : MapAdapter(host, serverPath, tilesize, 0, 17)
+            : MapAdapter("http://" + host, serverPath, tilesize, 0, 17)
     {
         mNumberOfTiles = pow(2.0, mCurrent_zoom);
         coord_per_x_tile = 360. / mNumberOfTiles;

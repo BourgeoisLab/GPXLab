@@ -61,20 +61,7 @@ namespace qmapcontrol
 
     void MapNetwork::loadImage(const QString& host, const QString& url)
     {
-        QString hostName = host;
-        QString portNumber = QString("80");
-
-        QRegExp r(".:.");
-
-        if(r.indexIn(host) >= 0)
-        {
-            QStringList s = host.split(":");
-
-            hostName = s.at(0);
-            portNumber = s.at(1);
-        }
-
-        QString finalUrl = QString("http://%1:%2%3").arg(hostName).arg(portNumber).arg(url);
+        QString finalUrl = QString("%1%2").arg(host).arg(url);
         QNetworkRequest request = QNetworkRequest(QUrl(finalUrl));
 
         if( cacheEnabled )
@@ -90,7 +77,7 @@ namespace qmapcontrol
         QMutexLocker lock(&vectorMutex);
         replyList.append( http->get(request) );
         loadingMap.insert( finalUrl, url );
-}
+    }
 
     void MapNetwork::requestFinished(QNetworkReply *reply)
     {

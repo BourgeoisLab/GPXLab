@@ -64,8 +64,9 @@ public:
      * @param undoStack Undo stack
      * @param doPersistentCaching Enable / disable persistent caching
      * @param cachePath Path to the cache directory
+     * @param tilesURL Tiles URL
      */
-    void init(GPX_wrapper *gpxmw, QUndoStack *undoStack, bool doPersistentCaching, QString &cachePath);
+    void init(GPX_wrapper *gpxmw, QUndoStack *undoStack, bool doPersistentCaching, QString &cachePath, QString &tilesURL);
 
     /**
      * @brief Generates the map according to the GPX_Model
@@ -187,6 +188,11 @@ private slots:
      */
     void mouseEventCoordinate(const QMouseEvent* evnt, const QPointF coordinate);
 
+    /**
+     * @brief Slot when settings are loaded or saved
+     */
+    void settingsChanged(bool loaded);
+
 private:
 
     /**
@@ -201,6 +207,8 @@ private:
     void keyPressEvent(QKeyEvent *event);
 
     void leaveEvent(QEvent *event);
+
+    void setTilesURL(const QString &tilesURL);
 
 private:
     GPX_wrapper *gpxmw;

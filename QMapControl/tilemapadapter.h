@@ -59,11 +59,15 @@ namespace qmapcontrol
         virtual QPoint coordinateToDisplay(const QPointF&) const;
         virtual QPointF displayToCoordinate(const QPoint&) const;
 
+        virtual void changeHostAddress(const QString qHost, const QString qServerPath = QString());
+
         qreal PI;
 
     protected:
         qreal rad_deg(qreal) const;
         qreal deg_rad(qreal) const;
+
+        void parseParams(const QString& serverPath);
 
         virtual bool isTileValid(int x, int y, int z) const;
         virtual void zoom_in();

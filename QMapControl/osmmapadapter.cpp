@@ -27,7 +27,7 @@
 namespace qmapcontrol
 {
     OSMMapAdapter::OSMMapAdapter()
-            : TileMapAdapter("tile.openstreetmap.org", "/%1/%2/%3.png", 256, 0, 19)
+            : TileMapAdapter("http://tile.openstreetmap.org", "/%1/%2/%3.png", 256, 0, 19)
     {
     }
 

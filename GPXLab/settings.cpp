@@ -38,9 +38,12 @@ void Settings::load()
     recentFiles = qsettings.value("recentFileList").toStringList();
     doPersistentCaching = qsettings.value("doPersistentCaching", true).toBool();
     cachePath = qsettings.value("cachePath", "").toString();
+    tilesURL = qsettings.value("tilesURL", "").toString();
     if (cachePath.isEmpty())
         cachePath = defaultCachePath();
     autoLoadLastFile = qsettings.value("autoLoadLastFile", true).toBool();
+    if (tilesURL.isEmpty())
+        tilesURL = defaultTilesURL();
     emit settingsChanged(true);
 }
 
@@ -53,6 +56,7 @@ void Settings::save()
     qsettings.setValue("doPersistentCaching", doPersistentCaching);
     qsettings.setValue("cachePath", cachePath);
     qsettings.setValue("autoLoadLastFile", autoLoadLastFile);
+    qsettings.setValue("tilesURL", tilesURL);
     emit settingsChanged(false);
 }
 
@@ -112,4 +116,9 @@ void Settings::clearCache()
 QString Settings::defaultCachePath()
 {
     return QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+}
+
+QString Settings::defaultTilesURL()
+{
+    return QString("http://tile.openstreetmap.org/%1/%2/%3.png");
 }

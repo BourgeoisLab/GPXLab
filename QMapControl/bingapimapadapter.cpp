@@ -39,7 +39,7 @@
 namespace qmapcontrol
 {
     bingApiMapadapter::bingApiMapadapter(QString mapType, QString apiKey)
-    : TileMapAdapter("dev.virtualearth.net", "/REST/v1/Imagery/Map/", 256, 0, 21),
+    : TileMapAdapter("http://dev.virtualearth.net", "/REST/v1/Imagery/Map/", 256, 0, 21),
       myKey(apiKey),
       myMapType(mapType)
     {

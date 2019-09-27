@@ -85,10 +85,11 @@ GPXLab::GPXLab(const QString &fileName, QWidget *parent) :
     connect(ui->treeTracks, SIGNAL(itemDoubleClicked(QTreeWidgetItem* , int)), this, SLOT(tree_doubleClicked(QTreeWidgetItem*, int)));
 
     // map widget
-    ui->mapWidget->init(gpxmw, undoStack, settings->doPersistentCaching, settings->cachePath);
+    ui->mapWidget->init(gpxmw, undoStack, settings->doPersistentCaching, settings->cachePath, settings->tilesURL);
     ui->mapWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->mapWidget, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(map_showContextMenu(const QPoint&)));
     connect(ui->mapWidget, SIGNAL(viewChanged(const QPointF&, int)), this, SLOT(map_viewChanged(const QPointF&, int)));
+    connect(settings, SIGNAL(settingsChanged(bool)), ui->mapWidget, SLOT(settingsChanged(bool)));
 
     // calendar widget
     ui->calendarWidget->init(gpxmw);
