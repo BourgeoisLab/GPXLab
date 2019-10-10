@@ -137,7 +137,8 @@ macx {
     ICON = ../pkg/gpxlab.icns
     QMAKE_INFO_PLIST = ../pkg/Info.plist
     LOCALE.path = Contents/Resources/translations
-    LOCALE.files = locale/*.qm
+    LOCALE.files = locale/gpxlab_fi.qm \
+        locale/gpxlab_ru.qm
     QMAKE_BUNDLE_DATA += LOCALE
 }
 
