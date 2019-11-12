@@ -341,7 +341,7 @@ static enum e_item UXML_findItem(T_uXml* pXML)
                 // read TAG
                 pXML->pTag[m_Counter++] = tolower(c);
                 while(pXML->pTag[m_Counter - read] != '>' &&
-                      pXML->pTag[m_Counter - read] != ' ' &&
+                      !isspace(pXML->pTag[m_Counter - read])  &&
                       pXML->pTag[m_Counter - read] != '/' &&
                       m_Counter < UXML_TAG_SIZE && !pXML->eof)
                 {
@@ -360,7 +360,7 @@ static enum e_item UXML_findItem(T_uXml* pXML)
                 if (m_Counter > 0 && m_Counter <= UXML_TAG_SIZE)
                     pXML->pTag[m_Counter - 1] = 0;
 
-                if (c == ' ')
+                if (isspace(c))
                 {
                     //skip spaces
                     do
@@ -464,7 +464,7 @@ static int UXML_scanAttributes(T_uXml* pXML)
     pXML->pAttribute[m_Counter++] = tolower(c);
     while (pXML->pAttribute[m_Counter - read] != '>' &&
         pXML->pAttribute[m_Counter - read] != '=' &&
-        pXML->pAttribute[m_Counter - read] != ' ' &&
+        !isspace(pXML->pTag[m_Counter - read])  &&
         pXML->pAttribute[m_Counter - read] != '/' &&
         m_Counter < UXML_TAG_SIZE && !pXML->eof)
     {
@@ -483,7 +483,7 @@ static int UXML_scanAttributes(T_uXml* pXML)
     if (m_Counter > 0 && m_Counter <= UXML_TAG_SIZE)
         pXML->pAttribute[m_Counter - 1] = '\0';
 
-    if (c == ' ')
+    if (isspace(c))
     {
         //skip spaces
         do
