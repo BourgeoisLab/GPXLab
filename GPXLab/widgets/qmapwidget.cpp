@@ -502,24 +502,6 @@ void QMapWidget::moveTrackDown(int trackNumber)
     }
 }
 
-void QMapWidget::editPoint(int trackNumber, int pointNumber)
-{
-    QList<Geometry*> &tracks = trackLayer->getGeometries();
-    for(QList<Geometry*>::iterator itTrack = tracks.begin(); itTrack != tracks.end(); ++itTrack)
-    {
-        QMapTrack* track = dynamic_cast<QMapTrack*>(*itTrack);
-        if (track)
-        {
-            if (track->getTrackNumber() == trackNumber)
-            {
-                track->redrawPoint(pointNumber - 1);
-                track->redrawPoint(pointNumber);
-                break;
-            }
-        }
-    }
-}
-
 void QMapWidget::mouseEventCoordinate(const QMouseEvent* evnt, const QPointF coordinate)
 {
     if (isMousePressed() && gpxmw->getSelectedPointNumber() >= 0 &&

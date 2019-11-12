@@ -141,13 +141,6 @@ public:
      */
     void moveTrackDown(int trackNumber);
 
-    /**
-     * @brief Edits a point
-     * @param trackNumber Track number
-     * @param pointNumber Point number
-     */
-    void editPoint(int trackNumber, int pointNumber);
-
 signals:
 
     /**

@@ -105,6 +105,10 @@ bool QPixmapExt::isFromImage() const
 
 QMapTrack::QMapTrack(const GPX_wrapper *gpxmw, int trackNumber, const GPX_trkType *track) :
     Curve(),
+    pointPixmapFirst(QPixmapExt(":/images/flag_green.png", Point::BottomLeft)),
+    pointPixmapFirstMiddle(QPixmapExt(":/images/flag_blue.png", Point::BottomLeft)),
+    pointPixmapLastMiddle(QPixmapExt(":/images/flag_red.png", Point::BottomLeft)),
+    pointPixmapLast(QPixmapExt(":/images/flag_finish.png", Point::BottomLeft)),
     gpxmw(gpxmw),
     track(track),
     trackNumber(trackNumber),
@@ -127,70 +131,10 @@ QMapTrack::QMapTrack(const GPX_wrapper *gpxmw, int trackNumber, const GPX_trkTyp
     pointPenSelected->setWidth(3);
 
     mypen = linePen;
-
-    pointPixmap = new QPixmapExt[track->stats.points];
-    QPixmapExt *pixmap = pointPixmap;
-
-    int trackSegmentNumber = 0;
-    int pointNumber = 0;
-
-    int numPoints;
-    const GPX_trksegType* trkseg;
-    const GPX_wptType* trkpt;
-
-    int numTrackSegments = gpxmw->initTrksegIteration(trackNumber);
-    if (numTrackSegments  > 0)
-    {
-        while ((trkseg = gpxmw->getNextTrkseg()))
-        {
-            pointNumber = 0;
-            numPoints = gpxmw->initTrkptIteration(trackNumber, trackSegmentNumber);
-            if (numPoints > 0)
-            {
-                while ((trkpt = gpxmw->getNextTrkpt()))
-                {
-                    if (pointNumber == 0)
-                    {
-                        if (trackSegmentNumber == 0)
-                        {
-                            // first point of first segment
-                            *pixmap++ = QPixmapExt(":/images/flag_green.png", Point::BottomLeft);
-                        }
-                        else
-                        {
-                            // first point of other segments
-                            *pixmap++ = QPixmapExt(":/images/flag_blue.png", Point::BottomLeft);
-                        }
-                    }
-                    else if (pointNumber == (numPoints - 1))
-                    {
-                        if (trackSegmentNumber == (numTrackSegments - 1))
-                        {
-                            // last point of last segment
-                            *pixmap++ = QPixmapExt(":/images/flag_finish.png", Point::BottomLeft);
-                        }
-                        else
-                        {
-                            // last point of other segments
-                            *pixmap++ = QPixmapExt(":/images/flag_red.png", Point::BottomLeft);
-                        }
-                    }
-                    else
-                    {
-                        // middle points
-                        *pixmap++ = drawArrow(6, -trkpt->heading, pointsMiddle);
-                    }
-                    ++pointNumber;
-                }
-            }
-            ++trackSegmentNumber;
-        }
-    }
 }
 
 QMapTrack::~QMapTrack()
 {
-    delete[] pointPixmap;
 }
 
 QPixmapExt QMapTrack::drawArrow(int sideLength, qreal heading, QPen* pen)
@@ -229,16 +173,6 @@ QPixmapExt QMapTrack::drawArrow(int sideLength, qreal heading, QPen* pen)
     painter.drawPolygon(arrow);
 
     return pixmap;
-}
-
-void QMapTrack::redrawPoint(int pointNumber)
-{
-    const GPX_wptType *trkpt = gpxmw->getPoint(trackNumber, -1, pointNumber);
-    if (trkpt)
-    {
-        if (!pointPixmap[pointNumber].isFromImage())
-            pointPixmap[pointNumber] = drawArrow(6, -trkpt->heading, pointsMiddle);
-    }
 }
 
 int QMapTrack::getTrackNumber() const
@@ -312,7 +246,7 @@ void QMapTrack::draw(QPainter* painter, const MapAdapter* mapadapter, const QRec
         if (trackNumber == gpxmw->getSelectedTrackNumber())
         {
             trkpt = gpxmw->getPoint(trackNumber, 0, 0);
-            drawPoint(painter, mapadapter, screensize, &pointPixmap[0], trkpt->latitude, trkpt->longitude);
+            drawPoint(painter, mapadapter, screensize, &pointPixmapFirst, trkpt->latitude, trkpt->longitude);
         }
         return;
     }
@@ -353,7 +287,8 @@ void QMapTrack::draw(QPainter* painter, const MapAdapter* mapadapter, const QRec
     // draw points
     if (trackNumber == gpxmw->getSelectedTrackNumber())
     {
-        if (gpxmw->initTrksegIteration(trackNumber))
+        int numTrackSegments = gpxmw->initTrksegIteration(trackNumber);
+        if (numTrackSegments)
         {
             QPoint A, B;
             int dist = 0;
@@ -362,7 +297,6 @@ void QMapTrack::draw(QPainter* painter, const MapAdapter* mapadapter, const QRec
             A = mapadapter->coordinateToDisplay(QPointF(trkpt->longitude, trkpt->latitude));
 
             trackSegmentNumber = 0;
-            QPixmapExt *pixmap = pointPixmap;
             while ((trkseg = gpxmw->getNextTrkseg()))
             {
                 if (trackSegmentNumber == gpxmw->getSelectedTrackSegmentNumber() || gpxmw->getSelectedTrackSegmentNumber() == -1)
@@ -373,9 +307,21 @@ void QMapTrack::draw(QPainter* painter, const MapAdapter* mapadapter, const QRec
                     {
                         while ((trkpt = gpxmw->getNextTrkpt()))
                         {
-                            if (pointNumber == 0 || pointNumber == (numPoints - 1))
+                            if (pointNumber == 0)
                             {
-                                drawPoint(painter, mapadapter, screensize, pixmap, trkpt->latitude, trkpt->longitude);
+                                // first points
+                                if (trackSegmentNumber == 0)
+                                    drawPoint(painter, mapadapter, screensize, &pointPixmapFirst, trkpt->latitude, trkpt->longitude);
+                                else
+                                    drawPoint(painter, mapadapter, screensize, &pointPixmapFirstMiddle, trkpt->latitude, trkpt->longitude);
+                            }
+                            else if (pointNumber == (numPoints - 1))
+                            {
+                                // last points
+                                if (trackSegmentNumber == (numTrackSegments - 1))
+                                    drawPoint(painter, mapadapter, screensize, &pointPixmapLast, trkpt->latitude, trkpt->longitude);
+                                else
+                                    drawPoint(painter, mapadapter, screensize, &pointPixmapLastMiddle, trkpt->latitude, trkpt->longitude);
                             }
                             else
                             {
@@ -383,7 +329,8 @@ void QMapTrack::draw(QPainter* painter, const MapAdapter* mapadapter, const QRec
                                 if (mapadapter->currentZoom() >= mapadapter->maxZoom() - 1)
                                 {
                                     // draw all points if zoom is about maximum
-                                    drawPoint(painter, mapadapter, screensize, pixmap, trkpt->latitude, trkpt->longitude);
+                                    QPixmapExt pixmap = drawArrow(6, -trkpt->heading, pointsMiddle);
+                                    drawPoint(painter, mapadapter, screensize, &pixmap, trkpt->latitude, trkpt->longitude);
                                 }
                                 else
                                 {
@@ -394,18 +341,14 @@ void QMapTrack::draw(QPainter* painter, const MapAdapter* mapadapter, const QRec
                                     if (dist > 12)
                                     {
                                         dist  = 0;
-                                        drawPoint(painter, mapadapter, screensize, pixmap, trkpt->latitude, trkpt->longitude);
+                                        QPixmapExt pixmap = drawArrow(6, -trkpt->heading, pointsMiddle);
+                                        drawPoint(painter, mapadapter, screensize, &pixmap, trkpt->latitude, trkpt->longitude);
                                     }
                                 }
                             }
-                            ++pixmap;
                             ++pointNumber;
                         }
                     }
-                }
-                else
-                {
-                    pixmap += trkseg->trkpt.size();
                 }
                 ++trackSegmentNumber;
             }

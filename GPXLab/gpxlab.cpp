@@ -692,7 +692,6 @@ void GPXLab::pointEdited(int trackNumber, int trackSegmentNumber, int pointNumbe
     // map
     if (properties & GPX_wrapper::latitude || properties & GPX_wrapper::longitude)
     {
-        ui->mapWidget->editPoint(trackNumber, pointNumber);
         if (trkpt)
             ui->mapWidget->selectedPointSetVisible(true, trkpt->latitude, trkpt->longitude);
     }

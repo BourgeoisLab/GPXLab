@@ -168,12 +168,6 @@ public:
      */
     void setMouseOver(bool over);
 
-    /**
-     * @brief Redraws a point
-     * @param pointNumber Point number
-     */
-    void redrawPoint(int pointNumber);
-
 private:
 
     /**
@@ -230,11 +224,14 @@ private:
 
 private:
 
+    const QPixmapExt pointPixmapFirst;
+    const QPixmapExt pointPixmapFirstMiddle;
+    const QPixmapExt pointPixmapLastMiddle;
+    const QPixmapExt pointPixmapLast;
+
     const GPX_wrapper *gpxmw;
     const GPX_trkType *track;
     int trackNumber;
-
-    QPixmapExt *pointPixmap;
 
     int touchedSegmentNumber;
     const GPX_wptType *touchedPoint;
