@@ -677,7 +677,7 @@
     <message>
         <location filename="../gpxlab.ui" line="576"/>
         <source>Date</source>
-        <translation>Päivämäärä</translation>
+        <translation>Pvm.</translation>
     </message>
     <message>
         <location filename="../gpxlab.ui" line="584"/>
