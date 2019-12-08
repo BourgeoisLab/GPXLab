@@ -9,6 +9,7 @@
   - with query: `http://a.tile.thunderforest.com/cycle/%1/%2/%3.png?apikey=<my-api-key>`
   - with https: `https://a.tile.opentopomap.org/%1/%2/%3.png`
   - with explicit port: `https://a.tile.opentopomap.org:443/%1/%2/%3.png`
+- [new] Standard shortcuts for ZoomIn/ZoomOut added
 
 ## v0.6.0
 - [new] Height files must now be placed in configuration direcotry

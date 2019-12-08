@@ -200,6 +200,12 @@ void QMapWidget::keyPressEvent(QKeyEvent *event)
         if (pointNumber >= 0)
             undoStack->push(new PointDeleteCommand(gpxmw, gpxmw->getSelectedTrackNumber(), gpxmw->getSelectedTrackSegmentNumber(), pointNumber));
         break;
+    case Qt::Key_Plus:
+        zoomIn();
+        break;
+    case Qt::Key_Minus:
+        zoomOut();
+        break;
     }
 }
 
