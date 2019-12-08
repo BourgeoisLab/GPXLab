@@ -792,7 +792,7 @@ GPX_model::retCode_e GPX_wrapper::splitTrack(int trackNumber, int &trackSegmentN
                 newTrkSeg.trkpt.push_back(*itTrkPt);
 
             // delete second half from current segment
-            itTrkSeg->trkpt.erase(itTrkSeg->trkpt.begin() + pointNumber, itTrkSeg->trkpt.end());
+            itTrkSeg->trkpt.erase(itTrkSeg->trkpt.begin() + pointNumber + 1, itTrkSeg->trkpt.end());
 
             // insert new track segment
             gpxm->trk[trackNumber].trkseg.insert(itTrkSeg + 1, newTrkSeg);
