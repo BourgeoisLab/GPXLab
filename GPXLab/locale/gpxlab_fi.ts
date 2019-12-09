@@ -629,7 +629,7 @@
         <translation>Nimi</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="856"/>
+        <location filename="../gpxlab.cpp" line="858"/>
         <source>Tracks</source>
         <extracomment>NOM</extracomment>
         <translation>Jäljet</translation>
@@ -747,27 +747,27 @@
         <translation>Poistu sovelluksesta</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1223"/>
+        <location filename="../gpxlab.ui" line="1220"/>
         <source>Open file (Ctrl+O)</source>
         <translation>Avaa tiedosto (Ctrl+O)</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1256"/>
+        <location filename="../gpxlab.ui" line="1253"/>
         <source>Save file (Ctrl+S)</source>
         <translation>Tallenna tiedosto (Ctrl+S)</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1274"/>
+        <location filename="../gpxlab.ui" line="1271"/>
         <source>Save file as (Ctrl+Shift+S)</source>
         <translation>Tallenna tiedosto nimellä (Ctrl+Shift+S)</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1277"/>
+        <location filename="../gpxlab.ui" line="1274"/>
         <source>Ctrl+Shift+S</source>
         <translation>Ctrl+Shift+S</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1422"/>
+        <location filename="../gpxlab.ui" line="1419"/>
         <source>Close file (Ctrl+W)</source>
         <translation>Sulje tiedosto (Ctrl+W)</translation>
     </message>
@@ -784,217 +784,212 @@
         <translation>Jäljet</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1208"/>
-        <source>Alt+F4</source>
-        <translation>Alt+F4</translation>
-    </message>
-    <message>
-        <location filename="../gpxlab.ui" line="1220"/>
-        <location filename="../gpxlab.cpp" line="210"/>
+        <location filename="../gpxlab.ui" line="1217"/>
+        <location filename="../gpxlab.cpp" line="213"/>
         <source>Open File</source>
         <translation>Avaa tiedosto</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1226"/>
+        <location filename="../gpxlab.ui" line="1223"/>
         <source>Ctrl+O</source>
         <translation>Ctrl+O</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1238"/>
-        <location filename="../gpxlab.cpp" line="262"/>
+        <location filename="../gpxlab.ui" line="1235"/>
+        <location filename="../gpxlab.cpp" line="265"/>
         <source>Append Files</source>
         <translation>Lisää tiedostoja</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1241"/>
+        <location filename="../gpxlab.ui" line="1238"/>
         <source>Append files</source>
         <translation>Lisää tiedostoja</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1253"/>
-        <location filename="../gpxlab.cpp" line="288"/>
+        <location filename="../gpxlab.ui" line="1250"/>
+        <location filename="../gpxlab.cpp" line="291"/>
         <source>Save File</source>
         <translation>Tallenna tiedosto</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1259"/>
+        <location filename="../gpxlab.ui" line="1256"/>
         <source>Ctrl+S</source>
         <translation>Ctrl+S</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1271"/>
+        <location filename="../gpxlab.ui" line="1268"/>
         <source>Save File As...</source>
         <translation>Tallenna tiedosto nimellä...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1289"/>
+        <location filename="../gpxlab.ui" line="1286"/>
         <source>Get Altitude From Database</source>
         <translation>Hae korkeus tietokannasta</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1292"/>
+        <location filename="../gpxlab.ui" line="1289"/>
         <source>Get altitude from Database</source>
         <translation>Hae korkeus tietokannasta</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1304"/>
+        <location filename="../gpxlab.ui" line="1301"/>
         <source>Edit File Properties</source>
         <translation>Muokkaa tiedoston ominaisuuksia</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1307"/>
+        <location filename="../gpxlab.ui" line="1304"/>
         <source>Edit file properties</source>
         <translation>Muokkaa tiedoston ominaisuuksia</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1319"/>
+        <location filename="../gpxlab.ui" line="1316"/>
         <source>Edit Track Properties</source>
         <translation>Muokkaa jäljen ominaisuuksia</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1322"/>
+        <location filename="../gpxlab.ui" line="1319"/>
         <source>Edit track properties</source>
         <translation>Muokkaa jäljen ominaisuuksia</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1334"/>
+        <location filename="../gpxlab.ui" line="1331"/>
         <source>Fit View</source>
         <translation>Sovita näkymä</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1337"/>
+        <location filename="../gpxlab.ui" line="1334"/>
         <source>Fit view to tracks</source>
         <translation>Sovita näkymä jäljille</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1349"/>
+        <location filename="../gpxlab.ui" line="1346"/>
         <source>Fit View to Track</source>
         <translation>Sovita näkymä jäljelle</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1352"/>
+        <location filename="../gpxlab.ui" line="1349"/>
         <source>Fit view to selected track</source>
         <translation>Sovita näkymä valitulle jäljelle</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1364"/>
+        <location filename="../gpxlab.ui" line="1361"/>
         <source>Fit view to Point</source>
         <translation>Sovita näkymä pisteelle</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1367"/>
+        <location filename="../gpxlab.ui" line="1364"/>
         <source>Fit view to selected point</source>
         <translation>Sovita näkymä valitulle pisteelle</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1382"/>
+        <location filename="../gpxlab.ui" line="1379"/>
         <source>Follow Item</source>
         <translation>Seuraa valitun reittipistettä</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1385"/>
+        <location filename="../gpxlab.ui" line="1382"/>
         <source>Follow Selected Item</source>
         <translation>Seuraa valitun reittipistettä</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1400"/>
+        <location filename="../gpxlab.ui" line="1397"/>
         <source>Show Only Selected Track</source>
         <translation>Näytä vain valittu jälki</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1403"/>
+        <location filename="../gpxlab.ui" line="1400"/>
         <source>Show only selected track</source>
         <translation>Näytä vain valittu jälki</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1408"/>
+        <location filename="../gpxlab.ui" line="1405"/>
         <source>About</source>
         <translation>Tietoja GPXLab:stä</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1419"/>
+        <location filename="../gpxlab.ui" line="1416"/>
         <source>Close File</source>
         <translation>Sulje tiedosto</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1425"/>
+        <location filename="../gpxlab.ui" line="1422"/>
         <source>Ctrl+W</source>
         <translation>Ctrl+W</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1437"/>
+        <location filename="../gpxlab.ui" line="1434"/>
         <source>Split Track</source>
         <translation>Jaa jälki</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1440"/>
+        <location filename="../gpxlab.ui" line="1437"/>
         <source>Split track</source>
         <translation>Jaa jälki</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1452"/>
+        <location filename="../gpxlab.ui" line="1449"/>
         <source>Combine Track</source>
         <translation>Yhdistää jälkiä</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1455"/>
+        <location filename="../gpxlab.ui" line="1452"/>
         <source>Combine track</source>
         <translation>Yhdistää jälkiä</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1460"/>
+        <location filename="../gpxlab.ui" line="1457"/>
         <source>Restore Default View</source>
         <translation>Palauta oletusnäkymä</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1463"/>
+        <location filename="../gpxlab.ui" line="1460"/>
         <source>Restore default view</source>
         <translation>Palauta oletusnäkymä</translation>
     </message>
     <message>
+        <location filename="../gpxlab.ui" line="1473"/>
         <location filename="../gpxlab.ui" line="1476"/>
-        <location filename="../gpxlab.ui" line="1479"/>
         <source>Map Zoom</source>
         <translation>Kartan zoomi</translation>
     </message>
     <message>
+        <location filename="../gpxlab.ui" line="1485"/>
         <location filename="../gpxlab.ui" line="1488"/>
-        <location filename="../gpxlab.ui" line="1491"/>
         <source>Settings</source>
         <translation>Asetukset</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1506"/>
+        <location filename="../gpxlab.ui" line="1503"/>
         <source>Delete Point</source>
         <translation>Poista piste</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1509"/>
+        <location filename="../gpxlab.ui" line="1506"/>
         <source>Delete point</source>
         <translation>Poista piste</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1512"/>
+        <location filename="../gpxlab.ui" line="1509"/>
         <source>Del</source>
         <translation>Del</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1524"/>
+        <location filename="../gpxlab.ui" line="1521"/>
         <source>Set Start Time</source>
         <translation>Aseta alkamisaika</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1527"/>
+        <location filename="../gpxlab.ui" line="1524"/>
         <source>Set start time</source>
         <translation>Aseta alkamisaika</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1539"/>
+        <location filename="../gpxlab.ui" line="1536"/>
         <source>Insert Point</source>
         <translation>Lisää piste</translation>
     </message>
     <message>
-        <location filename="../gpxlab.ui" line="1542"/>
+        <location filename="../gpxlab.ui" line="1539"/>
         <source>Insert point</source>
         <translation>Lisää piste</translation>
     </message>
@@ -1009,103 +1004,103 @@
         <translation>&amp;Tee uudelleen</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="228"/>
+        <location filename="../gpxlab.cpp" line="231"/>
         <source>Loading file: </source>
         <translation>Ladataan tiedostoa: </translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="248"/>
+        <location filename="../gpxlab.cpp" line="251"/>
         <source>Failed to open &quot;</source>
         <translation>Avaus epäonnistui: &quot;</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="275"/>
+        <location filename="../gpxlab.cpp" line="278"/>
         <source>Appending file: </source>
         <translation>Tiedoston lisääminen: </translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="292"/>
+        <location filename="../gpxlab.cpp" line="295"/>
         <source>Saving file: </source>
         <translation>Tiedoston tallentaminen: </translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="307"/>
+        <location filename="../gpxlab.cpp" line="310"/>
         <source>Failed to save &quot;</source>
         <translation>Tallennus epäonnistui: &quot;</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="402"/>
-        <location filename="../gpxlab.cpp" line="435"/>
+        <location filename="../gpxlab.cpp" line="405"/>
+        <location filename="../gpxlab.cpp" line="438"/>
         <source>km</source>
         <translation>km</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="403"/>
-        <location filename="../gpxlab.cpp" line="436"/>
+        <location filename="../gpxlab.cpp" line="406"/>
+        <location filename="../gpxlab.cpp" line="439"/>
         <source>km/h</source>
         <translation>km/t</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="404"/>
-        <location filename="../gpxlab.cpp" line="437"/>
+        <location filename="../gpxlab.cpp" line="407"/>
+        <location filename="../gpxlab.cpp" line="440"/>
         <source>min/km</source>
         <translation>min/km</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="405"/>
-        <location filename="../gpxlab.cpp" line="406"/>
-        <location filename="../gpxlab.cpp" line="438"/>
-        <location filename="../gpxlab.cpp" line="439"/>
-        <location filename="../gpxlab.cpp" line="440"/>
+        <location filename="../gpxlab.cpp" line="408"/>
+        <location filename="../gpxlab.cpp" line="409"/>
         <location filename="../gpxlab.cpp" line="441"/>
+        <location filename="../gpxlab.cpp" line="442"/>
+        <location filename="../gpxlab.cpp" line="443"/>
+        <location filename="../gpxlab.cpp" line="444"/>
         <source>m</source>
         <translation>m</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="467"/>
-        <location filename="../gpxlab.cpp" line="522"/>
+        <location filename="../gpxlab.cpp" line="470"/>
+        <location filename="../gpxlab.cpp" line="525"/>
         <source>Updating file properties...</source>
         <translation>Tiedoston ominaisuuksien päivittäminen...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="471"/>
-        <location filename="../gpxlab.cpp" line="530"/>
+        <location filename="../gpxlab.cpp" line="474"/>
+        <location filename="../gpxlab.cpp" line="533"/>
         <source>Generating track tree...</source>
         <translation>Generoidaan puu...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="475"/>
+        <location filename="../gpxlab.cpp" line="478"/>
         <source>Generating map...</source>
         <translation>Generoidaan kartta...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="479"/>
-        <location filename="../gpxlab.cpp" line="535"/>
+        <location filename="../gpxlab.cpp" line="482"/>
+        <location filename="../gpxlab.cpp" line="538"/>
         <source>Generating track calendar...</source>
         <translation>Generoidaan kalenteri...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="526"/>
+        <location filename="../gpxlab.cpp" line="529"/>
         <source>Updating track properties...</source>
         <translation>Jäljen ominaisuuksien päivittäminen...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="540"/>
+        <location filename="../gpxlab.cpp" line="543"/>
         <source>Generating diagram...</source>
         <translation>Generoidaan kaaviokuva...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="544"/>
+        <location filename="../gpxlab.cpp" line="547"/>
         <source>Generating point list...</source>
         <translation>Generoidaan pistelista...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="930"/>
+        <location filename="../gpxlab.cpp" line="932"/>
         <source>The file has been modified.</source>
         <translation>Tiedosto on muutettu.</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="931"/>
+        <location filename="../gpxlab.cpp" line="933"/>
         <source>Do you want to save your changes?</source>
         <translation>Haluatko tallentaa muutokset?</translation>
     </message>
@@ -1334,7 +1329,7 @@ ID</translation>
 <context>
     <name>QMapWidget</name>
     <message>
-        <location filename="../widgets/qmapwidget.cpp" line="327"/>
+        <location filename="../widgets/qmapwidget.cpp" line="333"/>
         <source>km</source>
         <translation>km</translation>
     </message>
