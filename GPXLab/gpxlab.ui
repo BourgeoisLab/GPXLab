@@ -1204,9 +1204,6 @@ selection-background-color: rgb(100, 200, 127);</string>
    <property name="toolTip">
     <string>Exit application</string>
    </property>
-   <property name="shortcut">
-    <string>Alt+F4</string>
-   </property>
    <property name="menuRole">
     <enum>QAction::QuitRole</enum>
    </property>

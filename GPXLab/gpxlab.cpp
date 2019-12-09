@@ -117,6 +117,9 @@ GPXLab::GPXLab(const QString &fileName, QWidget *parent) :
     ui->mainToolBar->insertWidget(ui->actionMapZoom, zoomSlider);
     connect(zoomSlider, SIGNAL(valueChanged(int)), this, SLOT(zoom_valueChanged(int)));
 
+    // exit
+    ui->actionExit->setShortcut(QKeySequence::Quit);
+
     // build recent files action
     actionOpenRecentFile = new QAction*[settings->maxRecentFiles];
     for (int i = 0; i < settings->maxRecentFiles; ++i)
