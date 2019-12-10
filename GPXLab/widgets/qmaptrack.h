@@ -21,6 +21,7 @@
 #include "point.h"
 #include "curve.h"
 #include "gpx_wrapper.h"
+#include "qpixmapext.h"
 
 using namespace qmapcontrol;
 
@@ -29,80 +30,6 @@ using namespace qmapcontrol;
  * @brief Widgets related functions
  * @{
  */
-
-/**
- * @class QPixmapExt
- *
- * @brief QPixmap subclass
- *
- * Extends the QPixmap class by adding two values to algn the pixmap.
- *
- * @see QPixmap
- *
- * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.0
- * @date 1 Feb 2015
- */
-class QPixmapExt : public QPixmap
-{
-public:
-
-    /**
-     * @brief Creates an empty QPixmapExt
-     */
-    QPixmapExt();
-
-    /**
-     * @brief Creates a QPixmapExt with the given size and alingment
-     * @param width Width
-     * @param height Height
-     * @param alignment Alignment
-     */
-    QPixmapExt(int width, int height, Point::Alignment alignment = Point::Middle);
-
-    /**
-     * @brief Creates a QPixmapExt from a image file
-     * @param fileName Image file name
-     * @param alignment Alignment
-     */
-    QPixmapExt(const QString & fileName, Point::Alignment alignment = Point::Middle);
-
-    /**
-     * @brief Gets the alignment offset for the x coordinate
-     * @return Alignment offset
-     */
-    int getAlignmentX() const;
-
-    /**
-     * @brief Gets the alignment offset for the y coordinate
-     * @return Alignment offset
-     */
-    int getAlignmentY() const;
-
-    /**
-     * @brief Checks if pixmap is from an image
-     * @return True if pixmap is from an image
-     */
-    bool isFromImage() const;
-
-private:
-
-    /**
-     * @brief Calculates the offsets
-     * @param alignment Alignment
-     */
-    void alignToTopLeft(Point::Alignment alignment);
-
-    /** @brief Offset for the x coordinate */
-    int dx;
-
-    /** @brief Offset for the y coordinate */
-    int dy;
-
-    /** @brief True if pixmap is from an image */
-    bool isFromImg;
-};
-
 
 /**
  * @class QMapTrack

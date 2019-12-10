@@ -53,6 +53,7 @@ SOURCES += main.cpp\
     widgets/qmapwidget.cpp \
     widgets/qmaptrack.cpp \
     widgets/qcalendarwidgetext.cpp \
+    widgets/qpixmapext.cpp \
     dialogs/dialog_modelproperties.cpp \
     dialogs/dialog_trackproperties.cpp \
     dialogs/dialog_srtm.cpp \
@@ -94,6 +95,7 @@ HEADERS  += \
     widgets/qmapwidget.h \
     widgets/qmaptrack.h \
     widgets/qcalendarwidgetext.h \
+    widgets/qpixmapext.h \
     dialogs/dialog_modelproperties.h \
     dialogs/dialog_trackproperties.h \
     dialogs/dialog_srtm.h \
