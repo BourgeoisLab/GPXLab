@@ -17,17 +17,11 @@ DEFINES += ORGANISATION=\\\"$$ORGANISATION\\\" TARGET=\\\"$$TARGET\\\" VERSION=\
 
 win32:RC_ICONS += gpxlab.ico
 
-OBJECTS_DIR = tmp
-MOC_DIR = tmp
-UI_DIR = tmp
-RCC_DIR = tmp
-DESTDIR = ../bin
-
 win32 {
-  LIBS += -L../bin/ -lqmapcontrol0
+  LIBS += -L../QMapControl/ -lqmapcontrol0
 }
 else {
-  LIBS += -L../bin/ -lqmapcontrol
+  LIBS += -L../QMapControl/ -lqmapcontrol
 }
 
 INCLUDEPATH += ../QMapControl/ gpx_model/ commands/ functions/ dialogs/ widgets/
@@ -138,25 +132,24 @@ TRANSLATIONS += \
 macx {
     ICON = ../pkg/gpxlab.icns
     QMAKE_INFO_PLIST = ../pkg/Info.plist
-    LOCALE.path = Contents/Resources/translations
-    LOCALE.files = locale/gpxlab_fi.qm \
-        locale/gpxlab_ru.qm
-    QMAKE_BUNDLE_DATA += LOCALE
+    locale.path = Contents/Resources/translations
+    locale.files = ./locale/gpxlab_fi.qm \
+        ./locale/gpxlab_ru.qm
+    QMAKE_BUNDLE_DATA += locale
 }
 
 unix:!macx {
     isEmpty(PREFIX):PREFIX = /usr/local
     DEFINES += PREFIX=\\\"$$PREFIX\\\"
 
-    TARGET.path = $$PREFIX/bin
-    TARGET.files = ../bin/gpxlab
-    LOCALE.path = $$PREFIX/share/bourgeoislab/gpxlab/translations
-    LOCALE.files = locale/*.qm
-    ICON.path = $$PREFIX/share/pixmaps
-    ICON.files = ../doc/gpxlab.png
-    DESKTOP.path = $$PREFIX/share/applications
-    DESKTOP.files = ../pkg/gpxlab.desktop
-    MIME.path = $$PREFIX/share/mime/packages
-    MIME.files = ../pkg/gpxlab.xml
-    INSTALLS += TARGET LOCALE ICON DESKTOP MIME
+    target.path = $$PREFIX/bin
+    locale.path = $$PREFIX/share/bourgeoislab/gpxlab/translations
+    locale.files = locale/*.qm
+    icon.path = $$PREFIX/share/pixmaps
+    icon.files = ../doc/gpxlab.png
+    desktop.path = $$PREFIX/share/applications
+    desktop.files = ../pkg/gpxlab.desktop
+    mime.path = $$PREFIX/share/mime/packages
+    mime.files = ../pkg/gpxlab.xml
+    INSTALLS += target locale icon desktop mime
 }

@@ -1,15 +1,27 @@
-.DS_Store
-build-Debug
-build-Release
-bin
-doc/html
-GPXLab.pro.user
+# C++ objects and libs
+*.o
+*.a
+
+# Qt-es
+.qmake.cache
 .qmake.stash
-GPXLab/.qmake.cache
-QMapControl/.qmake.cache
-Makefile
-GPXLab/Makefile
-QMapControl/Makefile
-GPXLab/tmp
-QMapControl/tmp
+*.pro.user
+*.pro.user.*
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+Makefile*
+*build-*
 *.qm
+
+# Binaries
+GPXLab
+!GPXLab/
+gpxlab
+
+# macOS
+.DS_Store
+
+# Doxygen
+doc/html

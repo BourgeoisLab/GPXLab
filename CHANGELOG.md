@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.7.0 (in development)
+## v0.7.0
 - [new] Use SRTM version 3.0 global 1 arc second data
 - [new] SRTM files must now be located in the QStandardPaths::AppDataLocation directory
 - [new] Settings to automatically reload the last opened file on startup

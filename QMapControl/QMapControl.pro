@@ -12,12 +12,6 @@ TEMPLATE = lib
 
 DEFINES += QMAPCONTROL_LIBRARY
 
-OBJECTS_DIR = tmp
-MOC_DIR = tmp
-UI_DIR = tmp
-RCC_DIR = tmp
-DESTDIR = ../bin
-
 HEADERS += curve.h \
            geometry.h \
            imagemanager.h \
