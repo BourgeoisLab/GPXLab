@@ -1,5 +1,6 @@
 GPXLab
 ======
+[![Packaging status](https://repology.org/badge/tiny-repos/gpxlab.svg)](https://repology.org/metapackage/gpxlab/versions)
 
 ![GPXLab](doc/gpxlab.png?raw=true)
 
