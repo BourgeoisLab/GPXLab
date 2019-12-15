@@ -18,13 +18,16 @@ DEFINES += ORGANISATION=\\\"$$ORGANISATION\\\" TARGET=\\\"$$TARGET\\\" VERSION=\
 win32:RC_ICONS += gpxlab.ico
 
 win32 {
-  LIBS += -L../QMapControl/ -lqmapcontrol0
+  win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../QMapControl/release/ -lqmapcontrol
+  else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../QMapControl/debug/ -lqmapcontrol
 }
 else {
-  LIBS += -L../QMapControl/ -lqmapcontrol
+  LIBS += -L$$OUT_PWD/../QMapControl/ -lqmapcontrol
 }
 
-INCLUDEPATH += ../QMapControl/ gpx_model/ commands/ functions/ dialogs/ widgets/
+INCLUDEPATH += $$PWD/../QMapControl $$PWD/gpx_model $$PWD/commands $$PWD/functions $$PWD/dialogs $$PWD/widgets
+
+DEPENDPATH += $$PWD/../QMapControl
 
 SOURCES += main.cpp\
     gpxlab.cpp \

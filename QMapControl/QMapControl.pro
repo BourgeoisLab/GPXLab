@@ -9,6 +9,7 @@ VERSION = 0.9.7.9
 TARGET = qmapcontrol
 TEMPLATE = lib
 !win32: CONFIG += staticlib
+win32: CONFIG += skip_target_version_ext
 
 DEFINES += QMAPCONTROL_LIBRARY
 
