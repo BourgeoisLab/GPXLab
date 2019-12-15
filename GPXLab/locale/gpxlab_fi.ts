@@ -2,6 +2,24 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="fi_FI">
 <context>
+    <name>Dialog_CheckUpdate</name>
+    <message>
+        <location filename="../dialogs/dialog_checkupdate.ui" line="20"/>
+        <source>Update available</source>
+        <translation>Päivitys saatavilla</translation>
+    </message>
+    <message>
+        <location filename="../dialogs/dialog_checkupdate.ui" line="68"/>
+        <source>Don&apos;t remind me of this version</source>
+        <translation>Älä muistuta tästä versiosta</translation>
+    </message>
+    <message>
+        <location filename="../dialogs/dialog_checkupdate.ui" line="78"/>
+        <source>Check for updates</source>
+        <translation>Tarkista päivitykset</translation>
+    </message>
+</context>
+<context>
     <name>Dialog_DateTime</name>
     <message>
         <location filename="../dialogs/dialog_datetime.ui" line="14"/>
@@ -275,53 +293,63 @@
         <translation>Asetukset</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_settings.ui" line="68"/>
+        <location filename="../dialogs/dialog_settings.ui" line="43"/>
+        <source>General</source>
+        <translation>Yleinen</translation>
+    </message>
+    <message>
+        <location filename="../dialogs/dialog_settings.ui" line="77"/>
+        <source>Check for updates:</source>
+        <translation>Tarkista päivitykset:</translation>
+    </message>
+    <message>
+        <location filename="../dialogs/dialog_settings.ui" line="92"/>
         <source>Map</source>
         <translation>Kartta</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_settings.ui" line="80"/>
+        <location filename="../dialogs/dialog_settings.ui" line="104"/>
         <source>Persistent caching:</source>
         <translation>Pysyvä välimuisti:</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_settings.ui" line="93"/>
+        <location filename="../dialogs/dialog_settings.ui" line="143"/>
         <source>Cache location:</source>
         <translation>Välimuistin sijainti:</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_settings.ui" line="117"/>
+        <location filename="../dialogs/dialog_settings.ui" line="167"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_settings.ui" line="136"/>
-        <location filename="../dialogs/dialog_settings.ui" line="221"/>
+        <location filename="../dialogs/dialog_settings.ui" line="186"/>
+        <location filename="../dialogs/dialog_settings.ui" line="216"/>
         <source>Default</source>
         <translation>Oletusarvo</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_settings.ui" line="162"/>
+        <location filename="../dialogs/dialog_settings.ui" line="128"/>
         <source>Clear cache</source>
         <translation>Tyhjennä</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_settings.ui" line="177"/>
+        <location filename="../dialogs/dialog_settings.ui" line="61"/>
         <source>Autoload last file:</source>
         <translation>Automaattisesti lataa viimeinen tiedosto:</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_settings.ui" line="193"/>
+        <location filename="../dialogs/dialog_settings.ui" line="231"/>
         <source>Tiles URL:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_settings.ui" line="202"/>
+        <location filename="../dialogs/dialog_settings.ui" line="197"/>
         <source>Placeholders to be used inside &quot;Path&quot; definition: %1 = zoom; %2 = x; %3 = y</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_settings.cpp" line="69"/>
+        <location filename="../dialogs/dialog_settings.cpp" line="71"/>
         <source>Cache Location</source>
         <translation>Välimuistin sijainti</translation>
     </message>
@@ -629,7 +657,7 @@
         <translation>Nimi</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="858"/>
+        <location filename="../gpxlab.cpp" line="892"/>
         <source>Tracks</source>
         <extracomment>NOM</extracomment>
         <translation>Jäljet</translation>
@@ -785,7 +813,7 @@
     </message>
     <message>
         <location filename="../gpxlab.ui" line="1217"/>
-        <location filename="../gpxlab.cpp" line="213"/>
+        <location filename="../gpxlab.cpp" line="218"/>
         <source>Open File</source>
         <translation>Avaa tiedosto</translation>
     </message>
@@ -796,7 +824,7 @@
     </message>
     <message>
         <location filename="../gpxlab.ui" line="1235"/>
-        <location filename="../gpxlab.cpp" line="265"/>
+        <location filename="../gpxlab.cpp" line="270"/>
         <source>Append Files</source>
         <translation>Lisää tiedostoja</translation>
     </message>
@@ -807,7 +835,7 @@
     </message>
     <message>
         <location filename="../gpxlab.ui" line="1250"/>
-        <location filename="../gpxlab.cpp" line="291"/>
+        <location filename="../gpxlab.cpp" line="296"/>
         <source>Save File</source>
         <translation>Tallenna tiedosto</translation>
     </message>
@@ -994,113 +1022,113 @@
         <translation>Lisää piste</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="76"/>
+        <location filename="../gpxlab.cpp" line="77"/>
         <source>&amp;Undo</source>
         <translation>&amp;Kumoa</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="79"/>
+        <location filename="../gpxlab.cpp" line="80"/>
         <source>&amp;Redo</source>
         <translation>&amp;Tee uudelleen</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="231"/>
+        <location filename="../gpxlab.cpp" line="236"/>
         <source>Loading file: </source>
         <translation>Ladataan tiedostoa: </translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="251"/>
+        <location filename="../gpxlab.cpp" line="256"/>
         <source>Failed to open &quot;</source>
         <translation>Avaus epäonnistui: &quot;</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="278"/>
+        <location filename="../gpxlab.cpp" line="283"/>
         <source>Appending file: </source>
         <translation>Tiedoston lisääminen: </translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="295"/>
+        <location filename="../gpxlab.cpp" line="300"/>
         <source>Saving file: </source>
         <translation>Tiedoston tallentaminen: </translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="310"/>
+        <location filename="../gpxlab.cpp" line="315"/>
         <source>Failed to save &quot;</source>
         <translation>Tallennus epäonnistui: &quot;</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="405"/>
-        <location filename="../gpxlab.cpp" line="438"/>
+        <location filename="../gpxlab.cpp" line="439"/>
+        <location filename="../gpxlab.cpp" line="472"/>
         <source>km</source>
         <translation>km</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="406"/>
-        <location filename="../gpxlab.cpp" line="439"/>
+        <location filename="../gpxlab.cpp" line="440"/>
+        <location filename="../gpxlab.cpp" line="473"/>
         <source>km/h</source>
         <translation>km/t</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="407"/>
-        <location filename="../gpxlab.cpp" line="440"/>
+        <location filename="../gpxlab.cpp" line="441"/>
+        <location filename="../gpxlab.cpp" line="474"/>
         <source>min/km</source>
         <translation>min/km</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="408"/>
-        <location filename="../gpxlab.cpp" line="409"/>
-        <location filename="../gpxlab.cpp" line="441"/>
         <location filename="../gpxlab.cpp" line="442"/>
         <location filename="../gpxlab.cpp" line="443"/>
-        <location filename="../gpxlab.cpp" line="444"/>
+        <location filename="../gpxlab.cpp" line="475"/>
+        <location filename="../gpxlab.cpp" line="476"/>
+        <location filename="../gpxlab.cpp" line="477"/>
+        <location filename="../gpxlab.cpp" line="478"/>
         <source>m</source>
         <translation>m</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="470"/>
-        <location filename="../gpxlab.cpp" line="525"/>
+        <location filename="../gpxlab.cpp" line="504"/>
+        <location filename="../gpxlab.cpp" line="559"/>
         <source>Updating file properties...</source>
         <translation>Tiedoston ominaisuuksien päivittäminen...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="474"/>
-        <location filename="../gpxlab.cpp" line="533"/>
+        <location filename="../gpxlab.cpp" line="508"/>
+        <location filename="../gpxlab.cpp" line="567"/>
         <source>Generating track tree...</source>
         <translation>Generoidaan puu...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="478"/>
+        <location filename="../gpxlab.cpp" line="512"/>
         <source>Generating map...</source>
         <translation>Generoidaan kartta...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="482"/>
-        <location filename="../gpxlab.cpp" line="538"/>
+        <location filename="../gpxlab.cpp" line="516"/>
+        <location filename="../gpxlab.cpp" line="572"/>
         <source>Generating track calendar...</source>
         <translation>Generoidaan kalenteri...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="529"/>
+        <location filename="../gpxlab.cpp" line="563"/>
         <source>Updating track properties...</source>
         <translation>Jäljen ominaisuuksien päivittäminen...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="543"/>
+        <location filename="../gpxlab.cpp" line="577"/>
         <source>Generating diagram...</source>
         <translation>Generoidaan kaaviokuva...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="547"/>
+        <location filename="../gpxlab.cpp" line="581"/>
         <source>Generating point list...</source>
         <translation>Generoidaan pistelista...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="932"/>
+        <location filename="../gpxlab.cpp" line="966"/>
         <source>The file has been modified.</source>
         <translation>Tiedosto on muutettu.</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="933"/>
+        <location filename="../gpxlab.cpp" line="967"/>
         <source>Do you want to save your changes?</source>
         <translation>Haluatko tallentaa muutokset?</translation>
     </message>

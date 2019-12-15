@@ -2,6 +2,24 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ru_RU">
 <context>
+    <name>Dialog_CheckUpdate</name>
+    <message>
+        <location filename="../dialogs/dialog_checkupdate.ui" line="20"/>
+        <source>Update available</source>
+        <translation>Доступно обновление</translation>
+    </message>
+    <message>
+        <location filename="../dialogs/dialog_checkupdate.ui" line="68"/>
+        <source>Don&apos;t remind me of this version</source>
+        <translation>Не напоминать об этой версии</translation>
+    </message>
+    <message>
+        <location filename="../dialogs/dialog_checkupdate.ui" line="78"/>
+        <source>Check for updates</source>
+        <translation>Проверить наличие обновлений</translation>
+    </message>
+</context>
+<context>
     <name>Dialog_DateTime</name>
     <message>
         <location filename="../dialogs/dialog_datetime.ui" line="14"/>
@@ -275,53 +293,63 @@
         <translation>Параметры</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_settings.ui" line="68"/>
+        <location filename="../dialogs/dialog_settings.ui" line="43"/>
+        <source>General</source>
+        <translation>Основные</translation>
+    </message>
+    <message>
+        <location filename="../dialogs/dialog_settings.ui" line="77"/>
+        <source>Check for updates:</source>
+        <translation>Проверять наличие обновлений:</translation>
+    </message>
+    <message>
+        <location filename="../dialogs/dialog_settings.ui" line="92"/>
         <source>Map</source>
         <translation>Карта</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_settings.ui" line="80"/>
+        <location filename="../dialogs/dialog_settings.ui" line="104"/>
         <source>Persistent caching:</source>
         <translation>Постоянное кэширование:</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_settings.ui" line="93"/>
+        <location filename="../dialogs/dialog_settings.ui" line="143"/>
         <source>Cache location:</source>
         <translation>Расположение кэша:</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_settings.ui" line="117"/>
+        <location filename="../dialogs/dialog_settings.ui" line="167"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_settings.ui" line="136"/>
-        <location filename="../dialogs/dialog_settings.ui" line="221"/>
+        <location filename="../dialogs/dialog_settings.ui" line="186"/>
+        <location filename="../dialogs/dialog_settings.ui" line="216"/>
         <source>Default</source>
         <translation>По умолчанию</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_settings.ui" line="162"/>
+        <location filename="../dialogs/dialog_settings.ui" line="128"/>
         <source>Clear cache</source>
         <translation>Очистить</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_settings.ui" line="177"/>
+        <location filename="../dialogs/dialog_settings.ui" line="61"/>
         <source>Autoload last file:</source>
         <translation>Автозагружать последний файл:</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_settings.ui" line="193"/>
+        <location filename="../dialogs/dialog_settings.ui" line="231"/>
         <source>Tiles URL:</source>
         <translation>URL тайлов:</translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_settings.ui" line="202"/>
+        <location filename="../dialogs/dialog_settings.ui" line="197"/>
         <source>Placeholders to be used inside &quot;Path&quot; definition: %1 = zoom; %2 = x; %3 = y</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dialogs/dialog_settings.cpp" line="69"/>
+        <location filename="../dialogs/dialog_settings.cpp" line="71"/>
         <source>Cache Location</source>
         <translation>Расположение кэша</translation>
     </message>
@@ -629,7 +657,7 @@
         <translation>Название</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="858"/>
+        <location filename="../gpxlab.cpp" line="892"/>
         <source>Tracks</source>
         <extracomment>NOM</extracomment>
         <translation>Треки</translation>
@@ -785,7 +813,7 @@
     </message>
     <message>
         <location filename="../gpxlab.ui" line="1217"/>
-        <location filename="../gpxlab.cpp" line="213"/>
+        <location filename="../gpxlab.cpp" line="218"/>
         <source>Open File</source>
         <translation>Открыть файл</translation>
     </message>
@@ -796,7 +824,7 @@
     </message>
     <message>
         <location filename="../gpxlab.ui" line="1235"/>
-        <location filename="../gpxlab.cpp" line="265"/>
+        <location filename="../gpxlab.cpp" line="270"/>
         <source>Append Files</source>
         <translation>Добавить файлы</translation>
     </message>
@@ -807,7 +835,7 @@
     </message>
     <message>
         <location filename="../gpxlab.ui" line="1250"/>
-        <location filename="../gpxlab.cpp" line="291"/>
+        <location filename="../gpxlab.cpp" line="296"/>
         <source>Save File</source>
         <translation>Сохранить файл</translation>
     </message>
@@ -994,113 +1022,113 @@
         <translation>Вставить точку</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="76"/>
+        <location filename="../gpxlab.cpp" line="77"/>
         <source>&amp;Undo</source>
         <translation>&amp;Отменить</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="79"/>
+        <location filename="../gpxlab.cpp" line="80"/>
         <source>&amp;Redo</source>
         <translation>&amp;Вернуть</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="231"/>
+        <location filename="../gpxlab.cpp" line="236"/>
         <source>Loading file: </source>
         <translation>Загрузка файла: </translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="251"/>
+        <location filename="../gpxlab.cpp" line="256"/>
         <source>Failed to open &quot;</source>
         <translation>Не удалось открыть &quot;</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="278"/>
+        <location filename="../gpxlab.cpp" line="283"/>
         <source>Appending file: </source>
         <translation>Добавление файла: </translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="295"/>
+        <location filename="../gpxlab.cpp" line="300"/>
         <source>Saving file: </source>
         <translation>Сохранение файла: </translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="310"/>
+        <location filename="../gpxlab.cpp" line="315"/>
         <source>Failed to save &quot;</source>
         <translation>Не удалось сохранить &quot;</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="405"/>
-        <location filename="../gpxlab.cpp" line="438"/>
+        <location filename="../gpxlab.cpp" line="439"/>
+        <location filename="../gpxlab.cpp" line="472"/>
         <source>km</source>
         <translation>км</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="406"/>
-        <location filename="../gpxlab.cpp" line="439"/>
+        <location filename="../gpxlab.cpp" line="440"/>
+        <location filename="../gpxlab.cpp" line="473"/>
         <source>km/h</source>
         <translation>км/ч</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="407"/>
-        <location filename="../gpxlab.cpp" line="440"/>
+        <location filename="../gpxlab.cpp" line="441"/>
+        <location filename="../gpxlab.cpp" line="474"/>
         <source>min/km</source>
         <translation>мин/км</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="408"/>
-        <location filename="../gpxlab.cpp" line="409"/>
-        <location filename="../gpxlab.cpp" line="441"/>
         <location filename="../gpxlab.cpp" line="442"/>
         <location filename="../gpxlab.cpp" line="443"/>
-        <location filename="../gpxlab.cpp" line="444"/>
+        <location filename="../gpxlab.cpp" line="475"/>
+        <location filename="../gpxlab.cpp" line="476"/>
+        <location filename="../gpxlab.cpp" line="477"/>
+        <location filename="../gpxlab.cpp" line="478"/>
         <source>m</source>
         <translation>м</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="470"/>
-        <location filename="../gpxlab.cpp" line="525"/>
+        <location filename="../gpxlab.cpp" line="504"/>
+        <location filename="../gpxlab.cpp" line="559"/>
         <source>Updating file properties...</source>
         <translation>Обновление свойств файла...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="474"/>
-        <location filename="../gpxlab.cpp" line="533"/>
+        <location filename="../gpxlab.cpp" line="508"/>
+        <location filename="../gpxlab.cpp" line="567"/>
         <source>Generating track tree...</source>
         <translation>Генерация дерева треков...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="478"/>
+        <location filename="../gpxlab.cpp" line="512"/>
         <source>Generating map...</source>
         <translation>Генерация карты...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="482"/>
-        <location filename="../gpxlab.cpp" line="538"/>
+        <location filename="../gpxlab.cpp" line="516"/>
+        <location filename="../gpxlab.cpp" line="572"/>
         <source>Generating track calendar...</source>
         <translation>Генерация календаря треков...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="529"/>
+        <location filename="../gpxlab.cpp" line="563"/>
         <source>Updating track properties...</source>
         <translation>Обновление свойств трека...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="543"/>
+        <location filename="../gpxlab.cpp" line="577"/>
         <source>Generating diagram...</source>
         <translation>Генерация диаграммы...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="547"/>
+        <location filename="../gpxlab.cpp" line="581"/>
         <source>Generating point list...</source>
         <translation>Генерация списка точек...</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="932"/>
+        <location filename="../gpxlab.cpp" line="966"/>
         <source>The file has been modified.</source>
         <translation>Файл был изменен.</translation>
     </message>
     <message>
-        <location filename="../gpxlab.cpp" line="933"/>
+        <location filename="../gpxlab.cpp" line="967"/>
         <source>Do you want to save your changes?</source>
         <translation>Хотите ли вы сохранить свои изменения?</translation>
     </message>
