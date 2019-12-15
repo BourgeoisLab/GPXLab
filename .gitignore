@@ -19,6 +19,7 @@ Makefile*
 GPXLab
 !GPXLab/
 gpxlab
+!gpxlab/
 
 # macOS
 .DS_Store
