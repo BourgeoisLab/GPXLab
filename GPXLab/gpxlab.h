@@ -100,6 +100,11 @@ public:
 private slots:
 
     /**
+     * @brief Called when the update check is done
+     */
+    void checkUpdateFinished();
+
+    /**
      * @brief Called when a file is successfully loaded
      */
     void fileLoaded();
@@ -313,6 +318,7 @@ private slots:
 
 private:
 
+    void checkForUpdate(bool force);
     void updateActions(bool enabled);
     void updateRecentFiles();
     void updateFileProperties(bool clear);

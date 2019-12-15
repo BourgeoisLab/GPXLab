@@ -18,6 +18,7 @@
 #include "gpxlab.h"
 #include "ui_gpxlab.h"
 #include "qutils.h"
+#include "dialog_checkupdate.h"
 #include "appendtrackcommand.h"
 
 //////////////////////////////////////////////////////////////////////////////
@@ -193,6 +194,10 @@ GPXLab::GPXLab(const QString &fileName, QWidget *parent) :
         if (QFile::exists(settings->recentFiles[0]))
             openFile(settings->recentFiles[0]);
     }
+
+    // check for updates
+    if (settings->checkUpdate)
+        checkForUpdate(false);
 }
 
 GPXLab::~GPXLab()
@@ -346,6 +351,35 @@ void GPXLab::setMainWindowTitle()
             setWindowTitle("*" + gpxmw->getFileName() + " - " + appName + " v" + appVersion);
             ui->actionSave_File->setEnabled(true);
         }
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void GPXLab::checkForUpdate(bool force)
+{
+    QString url;
+    QDate since;
+    if (!force)
+        since = settings->checkUpdateLastDate;
+    Dialog_CheckUpdate *dlg = new Dialog_CheckUpdate(settings->checkUpdateUrl, since, this);
+    connect(dlg, SIGNAL(finished()), this, SLOT(checkUpdateFinished()));
+    dlg->checkForUpdate();
+}
+
+void GPXLab::checkUpdateFinished()
+{
+    Dialog_CheckUpdate *dlg = qobject_cast<Dialog_CheckUpdate*>(sender());
+    if (dlg)
+    {
+        if (dlg->hasUpdate())
+        {
+            dlg->exec();
+            if (dlg->ignoreUpdate())
+                settings->checkUpdateLastDate = QDate::currentDate();
+            settings->checkUpdate = dlg->doCheckUpdate();
+        }
+        dlg->deleteLater();
     }
 }
 

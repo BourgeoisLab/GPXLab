@@ -42,6 +42,9 @@ void Settings::load()
     if (cachePath.isEmpty())
         cachePath = defaultCachePath();
     autoLoadLastFile = qsettings.value("autoLoadLastFile", true).toBool();
+    checkUpdate = qsettings.value("checkUpdate", true).toBool();
+    checkUpdateUrl = qsettings.value("checkUpdateUrl", "https://api.github.com/repos/bourgeoislab/gpxlab/releases/latest").toString();
+    checkUpdateLastDate = qsettings.value("checkUpdateLastDate", QDate()).toDate();
     if (tilesURL.isEmpty())
         tilesURL = defaultTilesURL();
     emit settingsChanged(true);
@@ -56,6 +59,8 @@ void Settings::save()
     qsettings.setValue("doPersistentCaching", doPersistentCaching);
     qsettings.setValue("cachePath", cachePath);
     qsettings.setValue("autoLoadLastFile", autoLoadLastFile);
+    qsettings.setValue("checkUpdate", checkUpdate);
+    qsettings.setValue("checkUpdateLastDate", checkUpdateLastDate);
     qsettings.setValue("tilesURL", tilesURL);
     emit settingsChanged(false);
 }

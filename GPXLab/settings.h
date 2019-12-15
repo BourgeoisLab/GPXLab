@@ -26,6 +26,7 @@
 #include <QObject>
 #include <QMainWindow>
 #include <QString>
+#include <QDate>
 
 /**
  * @class Settings
@@ -134,6 +135,21 @@ public:
      * @brief Loads the last opened file on startup
      */
     bool autoLoadLastFile;
+
+    /**
+     * @brief Checks for update at the start of the program
+     */
+    bool checkUpdate;
+
+    /**
+     * @brief URL to check for updates
+     */
+    QString checkUpdateUrl;
+
+    /**
+     * @brief Last date of the update check
+     */
+    QDate checkUpdateLastDate;
 
     /**
      * @brief Tiles URL

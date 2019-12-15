@@ -51,6 +51,7 @@ SOURCES += main.cpp\
     widgets/qmaptrack.cpp \
     widgets/qcalendarwidgetext.cpp \
     widgets/qpixmapext.cpp \
+    dialogs/dialog_checkupdate.cpp \
     dialogs/dialog_modelproperties.cpp \
     dialogs/dialog_trackproperties.cpp \
     dialogs/dialog_srtm.cpp \
@@ -93,6 +94,7 @@ HEADERS  += \
     widgets/qmaptrack.h \
     widgets/qcalendarwidgetext.h \
     widgets/qpixmapext.h \
+    dialogs/dialog_checkupdate.h \
     dialogs/dialog_modelproperties.h \
     dialogs/dialog_trackproperties.h \
     dialogs/dialog_srtm.h \
@@ -116,6 +118,7 @@ HEADERS  += \
 
 FORMS    += \
     gpxlab.ui \
+    dialogs/dialog_checkupdate.ui \
     dialogs/dialog_modelproperties.ui \
     dialogs/dialog_trackproperties.ui \
     dialogs/dialog_srtm.ui \
