@@ -734,7 +734,12 @@ static void closeTag(void* pXml, char* pTag)
 
     case PARSING_TRKSEG:
         if (strcmp(pTag, "trkseg") == 0)
+        {
+            // remove segment if empty
+            if (gpxm->trk.back().trkseg.back().trkpt.empty())
+                gpxm->trk.back().trkseg.pop_back();
             xml->state = PARSING_TRK;
+        }
         break;
 
     case PARSING_TRKPT:
