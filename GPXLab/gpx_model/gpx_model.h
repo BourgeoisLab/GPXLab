@@ -1,22 +1,5 @@
-/****************************************************************************
- *   Copyright (c) 2014 - 2015 Frederic Bourgeois <bourgeoislab@gmail.com>  *
- *                                                                          *
- *   This program is free software: you can redistribute it and/or modify   *
- *   it under the terms of the GNU General Public License as published by   *
- *   the Free Software Foundation, either version 3 of the License, or      *
- *   (at your option) any later version.                                    *
- *                                                                          *
- *   This program is distributed in the hope that it will be useful,        *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
- *   GNU General Public License for more details.                           *
- *                                                                          *
- *   You should have received a copy of the GNU General Public License      *
- *   along with This program. If not, see <http://www.gnu.org/licenses/>.   *
- ****************************************************************************/
-
-#ifndef _GPX_MODEL_H_
-#define _GPX_MODEL_H_
+#ifndef GPX_MODEL_H
+#define GPX_MODEL_H
 
 #include <string>
 #include <vector>
@@ -141,7 +124,7 @@ struct GPX_metadataType
     int                     millisecond;        /**< GMT creation date of the file (0-999) [ms] */
     string                  keywords;           /**< Keywords associated with the file */
     GPX_boundsType          bounds;             /**< Minimum and maximum coordinates */
-    GPX_extType          extensions;         /**< Extensions */
+    GPX_extType             extensions;         /**< Extensions */
 };
 
 /**
@@ -180,10 +163,6 @@ struct GPX_statsType
  * @class GPX_model
  *
  * @brief Class representing the content of a GPX file
- *
- * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.1
- * @date 10 Jan 2015
  */
 class GPX_model
 {
@@ -286,10 +265,6 @@ private:
  * @class GPX_trkType
  *
  * @brief Track class holding a list of track segments
- *
- * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.1
- * @date 10 Jan 2015
  */
 class GPX_trkType
 {
@@ -321,10 +296,6 @@ private:
  * @class GPX_trksegType
  *
  * @brief Track segment class holding a list of points which are logically connected in order
- *
- * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.1
- * @date 10 Jan 2015
  */
 class GPX_trksegType
 {
@@ -355,10 +326,6 @@ private:
  * @class GPX_wptType
  *
  * @brief Track point class representing a single GPS localization point
- *
- * @author Frederic Bourgeois <bourgeoislab@gmail.com>
- * @version 1.1
- * @date 10 Jan 2015
  */
 class GPX_wptType
 {
@@ -452,4 +419,4 @@ private:
 
 /** @} GPX_model */
 
-#endif // _GPX_MODEL_H_
+#endif // GPX_MODEL_H
