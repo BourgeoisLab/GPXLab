@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.8.0 (in development)
+- [fix] Incorrect speed calculation
+
 ## v0.7.0
 - [new] Use SRTM version 3.0 global 1 arc second data
 - [new] SRTM files must now be located in the QStandardPaths::AppDataLocation directory

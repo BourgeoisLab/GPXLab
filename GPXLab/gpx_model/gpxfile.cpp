@@ -86,12 +86,8 @@ static int strToMilliseconds(const string str)
     size_t len = str.length();
     if (len > 20)
     {
-        int iVal = atoi(str.substr(20).c_str());
-        if (len == 23)
-            iVal *= 10;
-        else if (len == 22)
-            iVal *= 100;
-        return iVal;
+        double msecs = atof(str.substr(19).c_str());
+        return static_cast<int>(msecs * 1000);
     }
     return 0;
 }

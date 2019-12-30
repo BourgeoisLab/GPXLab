@@ -10,7 +10,7 @@ unix:!macx {
     ORGANISATION = BourgeoisLab
     TARGET = GPXLab
 }
-VERSION = 0.7.0
+VERSION = 0.8.0
 TEMPLATE = app
 
 DEFINES += ORGANISATION=\\\"$$ORGANISATION\\\" TARGET=\\\"$$TARGET\\\" VERSION=\\\"$$VERSION\\\"
