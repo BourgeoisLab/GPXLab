@@ -35,7 +35,7 @@ public:
      * @param gpxmw GPX_model wrapper
      * @param parent Parent
      */
-    explicit Dialog_srtm(const GPX_wrapper *gpxmw, QWidget *parent = 0);
+    explicit Dialog_srtm(const GPX_wrapper *gpxmw, QWidget *parent = nullptr);
     ~Dialog_srtm();
 
     /**

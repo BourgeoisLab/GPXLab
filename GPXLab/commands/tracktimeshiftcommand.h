@@ -26,7 +26,7 @@ public:
      * @param seconds Amount of seconds to shift
      * @param parent Parent
      */
-    TrackTimeShiftCommand(GPX_wrapper *gpxmw, int trackNumber, long seconds, QUndoCommand *parent = 0);
+    TrackTimeShiftCommand(GPX_wrapper *gpxmw, int trackNumber, long seconds, QUndoCommand *parent = nullptr);
 
     /**
      * @brief Undo the command

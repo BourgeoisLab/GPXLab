@@ -36,7 +36,7 @@ public:
      * @param stats Statistic information about the track
      * @param parent Parent
      */
-    explicit Dialog_trackProperties(GPX_trkMetadataType &metadata, const GPX_statsType &stats, QWidget *parent = 0);
+    explicit Dialog_trackProperties(GPX_trkMetadataType &metadata, const GPX_statsType &stats, QWidget *parent = nullptr);
     ~Dialog_trackProperties();
 
 private slots:

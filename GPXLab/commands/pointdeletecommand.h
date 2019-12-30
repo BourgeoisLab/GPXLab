@@ -27,7 +27,7 @@ public:
      * @param pointNumber Point number
      * @param parent Parent
      */
-    PointDeleteCommand(GPX_wrapper *gpxmw, int trackNumber, int trackSegmentNumber, int pointNumber, QUndoCommand *parent = 0);
+    PointDeleteCommand(GPX_wrapper *gpxmw, int trackNumber, int trackSegmentNumber, int pointNumber, QUndoCommand *parent = nullptr);
 
     /**
      * @brief Undo the command

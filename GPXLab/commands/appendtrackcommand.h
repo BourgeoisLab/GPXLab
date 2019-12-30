@@ -26,7 +26,7 @@ public:
      * @param fileType File type, GPXM_FILE_AUTOMATIC for automatic detection
      * @param parent Parent
      */
-    AppendTrackCommand(GPX_wrapper *gpxmw, const QString &fileName, GPX_model::fileType_e fileType, QUndoCommand *parent = 0);
+    AppendTrackCommand(GPX_wrapper *gpxmw, const QString &fileName, GPX_model::fileType_e fileType, QUndoCommand *parent = nullptr);
 
     /**
      * @brief Undo the command

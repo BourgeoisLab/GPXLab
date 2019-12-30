@@ -146,7 +146,7 @@ public:
      * @brief Constructor
      * @param parent Parent
      */
-    explicit QTableWidgetPoints(QWidget *parent = 0);
+    explicit QTableWidgetPoints(QWidget *parent = nullptr);
 
     /**
      * @brief Initializes the widget

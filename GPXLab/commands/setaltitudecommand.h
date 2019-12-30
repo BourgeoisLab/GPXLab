@@ -26,7 +26,7 @@ public:
      * @param values Altitude values
      * @param parent Parent
      */
-    SetAltitudeCommand(GPX_wrapper *gpxmw, int trackNumber, const QVector<double> &values, QUndoCommand *parent = 0);
+    SetAltitudeCommand(GPX_wrapper *gpxmw, int trackNumber, const QVector<double> &values, QUndoCommand *parent = nullptr);
 
     /**
      * @brief Undo the command

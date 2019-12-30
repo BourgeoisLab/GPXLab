@@ -36,7 +36,7 @@ public:
      * @param stats Statistic information about the model
      * @param parent Parent
      */
-    explicit Dialog_modelProperties(GPX_metadataType &metadata, const GPX_statsType &stats, QWidget *parent = 0);
+    explicit Dialog_modelProperties(GPX_metadataType &metadata, const GPX_statsType &stats, QWidget *parent = nullptr);
     ~Dialog_modelProperties();
 
 private slots:

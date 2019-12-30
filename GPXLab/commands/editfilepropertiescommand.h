@@ -25,7 +25,7 @@ public:
      * @param metadata Metadata of file
      * @param parent Parent
      */
-    EditFilePropertiesCommand(GPX_wrapper *gpxmw, GPX_metadataType &metadata, QUndoCommand *parent = 0);
+    EditFilePropertiesCommand(GPX_wrapper *gpxmw, GPX_metadataType &metadata, QUndoCommand *parent = nullptr);
 
     /**
      * @brief Undo the command

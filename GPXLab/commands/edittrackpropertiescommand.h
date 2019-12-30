@@ -26,7 +26,7 @@ public:
      * @param metadata Metadata of track
      * @param parent Parent
      */
-    EditTrackPropertiesCommand(GPX_wrapper *gpxmw, int trackNumber, GPX_trkMetadataType &metadata, QUndoCommand *parent = 0);
+    EditTrackPropertiesCommand(GPX_wrapper *gpxmw, int trackNumber, GPX_trkMetadataType &metadata, QUndoCommand *parent = nullptr);
 
     /**
      * @brief Undo the command

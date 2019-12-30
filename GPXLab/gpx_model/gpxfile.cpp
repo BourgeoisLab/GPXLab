@@ -39,7 +39,7 @@ static char gBuffer[BUFFER_SIZE];
 static bool gOverwriteMetadata = false;
 static int gVersion = 0;
 
-static vector <string> *gExtensionVector = NULL;
+static vector <string> *gExtensionVector = nullptr;
 static string gExtensionStr = "";
 static bool gExtensionHasContent = false;
 static int gExtensionPrevState = PARSING_NONE;
@@ -753,7 +753,7 @@ static void closeTag(void* pXml, char* pTag)
         case PARSING_WPT_EXTENSIONS:
             if (strcmp(pTag, "extensions") == 0)
             {
-                gExtensionVector = NULL;
+                gExtensionVector = nullptr;
                 xml->state = gExtensionPrevState;
             }
             else
@@ -812,7 +812,7 @@ GPX_model::retCode_e GPXFile::load(ifstream* fp, GPX_model* gpxm, bool overwrite
 
     gVersion = 0;
     gOverwriteMetadata = overwriteMetadata;
-    gExtensionVector = NULL;
+    gExtensionVector = nullptr;
 
     // set timezone temporary to UTC
     tz = getenv("TZ");

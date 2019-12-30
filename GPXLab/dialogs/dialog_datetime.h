@@ -30,7 +30,7 @@ public:
      * @param timestamp Initial timestamp
      * @param parent Parent
      */
-    explicit Dialog_DateTime(const QString title, const time_t timestamp, QWidget *parent = 0);
+    explicit Dialog_DateTime(const QString title, const time_t timestamp, QWidget *parent = nullptr);
     ~Dialog_DateTime();
 
     /**

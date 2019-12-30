@@ -49,7 +49,7 @@ public:
      * @param fileName If not empty the file is parsed and appended to the GPX_model
      * @param parent Parent
      */
-    explicit GPXLab(const QString &fileName = "", QWidget *parent = 0);
+    explicit GPXLab(const QString &fileName = "", QWidget *parent = nullptr);
     ~GPXLab();
 
     /**

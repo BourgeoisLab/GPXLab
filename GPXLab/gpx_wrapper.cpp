@@ -3,7 +3,7 @@
 #include "gpx_wrapper.h"
 
 GPX_wrapper::GPX_wrapper(const QString &creator) :
-    gpxm(NULL)
+    gpxm(nullptr)
 {
     init(creator);
 }
@@ -25,7 +25,7 @@ void GPX_wrapper::clear()
     selectedTrackNumber = -1;
     selectedTrackSegmentNumber = -1;
     selectedPointNumber = -1;
-    selectedPoint = NULL;
+    selectedPoint = nullptr;
     timeValues.clear();
     altitudeValues.clear();
     curveMainValues.clear();
@@ -33,7 +33,7 @@ void GPX_wrapper::clear()
     if (gpxm)
     {
         delete gpxm;
-        gpxm = NULL;
+        gpxm = nullptr;
         emit modelCleared();
     }
 }
@@ -75,14 +75,14 @@ const QString &GPX_wrapper::getFileName() const
 const GPX_statsType* GPX_wrapper::getModelStats() const
 {
     if (!gpxm)
-        return NULL;
+        return nullptr;
     return &gpxm->stats;
 }
 
 const GPX_metadataType* GPX_wrapper::getModelMetadata() const
 {
     if (!gpxm)
-        return NULL;
+        return nullptr;
     return &gpxm->metadata;
 }
 
@@ -106,19 +106,19 @@ int GPX_wrapper::getNumTracks() const
 const GPX_statsType* GPX_wrapper::getTrackStats(int trackNumber) const
 {
     if (!gpxm)
-        return NULL;
+        return nullptr;
     if ((size_t)trackNumber < gpxm->trk.size())
         return &gpxm->trk[trackNumber].stats;
-    return NULL;
+    return nullptr;
 }
 
 const GPX_trkMetadataType* GPX_wrapper::getTrackMetadata(int trackNumber) const
 {
     if (!gpxm)
-        return NULL;
+        return nullptr;
     if ((size_t)trackNumber < gpxm->trk.size())
         return &gpxm->trk[trackNumber].metadata;
-    return NULL;
+    return nullptr;
 }
 
 GPX_model::retCode_e GPX_wrapper::setTrackMetadata(int trackNumber, const GPX_trkMetadataType &metadata)
@@ -138,7 +138,7 @@ GPX_model::retCode_e GPX_wrapper::setTrackMetadata(int trackNumber, const GPX_tr
 const GPX_statsType* GPX_wrapper::getItemStats(int trackNumber, int trackSegmentNumber) const
 {
     if (!gpxm)
-        return NULL;
+        return nullptr;
 
     if ((size_t)trackNumber < gpxm->trk.size())
     {
@@ -152,7 +152,7 @@ const GPX_statsType* GPX_wrapper::getItemStats(int trackNumber, int trackSegment
                 return &gpxm->trk[trackNumber].trkseg[trackSegmentNumber].stats;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 const QString GPX_wrapper::getItemName(int trackNumber, int trackSegmentNumber) const
@@ -179,16 +179,16 @@ const QString GPX_wrapper::getItemName(int trackNumber, int trackSegmentNumber) 
 const GPX_trkType *GPX_wrapper::getTrack(int trackNumber) const
 {
     if (!gpxm)
-        return NULL;
+        return nullptr;
     if ((size_t)trackNumber < gpxm->trk.size())
         return &gpxm->trk[trackNumber];
-    return NULL;
+    return nullptr;
 }
 
 const GPX_trksegType *GPX_wrapper::getTrackSegment(int trackNumber, int trackSegmentNumber) const
 {
     if (!gpxm)
-        return NULL;
+        return nullptr;
 
     if ((size_t)trackNumber < gpxm->trk.size())
     {
@@ -197,13 +197,13 @@ const GPX_trksegType *GPX_wrapper::getTrackSegment(int trackNumber, int trackSeg
             return &gpxm->trk[trackNumber].trkseg[trackSegmentNumber];
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 const GPX_wptType *GPX_wrapper::getPoint(int trackNumber, int trackSegmentNumber, int pointNumber) const
 {
     if (!gpxm)
-        return NULL;
+        return nullptr;
 
     if ((size_t)trackNumber < gpxm->trk.size())
     {
@@ -224,7 +224,7 @@ const GPX_wptType *GPX_wrapper::getPoint(int trackNumber, int trackSegmentNumber
                 return &gpxm->trk[trackNumber].trkseg[trackSegmentNumber].trkpt[pointNumber];
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 QString GPX_wrapper::getTrackPointPropertyLabel(TrackPointProperty property, bool newLines) const
@@ -1237,10 +1237,10 @@ int GPX_wrapper::initTrkIteration() const
 const GPX_trkType *GPX_wrapper::getNextTrk() const
 {
     if (!gpxm)
-        return NULL;
+        return nullptr;
     if (itTrk != itTrkEnd)
         return &*itTrk++;
-    return NULL;
+    return nullptr;
 }
 
 int GPX_wrapper::initTrksegIteration(int trackNumber) const
@@ -1260,10 +1260,10 @@ int GPX_wrapper::initTrksegIteration(int trackNumber) const
 const GPX_trksegType* GPX_wrapper::getNextTrkseg() const
 {
     if (!gpxm)
-        return NULL;
+        return nullptr;
     if (itTrkseg != itTrksegEnd)
         return &*itTrkseg++;
-    return NULL;
+    return nullptr;
 }
 
 int GPX_wrapper::initTrkptIteration(int trackNumber, int trackSegmentNumber) const
@@ -1286,10 +1286,10 @@ int GPX_wrapper::initTrkptIteration(int trackNumber, int trackSegmentNumber) con
 const GPX_wptType *GPX_wrapper::getNextTrkpt() const
 {
     if (!gpxm)
-        return NULL;
+        return nullptr;
     if (itTrkpt != itTrkptEnd)
         return &*itTrkpt++;
-    return NULL;
+    return nullptr;
 }
 
 GPX_model::retCode_e GPX_wrapper::setSelectedTrack(int trackNumber, int trackSegmentNumber, bool forceSelect)
@@ -1305,7 +1305,7 @@ GPX_model::retCode_e GPX_wrapper::setSelectedTrack(int trackNumber, int trackSeg
 
     // clear selected point
     selectedPointNumber = -1;
-    selectedPoint = NULL;
+    selectedPoint = nullptr;
 
     if ((size_t)trackNumber < gpxm->trk.size())
     {
@@ -1333,7 +1333,7 @@ GPX_model::retCode_e GPX_wrapper::setSelectedPointByNumber(int pointNumber, bool
         return GPX_model::GPXM_WARN_NOTHING_CHANGED;
 
     selectedPointNumber = -1;
-    selectedPoint = NULL;
+    selectedPoint = nullptr;
     if (pointNumber == -1)
         return GPX_model::GPXM_OK;
 
@@ -1379,7 +1379,7 @@ GPX_model::retCode_e GPX_wrapper::setSelectedPointByCoord(double lat, double lon
         return GPX_model::GPXM_WARN_NOTHING_CHANGED;
 
     selectedPointNumber = -1;
-    selectedPoint = NULL;
+    selectedPoint = nullptr;
     if (selectedTrackNumber == -1)
     {
         return GPX_model::GPXM_ERR_FAILED;
@@ -1428,7 +1428,7 @@ GPX_model::retCode_e GPX_wrapper::setSelectedPointByTimestamp(time_t timestamp, 
         return GPX_model::GPXM_WARN_NOTHING_CHANGED;
 
     selectedPointNumber = -1;
-    selectedPoint = NULL;
+    selectedPoint = nullptr;
     if (selectedTrackNumber == -1)
     {
         return GPX_model::GPXM_ERR_FAILED;

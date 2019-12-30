@@ -25,7 +25,7 @@ public:
      * @param trackNumber Track number to move down
      * @param parent Parent
      */
-    MoveTrackDownCommand(GPX_wrapper *gpxmw, int trackNumber, QUndoCommand *parent = 0);
+    MoveTrackDownCommand(GPX_wrapper *gpxmw, int trackNumber, QUndoCommand *parent = nullptr);
 
     /**
      * @brief Undo the command

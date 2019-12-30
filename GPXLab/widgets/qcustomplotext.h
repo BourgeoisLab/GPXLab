@@ -48,7 +48,7 @@ public:
      * @brief Constructor
      * @param parent Parent
      */
-    explicit QCustomPlotExt(QWidget *parent = 0);
+    explicit QCustomPlotExt(QWidget *parent = nullptr);
 
     /**
      * @brief Adds a marker with the default QPen

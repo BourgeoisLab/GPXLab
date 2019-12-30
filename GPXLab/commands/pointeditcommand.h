@@ -30,7 +30,7 @@ public:
      * @param value Value
      * @param parent Parent
      */
-    PointEditCommand(GPX_wrapper *gpxmw, int trackNumber, int trackSegmentNumber, int pointNumber, size_t numProperties, GPX_wrapper::TrackPointProperty property[], QString value[], QUndoCommand *parent = 0);
+    PointEditCommand(GPX_wrapper *gpxmw, int trackNumber, int trackSegmentNumber, int pointNumber, size_t numProperties, GPX_wrapper::TrackPointProperty property[], QString value[], QUndoCommand *parent = nullptr);
 
     /**
      * @brief Constructor

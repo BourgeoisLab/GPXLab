@@ -172,7 +172,7 @@ public:
     /**
      * @brief Gets a track (read-only)
      * @param trackNumber Track number
-     * @return Track, NULL if invalid
+     * @return Track, nullptr if invalid
      */
     const GPX_trkType *getTrack(int trackNumber) const;
 
@@ -180,7 +180,7 @@ public:
      * @brief Gets a track segment (read-only)
      * @param trackNumber Track number
      * @param trackSegmentNumber Track segment number
-     * @return Track segment, NULL if invalid
+     * @return Track segment, nullptr if invalid
      */
     const GPX_trksegType *getTrackSegment(int trackNumber, int trackSegmentNumber) const;
 
@@ -190,7 +190,7 @@ public:
      * @param trackSegmentNumber Track segment number, if -1 for whole track
      * @param pointNumber Point number starting from the given track segment
      * or first segment if trackSegmentNumber = -1
-     * @return Track point, NULL if invalid
+     * @return Track point, nullptr if invalid
      */
     const GPX_wptType *getPoint(int trackNumber, int trackSegmentNumber, int pointNumber) const;
 
@@ -376,7 +376,7 @@ public:
 
     /**
      * @brief Gets the selected track point
-     * @return Track point, NULL if no point selected
+     * @return Track point, nullptr if no point selected
      */
     const GPX_wptType *getSelectedPoint() const;
 
@@ -431,7 +431,7 @@ public:
 
     /**
      * @brief Gets the next track from the iteration
-     * @return Next track, NULL if iteration finished
+     * @return Next track, nullptr if iteration finished
      */
     const GPX_trkType* getNextTrk() const;
 
@@ -444,7 +444,7 @@ public:
 
     /**
      * @brief Gets the next track segment from the iteration
-     * @return Next track segment, NULL if iteration finished
+     * @return Next track segment, nullptr if iteration finished
      */
     const GPX_trksegType *getNextTrkseg() const;
 
@@ -458,7 +458,7 @@ public:
 
     /**
      * @brief Gets the next track point from the iteration
-     * @return Next track point, NULL if iteration finished
+     * @return Next track point, nullptr if iteration finished
      */
     const GPX_wptType* getNextTrkpt() const;
 

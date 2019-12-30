@@ -163,7 +163,7 @@ GPX_model::retCode_e GPX_model::save(const string& fileName)
         return GPXM_ERR_FILEOPEN;
 
     metadata.name = name;
-    metadata.timestamp = time(NULL);
+    metadata.timestamp = time(nullptr);
     metadata.millisecond = 0;
 
     // write file
@@ -263,7 +263,7 @@ void GPX_trkType::update(bool propagate)
             {
                 // update track segment
                 if (propagate)
-                    itrkseg->update(propagate, 0, NULL);
+                    itrkseg->update(propagate, 0, nullptr);
 
                 // update self
                 stats.bounds.minlat = itrkseg->stats.bounds.minlat;
@@ -323,14 +323,14 @@ void GPX_trksegType::update(bool propagate, time_t trackStartTime, const GPX_wpt
 
     if (!trkpt.empty())
     {
-        const GPX_wptType* nextWpt = NULL;
+        const GPX_wptType* nextWpt = nullptr;
         float lasthei = 0.0f, deltahei;
         vector<GPX_wptType>::iterator itrkpt;
         stats.points = (int)trkpt.size();
         for (itrkpt = trkpt.begin(); itrkpt != trkpt.end(); ++itrkpt)
         {
             if ((itrkpt + 1) == trkpt.end())
-                nextWpt = NULL;
+                nextWpt = nullptr;
             else
                 nextWpt = &*(itrkpt + 1);
 
@@ -341,7 +341,7 @@ void GPX_trksegType::update(bool propagate, time_t trackStartTime, const GPX_wpt
                     itrkpt->update(trackStartTime, prevWpt, nextWpt);
 
                 // update self
-                if (prevWpt == NULL)
+                if (prevWpt == nullptr)
                     trackStartTime = itrkpt->timestamp;
                 stats.bounds.minlat = itrkpt->latitude;
                 stats.bounds.maxlat = itrkpt->latitude;

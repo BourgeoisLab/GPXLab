@@ -29,7 +29,7 @@ public:
      * @brief Constructor
      * @param parent Parent
      */
-    explicit QDiagramWidget(QWidget *parent = 0);
+    explicit QDiagramWidget(QWidget *parent = nullptr);
 
     /**
      * @brief init

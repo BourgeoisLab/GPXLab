@@ -27,7 +27,7 @@ public:
      * @param pointNumber Point number, if -1 no point will be selected
      * @param parent Parent
      */
-    SelectCommand(GPX_wrapper *gpxmw, int trackNumber, int trackSegmentNumber = -1, int pointNumber = -1, QUndoCommand *parent = 0);
+    SelectCommand(GPX_wrapper *gpxmw, int trackNumber, int trackSegmentNumber = -1, int pointNumber = -1, QUndoCommand *parent = nullptr);
 
     /**
      * @brief Constructor
@@ -38,7 +38,7 @@ public:
      * @param lon Longitude coordinate of the point to select
      * @param parent Parent
      */
-    SelectCommand(GPX_wrapper *gpxmw, int trackNumber, int trackSegmentNumber, double lat, double lon, QUndoCommand *parent = 0);
+    SelectCommand(GPX_wrapper *gpxmw, int trackNumber, int trackSegmentNumber, double lat, double lon, QUndoCommand *parent = nullptr);
 
     /**
      * @brief Constructor
@@ -48,7 +48,7 @@ public:
      * @param timestamp Timestamp of the point to select
      * @param parent Parent
      */
-    SelectCommand(GPX_wrapper *gpxmw, int trackNumber, int trackSegmentNumber, time_t timestamp, QUndoCommand *parent = 0);
+    SelectCommand(GPX_wrapper *gpxmw, int trackNumber, int trackSegmentNumber, time_t timestamp, QUndoCommand *parent = nullptr);
 
     /**
      * @brief Undo the command

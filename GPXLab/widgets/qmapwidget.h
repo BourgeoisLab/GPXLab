@@ -34,7 +34,7 @@ public:
      * @param parent Parent
      * @param windowFlags Window flags
      */
-    explicit QMapWidget(QWidget *parent = 0, Qt::WindowFlags windowFlags = 0);
+    explicit QMapWidget(QWidget *parent = nullptr, Qt::WindowFlags windowFlags = Qt::WindowFlags());
 
     /**
      * @brief Initializes the widget
@@ -148,7 +148,7 @@ private slots:
 
     /**
      * @brief Called on mouse move events
-     * @param geometry Geometry on the mouse coordinates, NULL if none
+     * @param geometry Geometry on the mouse coordinates, nullptr if none
      * @param point Mouse coordinates
      */
     void geometryOver(Geometry* geometry, QPoint point);
@@ -174,7 +174,7 @@ private:
      * @param trackSegmentNumber Track segment number
      * @param pointNumber Point number
      */
-    void overPointSetVisible(bool visible, const GPX_wptType *trkpt = NULL);
+    void overPointSetVisible(bool visible, const GPX_wptType *trkpt = nullptr);
 
     void keyPressEvent(QKeyEvent *event);
 

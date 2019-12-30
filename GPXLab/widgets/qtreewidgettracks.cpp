@@ -81,7 +81,7 @@ void QTreeWidgetTracks::build(const GPX_wrapper *gpxmw)
     int trackSegmentNumber = 0;
     const GPX_trkType* trk;
     const GPX_trksegType* trkseg;
-    QTreeWidgetItem *itemTrack = NULL, *itemTrackSegment = NULL;
+    QTreeWidgetItem *itemTrack = nullptr, *itemTrackSegment = nullptr;
     QDateTime timestamp;
 
     // set column widths
@@ -115,7 +115,7 @@ void QTreeWidgetTracks::build(const GPX_wrapper *gpxmw)
                 while ((trkseg = gpxmw->getNextTrkseg()))
                 {
                     QList<QVariant> dataListTrackSegment;
-                    itemTrackSegment = new QTreeWidgetItemExt(NULL);
+                    itemTrackSegment = new QTreeWidgetItemExt(nullptr);
                     itemTrackSegment->setText(TREE_COL_NUMBER, QString::number(trackNumber + 1) + "." + QString::number(trackSegmentNumber + 1));
                     itemTrackSegment->setText(TREE_COL_NAME, "#" + QString::number(trackSegmentNumber + 1));
                     itemTrackSegment->setText(TREE_COL_DATE, "");

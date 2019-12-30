@@ -30,7 +30,7 @@ public:
      * @param settings Settings
      * @param parent Parent
      */
-    explicit Dialog_settings(Settings *settings, QWidget *parent = 0);
+    explicit Dialog_settings(Settings *settings, QWidget *parent = nullptr);
     ~Dialog_settings();
 
 private slots:

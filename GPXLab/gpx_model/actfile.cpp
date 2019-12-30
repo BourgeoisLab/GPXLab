@@ -21,7 +21,7 @@ static char gBuffer[BUFFER_SIZE];
 #define PARSING_NOTE                    5
 
 static time_t gTime = 0;
-static GPX_trksegType *gTrkseg = NULL;
+static GPX_trksegType *gTrkseg = nullptr;
 static unsigned int gPointIndex = 0;
 static unsigned int gSegementEndIndexes[MAX_SEGMENTS];
 
@@ -333,8 +333,8 @@ GPX_model::retCode_e ACTFile::load(ifstream* fp, GPX_model* gpxm)
     uXML.state = PARSING_NONE;
     uXML.pObject = gpxm;
 
-    gTime = getStartDateTime(0, NULL);
-    gTrkseg = NULL;
+    gTime = getStartDateTime(0, nullptr);
+    gTrkseg = nullptr;
     gPointIndex = 0;
     memset(gSegementEndIndexes, 0, sizeof(unsigned int) * MAX_SEGMENTS);
 

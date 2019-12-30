@@ -7,7 +7,7 @@ PointEditCommand::PointEditCommand(GPX_wrapper *gpxmw, int trackNumber, int trac
     trackSegmentNumber(trackSegmentNumber),
     pointNumber(pointNumber),
     numProperties(numProperties),
-    dValue(NULL)
+    dValue(nullptr)
 {
     size_t i;
     this->property = new GPX_wrapper::TrackPointProperty[numProperties];
@@ -26,7 +26,7 @@ PointEditCommand::PointEditCommand(GPX_wrapper *gpxmw, int trackNumber, int trac
     trackSegmentNumber(trackSegmentNumber),
     pointNumber(pointNumber),
     numProperties(numProperties),
-    sValue(NULL)
+    sValue(nullptr)
 {
     size_t i;
     this->property = new GPX_wrapper::TrackPointProperty[numProperties];

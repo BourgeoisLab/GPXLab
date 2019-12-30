@@ -28,7 +28,7 @@ public:
      * @brief Constructs the dialogue
      * @param parent Parent
      */
-    explicit Dialog_about(QWidget *parent = 0);
+    explicit Dialog_about(QWidget *parent = nullptr);
     ~Dialog_about();
 
 private:

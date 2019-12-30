@@ -28,7 +28,7 @@ public:
      * @param wpt Point
      * @param parent Parent
      */
-    PointInsertCommand(GPX_wrapper *gpxmw, int trackNumber, int trackSegmentNumber, int pointNumber, GPX_wptType &wpt, QUndoCommand *parent = 0);
+    PointInsertCommand(GPX_wrapper *gpxmw, int trackNumber, int trackSegmentNumber, int pointNumber, GPX_wptType &wpt, QUndoCommand *parent = nullptr);
 
     /**
      * @brief Undo the command

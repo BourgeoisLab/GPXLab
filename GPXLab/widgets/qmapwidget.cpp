@@ -195,7 +195,7 @@ void QMapWidget::keyPressEvent(QKeyEvent *event)
 void QMapWidget::leaveEvent(QEvent *event)
 {
     Q_UNUSED(event);
-    geometryOver(NULL, QPoint());
+    geometryOver(nullptr, QPoint());
 }
 
 void QMapWidget::setTilesURL(const QString &tilesURL)
@@ -429,7 +429,7 @@ void QMapWidget::insertTrack(int trackNumber, const GPX_trkType &track)
 
 void QMapWidget::deleteTrack(int trackNumber)
 {
-    Geometry* trackToDelete = NULL;
+    Geometry* trackToDelete = nullptr;
 
     // suspend redraw
     suspendUpdate(true);

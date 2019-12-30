@@ -29,7 +29,7 @@ public:
      * @brief Constructor
      * @param parent Parent
      */
-    explicit QTreeWidgetTracks(QWidget *parent = 0);
+    explicit QTreeWidgetTracks(QWidget *parent = nullptr);
 
     /**
      * @brief Generates the tree

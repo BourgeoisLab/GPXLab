@@ -25,7 +25,7 @@ public:
      * @param trackNumber Track number to remove
      * @param parent Parent
      */
-    RemoveTrackCommand(GPX_wrapper *gpxmw, int trackNumber, QUndoCommand *parent = 0);
+    RemoveTrackCommand(GPX_wrapper *gpxmw, int trackNumber, QUndoCommand *parent = nullptr);
 
     /**
      * @brief Undo the command
@@ -40,7 +40,7 @@ public:
 private:
 
     GPX_wrapper *gpxmw;
-    int trackNumber;
+    size_t trackNumber;
     GPX_trkType trk;
 };
 

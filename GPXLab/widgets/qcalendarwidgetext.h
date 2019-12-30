@@ -30,7 +30,7 @@ public:
      * @brief Constructor
      * @param parent Parent
      */
-    QCalendarWidgetExt(QWidget *parent = 0);
+    QCalendarWidgetExt(QWidget *parent = nullptr);
     ~QCalendarWidgetExt();
 
     /**

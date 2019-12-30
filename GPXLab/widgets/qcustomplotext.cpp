@@ -2,7 +2,7 @@
 
 QCustomPlotExt::QCustomPlotExt(QWidget *parent) :
     QCustomPlot(parent),
-    marker(NULL)
+    marker(nullptr)
 {
     clearExt();
     setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);

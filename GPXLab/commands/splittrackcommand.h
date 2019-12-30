@@ -27,7 +27,7 @@ public:
      * @param pointNumber Point number at which the track is combined
      * @param parent Parent
      */
-    SplitTrackCommand(GPX_wrapper *gpxmw, int trackNumber, int trackSegmentNumber, int pointNumber, QUndoCommand *parent = 0);
+    SplitTrackCommand(GPX_wrapper *gpxmw, int trackNumber, int trackSegmentNumber, int pointNumber, QUndoCommand *parent = nullptr);
 
     /**
      * @brief Undo the command

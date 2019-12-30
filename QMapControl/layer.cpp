@@ -242,7 +242,7 @@ namespace qmapcontrol
                         break;
                 }
                 if (!touched)
-                    emit(geometryOver(NULL, QPoint(evnt->x(), evnt->y())));
+                    emit(geometryOver(nullptr, QPoint(evnt->x(), evnt->y())));
                 delete tmppoint;
             }
         }
