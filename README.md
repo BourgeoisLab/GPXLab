@@ -43,10 +43,25 @@ License
 -------
 This software is free software and licensed under GPL version 3. 
 
-Compiling
----------
+Development
+-----------
 The project is separated in two sub-projects GPXLab and QMapControl. QMapControl is a widget to display a map. Since I had to made some modifications to the original code I added the modified version here. QMapControl is compiled as a library and linked to the main sub-project GPXLab.
- 
+
+Get latest source from master branch using:
+
+```bash
+$ git clone https://github.com/BourgeoisLab/GPXLab/
+```
+
+Compile source using:
+
+```bash
+$ cd GPXLab
+$ lrelease GPXLab/GPXLab.pro
+$ qmake
+$ make
+```
+
 Credits
 -------
 - **QCustomPlot Qt Widget:** http://www.qcustomplot.com
