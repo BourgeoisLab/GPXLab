@@ -135,6 +135,11 @@ public:
      */
     QString tilesURL;
 
+    /**
+     * @brief Last opened file path
+     */
+    QString lastOpenedPath;
+
 signals:
 
     /**
