@@ -197,10 +197,8 @@ bool GPXLab::openFile(QString fileName)
 
     if (fileName.isEmpty())
     {
-        QString lastOpenedPath;
         QString selectedFilter;
-        lastOpenedPath = settings->getValue("lastOpenedPath").toString();
-        fileName = QFileDialog::getOpenFileName(this, tr("Open File"), lastOpenedPath, "GPX (*.gpx);;NMEA (*.txt *.nmea);; SpoQ (*.act *.xml)", &selectedFilter);
+        fileName = QFileDialog::getOpenFileName(this, tr("Open File"), settings->lastOpenedPath, "GPX (*.gpx);;NMEA (*.txt *.nmea);; SpoQ (*.act *.xml)", &selectedFilter);
         if (selectedFilter == "GPX (*.gpx)")
             fileType = GPX_model::GPXM_FILE_GPX;
         else if (selectedFilter == "NMEA (*.txt *.nmea)")
@@ -237,7 +235,8 @@ bool GPXLab::openFile(QString fileName)
             // store the file path
             QDir filePath = QFileInfo(fileName).absoluteDir();
             QString currentFilePath = filePath.absolutePath();
-            settings->setValue("lastOpenedPath", currentFilePath);
+            settings->lastOpenedPath = currentFilePath;
+
             retValue = true;
         }
         else
