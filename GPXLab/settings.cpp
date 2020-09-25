@@ -22,6 +22,7 @@ void Settings::load()
     doPersistentCaching = qsettings.value("doPersistentCaching", true).toBool();
     cachePath = qsettings.value("cachePath", "").toString();
     tilesURL = qsettings.value("tilesURL", "").toString();
+    lastOpenedPath = qsettings.value("lastOpenedFilePath", "").toString();
     if (cachePath.isEmpty())
         cachePath = defaultCachePath();
     autoLoadLastFile = qsettings.value("autoLoadLastFile", true).toBool();
@@ -45,6 +46,7 @@ void Settings::save()
     qsettings.setValue("checkUpdate", checkUpdate);
     qsettings.setValue("checkUpdateLastDate", checkUpdateLastDate);
     qsettings.setValue("tilesURL", tilesURL);
+    qsettings.setValue("lastOpenedPath", lastOpenedPath);
     emit settingsChanged(false);
 }
 
