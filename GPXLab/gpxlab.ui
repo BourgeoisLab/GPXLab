@@ -79,7 +79,7 @@
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -461,7 +461,7 @@
   <widget class="QDockWidget" name="dockWidgetTracks">
    <property name="minimumSize">
     <size>
-     <width>200</width>
+     <width>257</width>
      <height>455</height>
     </size>
    </property>
@@ -1198,11 +1198,18 @@ selection-background-color: rgb(100, 200, 127);</string>
    </widget>
   </widget>
   <action name="actionExit">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/app_exit.png</normaloff>:/images/app_exit.png</iconset>
+   </property>
    <property name="text">
     <string>Exit</string>
    </property>
    <property name="toolTip">
-    <string>Exit application</string>
+    <string>Exit application (Ctrl+Q)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
    <property name="menuRole">
     <enum>QAction::QuitRole</enum>
@@ -1401,6 +1408,10 @@ selection-background-color: rgb(100, 200, 127);</string>
    </property>
   </action>
   <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/about.png</normaloff>:/images/about.png</iconset>
+   </property>
    <property name="text">
     <string>About</string>
    </property>
@@ -1411,6 +1422,10 @@ selection-background-color: rgb(100, 200, 127);</string>
   <action name="actionClose_File">
    <property name="enabled">
     <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/close_file.png</normaloff>:/images/close_file.png</iconset>
    </property>
    <property name="text">
     <string>Close File</string>
