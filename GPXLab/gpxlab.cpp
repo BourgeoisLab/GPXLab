@@ -102,7 +102,11 @@ GPXLab::GPXLab(const QString &fileName, QWidget *parent) :
     connect(zoomSlider, SIGNAL(valueChanged(int)), this, SLOT(zoom_valueChanged(int)));
 
     // exit
+  #ifdef Q_OS_WINDOWS
     ui->actionExit->setShortcut(QKeySequence("Ctrl+Q"));
+  #else
+    ui->actionExit->setShortcut(QKeySequence::Quit);
+  #endif
 
     // build recent files action
     actionOpenRecentFile = new QAction*[settings->maxRecentFiles];

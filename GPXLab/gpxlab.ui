@@ -79,7 +79,7 @@
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -461,7 +461,7 @@
   <widget class="QDockWidget" name="dockWidgetTracks">
    <property name="minimumSize">
     <size>
-     <width>257</width>
+     <width>200</width>
      <height>455</height>
     </size>
    </property>
@@ -1206,7 +1206,7 @@ selection-background-color: rgb(100, 200, 127);</string>
     <string>Exit</string>
    </property>
    <property name="toolTip">
-    <string>Exit application (Ctrl+Q)</string>
+    <string>Exit application</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
