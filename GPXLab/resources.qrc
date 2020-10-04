@@ -32,5 +32,8 @@
         <file>images/point_delete.png</file>
         <file>images/point_insert.png</file>
         <file>images/timeline.png</file>
+        <file>images/app_exit.png</file>
+        <file>images/close_file.png</file>
+        <file>images/about.png</file>
     </qresource>
 </RCC>
