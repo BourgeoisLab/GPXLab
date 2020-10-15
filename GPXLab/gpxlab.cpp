@@ -354,6 +354,10 @@ void GPXLab::checkForUpdate(bool force)
     QDate since;
     if (!force)
         since = settings->checkUpdateLastDate;
+    if (since.isValid() == false) {
+        since = QDate::currentDate();
+        settings->checkUpdateLastDate = QDate::currentDate();
+    }
     Dialog_CheckUpdate *dlg = new Dialog_CheckUpdate(settings->checkUpdateUrl, since, this);
     connect(dlg, SIGNAL(finished()), this, SLOT(checkUpdateFinished()));
     dlg->checkForUpdate();

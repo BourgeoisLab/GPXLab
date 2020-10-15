@@ -69,6 +69,7 @@ bool Dialog_CheckUpdate::parseReplyGithub(const QByteArray& str)
     }
 
     QDate dtPublished = QDate::fromString(reply.object().value("published_at").toString(), Qt::ISODate);
+
     if (dtPublished > mDateSince)
     {
         QLocale locale = QLocale();
